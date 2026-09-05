@@ -1,0 +1,113 @@
+<h1>Kalkulator Gaji Bersih</h1>
+<p>Perkirakan gaji bersih (<em>take home pay</em>) bulanan Anda setelah potongan PPh 21, BPJS Kesehatan, dan BPJS Ketenagakerjaan, berdasarkan status PTKP.</p>
+
+<form class="calc" onsubmit="return hitungGaji(event)">
+  <label>Penghasilan bruto per bulan (Rp)
+    <input id="gj-bruto" type="text" inputmode="numeric" data-money value="10000000" required>
+  </label>
+  <label>Status PTKP
+    <select id="gj-ptkp">
+      <option value="TK0">TK/0 &mdash; lajang, tanpa tanggungan</option>
+      <option value="TK1">TK/1 &mdash; lajang, 1 tanggungan</option>
+      <option value="TK2">TK/2 &mdash; lajang, 2 tanggungan</option>
+      <option value="TK3">TK/3 &mdash; lajang, 3 tanggungan</option>
+      <option value="K0">K/0 &mdash; kawin, tanpa tanggungan</option>
+      <option value="K1">K/1 &mdash; kawin, 1 tanggungan</option>
+      <option value="K2">K/2 &mdash; kawin, 2 tanggungan</option>
+      <option value="K3">K/3 &mdash; kawin, 3 tanggungan</option>
+    </select>
+  </label>
+  <label>BPJS Ketenagakerjaan (potong karyawan)
+    <select id="gj-tk">
+      <option value="ya">Ya &mdash; JHT 2% + JP 1%</option>
+      <option value="tidak">Tidak</option>
+    </select>
+  </label>
+  <label>BPJS Kesehatan (potong karyawan 1%)
+    <select id="gj-kes">
+      <option value="ya">Ya</option>
+      <option value="tidak">Tidak</option>
+    </select>
+  </label>
+  <label>Punya NPWP?
+    <select id="gj-npwp">
+      <option value="ya">Ya</option>
+      <option value="tidak">Tidak &mdash; PPh 21 lebih tinggi 20%</option>
+    </select>
+  </label>
+  <button type="submit">Hitung Gaji Bersih</button>
+</form>
+
+<div id="gj-hasil" class="result" hidden></div>
+
+<section class="article">
+  <h2>Cara perhitungan (metode tahunan)</h2>
+  <p>Kalkulator memakai metode penghitungan PPh 21 tahunan yang menjadi dasar rekonsiliasi pajak akhir tahun. Langkahnya: penghasilan bruto dikurangi <strong>biaya jabatan</strong> (5% dari bruto, maksimal Rp500.000 per bulan) serta iuran JHT dan JP yang dibayar karyawan, menghasilkan penghasilan neto. Neto disetahunkan, dikurangi <strong>PTKP</strong> sesuai status, lalu dikenai tarif progresif Pasal 17.</p>
+  <code class="formula">PKP = (neto bulanan &times; 12) &minus; PTKP
+PPh setahun = PKP dikenai tarif 5% / 15% / 25% / 30% / 35% berlapis
+PPh bulanan = PPh setahun / 12</code>
+  <p>PTKP setahun: Rp54.000.000 untuk wajib pajak, tambahan Rp4.500.000 jika kawin, dan Rp4.500.000 untuk tiap tanggungan (maksimal tiga). Lapisan tarif: sampai Rp60 juta 5%, di atasnya sampai Rp250 juta 15%, sampai Rp500 juta 25%, sampai Rp5 miliar 30%, selebihnya 35%.</p>
+
+  <h2>Contoh</h2>
+  <p>Gaji bruto Rp10.000.000 per bulan, status K/1, ikut BPJS Ketenagakerjaan dan Kesehatan, punya NPWP. Biaya jabatan Rp500.000, JHT Rp200.000, JP Rp100.000, sehingga neto sebulan Rp9.200.000 atau Rp110.400.000 setahun. Dikurangi PTKP K/1 sebesar Rp63.000.000, PKP-nya Rp47.400.000. PPh setahun 5% = Rp2.370.000, atau sekitar Rp197.500 per bulan. Setelah dikurangi PPh Rp197.500, JHT Rp200.000, JP Rp100.000, dan BPJS Kesehatan Rp100.000, gaji bersih sekitar Rp9.402.500.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Kenapa hasilnya beda dengan slip gaji dari perusahaan?</h3>
+  <p>Sejak 2024 pemotongan PPh 21 bulanan (Januari&ndash;November) memakai skema Tarif Efektif Rata-rata (TER) berbasis bruto, dan penyesuaian dilakukan di Desember. Angka bulanan bisa berbeda dari metode tahunan di sini, walau totalnya setahun mestinya mendekati. Perusahaan juga bisa menerapkan tunjangan pajak, metode gross-up, atau komponen potongan lain.</p>
+  <h3>Apakah THR dan bonus ikut dihitung?</h3>
+  <p>Belum. Kalkulator ini menghitung penghasilan rutin bulanan. THR, bonus, dan pendapatan tidak tetap dikenai PPh 21 tersendiri dan menaikkan pajak pada bulan diterimanya.</p>
+  <h3>Apakah iuran BPJS Kesehatan mengurangi pajak?</h3>
+  <p>Tidak. Yang menjadi pengurang penghasilan bruto untuk PPh 21 hanyalah biaya jabatan serta iuran JHT dan JP yang dibayar karyawan. Iuran BPJS Kesehatan tetap dipotong dari gaji tetapi tidak mengurangi dasar pajak.</p>
+</section>
+
+<script>
+function hitungGaji(e) {
+  e.preventDefault();
+  var bruto = num("gj-bruto");
+  if (bruto <= 0) { show("gj-hasil", "Masukkan penghasilan bruto yang valid."); return false; }
+  var kode = document.getElementById("gj-ptkp").value;
+  var kawin = kode.charAt(0) === "K";
+  var tanggungan = parseInt(kode.slice(1), 10) || 0;
+  var ikutTK = document.getElementById("gj-tk").value === "ya";
+  var ikutKes = document.getElementById("gj-kes").value === "ya";
+  var npwp = document.getElementById("gj-npwp").value === "ya";
+
+  var biayaJabatan = Math.min(bruto * 0.05, 500000);
+  var jht = ikutTK ? bruto * 0.02 : 0;
+  var jp = ikutTK ? Math.min(bruto, 10547400) * 0.01 : 0;
+  var bpjsKes = ikutKes ? Math.min(bruto, 12000000) * 0.01 : 0;
+
+  var netoBulan = bruto - biayaJabatan - jht - jp;
+  var netoTahun = netoBulan * 12;
+  var ptkp = 54000000 + (kawin ? 4500000 : 0) + Math.min(tanggungan, 3) * 4500000;
+  var pkp = Math.max(0, Math.floor((netoTahun - ptkp) / 1000) * 1000);
+
+  var lapis = [[60000000, 0.05], [190000000, 0.15], [250000000, 0.25], [4500000000, 0.30], [Infinity, 0.35]];
+  var sisa = pkp, pphTahun = 0;
+  for (var i = 0; i < lapis.length && sisa > 0; i++) {
+    var kena = Math.min(sisa, lapis[i][0]);
+    pphTahun += kena * lapis[i][1];
+    sisa -= kena;
+  }
+  if (!npwp) pphTahun *= 1.2;
+  var pphBulan = pphTahun / 12;
+
+  var potongan = jht + jp + bpjsKes + pphBulan;
+  var bersih = bruto - potongan;
+
+  show("gj-hasil",
+    "<strong>Gaji bersih per bulan: " + rp(bersih) + "</strong><br>" +
+    "PPh 21: " + rp(pphBulan) + " / bulan (" + rp(pphTahun) + " / tahun)<br>" +
+    (jht ? "JHT (2%): " + rp(jht) + "<br>" : "") +
+    (jp ? "JP (1%): " + rp(jp) + "<br>" : "") +
+    (bpjsKes ? "BPJS Kesehatan (1%): " + rp(bpjsKes) + "<br>" : "") +
+    "Total potongan: " + rp(potongan) +
+    bar([
+      { label: "Diterima", nilai: bersih, warna: "#2f6bff" },
+      { label: "Potongan", nilai: potongan, warna: "#f79009" }
+    ]),
+    "Kalkulator Gaji Bersih — dari bruto " + rp(bruto) + " (" + kode +
+    "), take home pay sekitar " + rp(bersih) + "/bulan. PPh 21 " + rp(pphBulan) + "/bulan.");
+  return false;
+}
+</script>

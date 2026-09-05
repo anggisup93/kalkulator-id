@@ -1,0 +1,68 @@
+<h1>Kalkulator Diskon</h1>
+<p>Hitung harga akhir setelah potongan diskon, berapa rupiah yang Anda hemat, dan efek diskon bertingkat (diskon di atas diskon).</p>
+
+<form class="calc" onsubmit="return hitungDiskon(event)">
+  <label>Harga awal (Rp)
+    <input id="dsk-harga" type="text" inputmode="numeric" data-money value="250000" required>
+  </label>
+  <label>Diskon pertama (%)
+    <input id="dsk-d1" type="number" min="0" max="100" step="0.1" value="20" required>
+  </label>
+  <label>Diskon kedua / tambahan (%)
+    <input id="dsk-d2" type="number" min="0" max="100" step="0.1" value="0">
+  </label>
+  <label>Potongan tetap setelah diskon (Rp)
+    <input id="dsk-potong" type="text" inputmode="numeric" data-money value="0">
+  </label>
+  <button type="submit">Hitung Harga Akhir</button>
+</form>
+
+<div id="dsk-hasil" class="result" hidden></div>
+
+<section class="article">
+  <h2>Cara menghitung diskon</h2>
+  <p>Diskon persen mengurangi harga sebesar persentase tertentu dari harga awal. Rumus dasarnya sederhana:</p>
+  <code class="formula">Harga akhir = Harga awal &times; (1 &minus; diskon%)</code>
+  <p>Jumlah yang dihemat adalah selisih antara harga awal dan harga akhir. Untuk <em>diskon bertingkat</em>, diskon kedua dihitung dari harga yang <strong>sudah</strong> dipotong diskon pertama, bukan dari harga awal.</p>
+
+  <h2>Contoh</h2>
+  <p>Harga awal Rp250.000 dengan diskon 20% menjadi Rp200.000, sehingga Anda hemat Rp50.000. Jika ada tambahan diskon 10%, potongan kedua dihitung dari Rp200.000 (bukan Rp250.000), sehingga harga akhir menjadi Rp180.000 &mdash; bukan Rp167.500 seperti bila kedua diskon dijumlahkan jadi 30%.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Apakah diskon 20% + 10% sama dengan diskon 30%?</h3>
+  <p>Tidak. Diskon bertingkat 20% lalu 10% setara dengan diskon total 28%, karena diskon kedua bekerja pada harga yang sudah lebih kecil. Diskon bertingkat selalu menghasilkan potongan lebih kecil dibanding menjumlahkan persennya.</p>
+  <h3>Bagaimana menghitung harga sebelum diskon dari harga promo?</h3>
+  <p>Bagi harga promo dengan (1 &minus; diskon%). Misalnya harga promo Rp180.000 hasil diskon 10%, maka harga sebelumnya adalah 180.000 / 0,9 = Rp200.000.</p>
+  <h3>Apakah PPN dihitung sebelum atau sesudah diskon?</h3>
+  <p>Umumnya PPN dikenakan atas harga setelah diskon. Kalkulator ini menampilkan harga setelah diskon; tambahkan PPN 11% di atas angka tersebut bila diperlukan.</p>
+</section>
+
+<script>
+function hitungDiskon(e) {
+  e.preventDefault();
+  var harga = num("dsk-harga");
+  var d1 = num("dsk-d1") / 100;
+  var d2 = num("dsk-d2") / 100;
+  var potong = num("dsk-potong");
+  if (harga <= 0) { show("dsk-hasil", "Masukkan harga awal yang valid."); return false; }
+
+  var setelahD1 = harga * (1 - d1);
+  var setelahD2 = setelahD1 * (1 - d2);
+  var akhir = Math.max(0, setelahD2 - potong);
+  var hemat = harga - akhir;
+  var persenEfektif = harga > 0 ? (hemat / harga) * 100 : 0;
+
+  var html =
+    "<strong>Harga akhir: " + rp(akhir) + "</strong><br>" +
+    "Total hemat: " + rp(hemat) + " (" + persenEfektif.toFixed(1) + "% dari harga awal)";
+  if (d2 > 0) html += "<br>Setelah diskon pertama: " + rp(setelahD1);
+  html += bar([
+    { label: "Dibayar", nilai: akhir, warna: "#2f6bff" },
+    { label: "Hemat", nilai: hemat, warna: "#12b76a" }
+  ]);
+  show("dsk-hasil", html,
+    "Kalkulator Diskon — harga akhir " + rp(akhir) + ", hemat " + rp(hemat) +
+    " (" + persenEfektif.toFixed(1) + "%).");
+  return false;
+}
+</script>

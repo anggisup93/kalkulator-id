@@ -1,0 +1,65 @@
+<h1>Kalkulator Bunga Majemuk</h1>
+<p>Proyeksikan pertumbuhan tabungan atau investasi Anda dengan efek bunga majemuk (<em>compound interest</em>), lengkap dengan setoran rutin bulanan.</p>
+
+<form class="calc" onsubmit="return hitungBM(event)">
+  <label>Modal awal (Rp)
+    <input id="bm-awal" type="text" inputmode="numeric" data-money value="10000000" required>
+  </label>
+  <label>Setoran rutin per bulan (Rp)
+    <input id="bm-setoran" type="text" inputmode="numeric" data-money value="1000000" required>
+  </label>
+  <label>Perkiraan return per tahun (%)
+    <input id="bm-return" type="number" min="0" step="0.1" value="7" required>
+  </label>
+  <label>Jangka waktu (tahun)
+    <input id="bm-tahun" type="number" min="1" max="50" value="10" required>
+  </label>
+  <button type="submit">Hitung Proyeksi</button>
+</form>
+
+<div id="bm-hasil" class="result" hidden></div>
+
+<section class="article">
+  <h2>Apa itu bunga majemuk</h2>
+  <p>Bunga majemuk adalah bunga yang dihitung bukan hanya dari modal awal, tetapi juga dari bunga yang sudah terkumpul sebelumnya. Efeknya, saldo tumbuh makin cepat seiring waktu &mdash; sering disebut sebagai "bunga berbunga". Semakin panjang jangka waktunya, semakin besar selisih antara total setoran dan nilai akhir.</p>
+  <code class="formula">Nilai akhir = M &times; (1 + r)^n + S &times; ((1 + r)^n &minus; 1) / r</code>
+  <p>dengan <em>M</em> = modal awal, <em>S</em> = setoran bulanan, <em>r</em> = return tahunan dibagi 12, dan <em>n</em> = jumlah bulan. Kalkulator ini mengasumsikan setoran dilakukan di akhir tiap bulan dan return yang tetap.</p>
+
+  <h2>Contoh</h2>
+  <p>Modal awal Rp10.000.000 dengan setoran Rp1.000.000 per bulan selama 10 tahun, pada asumsi return 7% per tahun, menghasilkan nilai akhir sekitar Rp194 juta. Dari jumlah itu, total uang yang Anda setor hanya Rp130 juta, sisanya sekitar Rp64 juta berasal dari imbal hasil.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Apakah return investasi selalu tetap seperti di kalkulator?</h3>
+  <p>Tidak. Return pasar saham, reksa dana, atau obligasi berfluktuasi tiap tahun. Angka di sini adalah rata-rata perkiraan untuk memberi gambaran, bukan jaminan hasil.</p>
+  <h3>Bagaimana pengaruh inflasi?</h3>
+  <p>Nilai akhir di kalkulator ini adalah nominal. Daya beli sesungguhnya akan lebih rendah karena inflasi. Untuk gambaran riil, kurangi asumsi return dengan perkiraan inflasi tahunan.</p>
+</section>
+
+<script>
+function hitungBM(e) {
+  e.preventDefault();
+  var M = num("bm-awal");
+  var S = num("bm-setoran");
+  var r = num("bm-return") / 100 / 12;
+  var n = num("bm-tahun") * 12;
+  var akhir;
+  if (r === 0) {
+    akhir = M + S * n;
+  } else {
+    var growth = Math.pow(1 + r, n);
+    akhir = M * growth + S * (growth - 1) / r;
+  }
+  var setor = M + S * n;
+  show("bm-hasil",
+    "<strong>Nilai akhir: " + rp(akhir) + "</strong><br>" +
+    "Total setoran Anda: " + rp(setor) + "<br>" +
+    "Imbal hasil: " + rp(akhir - setor) +
+    bar([
+      { label: "Setoran", nilai: setor, warna: "#2f6bff" },
+      { label: "Imbal hasil", nilai: akhir - setor, warna: "#12b76a" }
+    ]),
+    "Kalkulator Bunga Majemuk — nilai akhir " + rp(akhir) + " dari setoran " +
+    rp(setor) + " (imbal hasil " + rp(akhir - setor) + ").");
+  return false;
+}
+</script>

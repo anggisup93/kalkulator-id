@@ -1,0 +1,78 @@
+<h1>Kalkulator Kalori Harian</h1>
+<p>Hitung kebutuhan kalori harian Anda dari <em>Basal Metabolic Rate</em> (BMR) dan tingkat aktivitas, lengkap dengan target kalori untuk menurunkan atau menaikkan berat badan.</p>
+
+<form class="calc" onsubmit="return hitungKalori(event)">
+  <label>Jenis kelamin
+    <select id="kal-kelamin">
+      <option value="pria">Pria</option>
+      <option value="wanita">Wanita</option>
+    </select>
+  </label>
+  <label>Umur (tahun)
+    <input id="kal-umur" type="number" min="10" max="100" value="30" required>
+  </label>
+  <label>Tinggi badan (cm)
+    <input id="kal-tinggi" type="number" min="100" max="230" step="0.1" value="170" required>
+  </label>
+  <label>Berat badan (kg)
+    <input id="kal-berat" type="number" min="30" max="300" step="0.1" value="65" required>
+  </label>
+  <label>Tingkat aktivitas
+    <select id="kal-aktivitas">
+      <option value="1.2">Jarang olahraga (kerja duduk)</option>
+      <option value="1.375">Ringan (olahraga 1&ndash;3x/minggu)</option>
+      <option value="1.55" selected>Sedang (olahraga 3&ndash;5x/minggu)</option>
+      <option value="1.725">Berat (olahraga 6&ndash;7x/minggu)</option>
+      <option value="1.9">Sangat berat (fisik berat / 2x sehari)</option>
+    </select>
+  </label>
+  <button type="submit">Hitung Kebutuhan Kalori</button>
+</form>
+
+<div id="kal-hasil" class="result" hidden></div>
+
+<section class="article">
+  <h2>Cara menghitung kebutuhan kalori</h2>
+  <p>Kalkulator ini memakai rumus <strong>Mifflin-St Jeor</strong>, yang saat ini dianggap paling akurat untuk populasi umum. Langkah pertama menghitung BMR, yaitu kalori yang dibakar tubuh saat istirahat total.</p>
+  <code class="formula">BMR (pria) = 10&times;berat + 6,25&times;tinggi &minus; 5&times;umur + 5
+BMR (wanita) = 10&times;berat + 6,25&times;tinggi &minus; 5&times;umur &minus; 161</code>
+  <p>BMR lalu dikalikan faktor aktivitas untuk mendapat <em>Total Daily Energy Expenditure</em> (TDEE) &mdash; total kalori yang Anda bakar dalam sehari. Untuk menurunkan berat badan, makan di bawah TDEE; untuk menaikkan, makan di atasnya.</p>
+
+  <h2>Contoh</h2>
+  <p>Pria 30 tahun, tinggi 170 cm, berat 65 kg: BMR = 10&times;65 + 6,25&times;170 &minus; 5&times;30 + 5 = 1.567 kkal. Dengan aktivitas sedang (faktor 1,55), TDEE sekitar 2.429 kkal per hari. Untuk turun sekitar 0,5 kg per minggu, target hariannya sekitar 1.929 kkal.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Berapa defisit kalori yang aman untuk menurunkan berat badan?</h3>
+  <p>Defisit 300&ndash;500 kkal per hari umumnya aman dan berkelanjutan, setara penurunan sekitar 0,3&ndash;0,5 kg per minggu. Hindari makan di bawah BMR dalam jangka panjang tanpa pengawasan ahli gizi.</p>
+  <h3>Apakah hasil kalkulator ini pasti akurat?</h3>
+  <p>Ini estimasi. Kebutuhan asli dipengaruhi komposisi tubuh, genetik, kualitas tidur, dan aktivitas non-olahraga. Pakai angka ini sebagai titik awal, lalu sesuaikan setelah memantau berat badan 2&ndash;3 minggu.</p>
+  <h3>Kenapa berat badan tidak turun padahal sudah defisit?</h3>
+  <p>Penyebab umum: porsi makan kurang tercatat, retensi air, atau faktor aktivitas yang ditaksir terlalu tinggi. Coba turunkan pilihan aktivitas satu tingkat dan catat asupan lebih teliti selama seminggu.</p>
+</section>
+
+<script>
+function hitungKalori(e) {
+  e.preventDefault();
+  var kelamin = document.getElementById("kal-kelamin").value;
+  var umur = num("kal-umur");
+  var tinggi = num("kal-tinggi");
+  var berat = num("kal-berat");
+  var faktor = parseFloat(document.getElementById("kal-aktivitas").value) || 1.2;
+  if (umur <= 0 || tinggi <= 0 || berat <= 0) {
+    show("kal-hasil", "Lengkapi umur, tinggi, dan berat badan.");
+    return false;
+  }
+  var bmr = 10 * berat + 6.25 * tinggi - 5 * umur + (kelamin === "pria" ? 5 : -161);
+  var tdee = bmr * faktor;
+  var r = function (n) { return Math.round(n).toLocaleString("id-ID"); };
+  show("kal-hasil",
+    "<strong>Kebutuhan harian (TDEE): " + r(tdee) + " kkal</strong><br>" +
+    "BMR (istirahat total): " + r(bmr) + " kkal<br>" +
+    "Turun berat (&minus;0,5 kg/minggu): " + r(tdee - 500) + " kkal<br>" +
+    "Turun ringan (&minus;0,25 kg/minggu): " + r(tdee - 275) + " kkal<br>" +
+    "Naik berat (+0,25 kg/minggu): " + r(tdee + 275) + " kkal",
+    "Kalkulator Kalori Harian — TDEE " + r(tdee) + " kkal, BMR " + r(bmr) +
+    " kkal. Target turun berat sekitar " + r(tdee - 500) + " kkal/hari.");
+  return false;
+}
+</script>

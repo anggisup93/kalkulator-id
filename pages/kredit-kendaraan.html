@@ -1,0 +1,89 @@
+<h1>Kalkulator Kredit Kendaraan</h1>
+<p>Hitung perkiraan angsuran per bulan untuk kredit mobil atau motor dengan metode <strong>bunga flat</strong> &mdash; skema yang paling umum dipakai dealer dan leasing di Indonesia.</p>
+
+<form class="calc" onsubmit="return hitungKredit(event)">
+  <label>Harga kendaraan / OTR (Rp)
+    <input id="kr-otr" type="text" inputmode="numeric" data-money value="250000000" required>
+  </label>
+  <label>Uang muka / DP (Rp)
+    <input id="kr-dp" type="text" inputmode="numeric" data-money value="50000000" required>
+  </label>
+  <label>Suku bunga flat per tahun (%)
+    <input id="kr-bunga" type="number" min="0" step="0.01" value="6" required>
+  </label>
+  <label>Tenor
+    <select id="kr-tenor">
+      <option value="12">1 tahun (12 bulan)</option>
+      <option value="24">2 tahun (24 bulan)</option>
+      <option value="36" selected>3 tahun (36 bulan)</option>
+      <option value="48">4 tahun (48 bulan)</option>
+      <option value="60">5 tahun (60 bulan)</option>
+    </select>
+  </label>
+  <label>Asuransi per tahun (%, opsional)
+    <input id="kr-asuransi" type="number" min="0" step="0.01" value="0">
+  </label>
+  <label>Biaya admin & provisi (Rp)
+    <input id="kr-admin" type="text" inputmode="numeric" data-money value="0">
+  </label>
+  <button type="submit">Hitung Angsuran</button>
+</form>
+
+<div id="kr-hasil" class="result" hidden></div>
+
+<section class="article">
+  <h2>Cara kerja bunga flat</h2>
+  <p>Pada bunga flat, bunga dihitung dari pokok pinjaman awal dan tidak berkurang meski utang menyusut, sehingga angsuran per bulan tetap sama. Inilah sebabnya bunga flat yang terlihat kecil sebenarnya setara bunga efektif sekitar 1,8&ndash;1,9 kali lipatnya.</p>
+  <code class="formula">Pokok = OTR &minus; DP
+Total bunga = Pokok &times; bunga% &times; (tenor / 12)
+Angsuran = (Pokok + Total bunga + Asuransi) / tenor</code>
+  <p>Uang yang harus disiapkan saat akad umumnya mencakup DP, biaya admin/provisi, angsuran pertama, dan sering pula premi asuransi tahun pertama.</p>
+
+  <h2>Contoh</h2>
+  <p>Mobil OTR Rp250.000.000 dengan DP Rp50.000.000 berarti pokok Rp200.000.000. Bunga flat 6% per tahun selama 3 tahun menghasilkan total bunga Rp36.000.000. Tanpa asuransi, total kewajiban Rp236.000.000 sehingga angsuran sekitar Rp6.555.000 per bulan.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Apa bedanya bunga flat dan bunga efektif?</h3>
+  <p>Bunga efektif dihitung dari sisa pokok yang terus berkurang, sehingga total bunganya lebih kecil untuk persentase yang sama. Dealer biasa menyebut angka flat karena terlihat lebih ringan. Untuk membandingkan dengan KPR atau KTA yang memakai bunga efektif, kalikan bunga flat dengan sekitar 1,8.</p>
+  <h3>Berapa DP minimal kredit kendaraan?</h3>
+  <p>Umumnya 15&ndash;25% dari OTR untuk mobil dan 15&ndash;20% untuk motor, tergantung kebijakan leasing dan skor kredit. DP lebih besar menurunkan angsuran dan total bunga.</p>
+  <h3>Apakah hasil ini sudah termasuk semua biaya?</h3>
+  <p>Belum tentu. Di luar angka ini masih ada biaya seperti fidusia, provisi, dan asuransi jiwa yang berbeda antar-leasing. Anggap hasil kalkulator sebagai perkiraan awal sebelum meminta simulasi resmi.</p>
+</section>
+
+<script>
+function hitungKredit(e) {
+  e.preventDefault();
+  var otr = num("kr-otr");
+  var dp = num("kr-dp");
+  var bunga = num("kr-bunga") / 100;
+  var tenor = parseInt(document.getElementById("kr-tenor").value, 10);
+  var asuransiPct = num("kr-asuransi") / 100;
+  var admin = num("kr-admin");
+  var pokok = otr - dp;
+  if (pokok <= 0) { show("kr-hasil", "Uang muka tidak boleh melebihi atau sama dengan harga kendaraan."); return false; }
+
+  var tahun = tenor / 12;
+  var totalBunga = pokok * bunga * tahun;
+  var totalAsuransi = otr * asuransiPct * tahun;
+  var totalKewajiban = pokok + totalBunga + totalAsuransi;
+  var angsuran = totalKewajiban / tenor;
+  var bayarAwal = dp + admin + angsuran;
+
+  show("kr-hasil",
+    "<strong>Angsuran per bulan: " + rp(angsuran) + "</strong><br>" +
+    "Pokok pinjaman: " + rp(pokok) + "<br>" +
+    "Total bunga: " + rp(totalBunga) +
+    (totalAsuransi > 0 ? "<br>Total asuransi: " + rp(totalAsuransi) : "") + "<br>" +
+    "Total dibayar (di luar DP): " + rp(totalKewajiban) + "<br>" +
+    "Perkiraan bayar saat akad: " + rp(bayarAwal) + " (DP + admin + angsuran ke-1)" +
+    bar([
+      { label: "Pokok", nilai: pokok, warna: "#2f6bff" },
+      { label: "Bunga", nilai: totalBunga, warna: "#f79009" },
+      { label: "Asuransi", nilai: totalAsuransi, warna: "#12b76a" }
+    ]),
+    "Kalkulator Kredit Kendaraan — OTR " + rp(otr) + ", DP " + rp(dp) + ", " + tenor +
+    " bulan: angsuran sekitar " + rp(angsuran) + "/bulan (total bunga " + rp(totalBunga) + ").");
+  return false;
+}
+</script>

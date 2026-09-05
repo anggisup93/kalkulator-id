@@ -1,0 +1,53 @@
+<h1>Hitung Kata &amp; Karakter</h1>
+<p>Tempel atau ketik teks Anda untuk menghitung jumlah kata, karakter, kalimat, paragraf, dan perkiraan waktu baca. Semua dihitung langsung di browser &mdash; teks tidak dikirim ke mana pun.</p>
+
+<form class="calc" onsubmit="return false">
+  <label class="wide">Teks
+    <textarea id="hk-teks" placeholder="Tempel teks di sini…"></textarea>
+  </label>
+</form>
+
+<div id="hk-hasil" class="result"></div>
+
+<section class="article">
+  <h2>Bagaimana penghitungan dilakukan</h2>
+  <p>Kata dihitung dari kelompok karakter yang dipisahkan spasi atau baris baru. Kalimat diperkirakan dari tanda titik, tanda tanya, dan tanda seru. Paragraf dihitung dari blok teks yang dipisahkan baris kosong. Perkiraan waktu baca memakai kecepatan 200 kata per menit, rata-rata pembaca dewasa berbahasa Indonesia.</p>
+
+  <h2>Untuk apa alat ini</h2>
+  <p>Berguna saat menulis dengan batas panjang: cuitan dan bio media sosial, meta description (disarankan di bawah 160 karakter), abstrak skripsi, esai beasiswa, caption, atau naskah dengan target jumlah kata dari editor.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Apakah teks saya disimpan atau dikirim ke server?</h3>
+  <p>Tidak. Seluruh perhitungan berjalan di perangkat Anda memakai JavaScript. Menutup halaman akan menghapus teks tersebut.</p>
+  <h3>Kenapa jumlah kalimat kadang tidak pas?</h3>
+  <p>Penghitungan kalimat memakai aturan sederhana berbasis tanda baca. Singkatan seperti "dll." atau angka desimal "3.5" bisa terhitung sebagai akhir kalimat. Anggap angka ini sebagai perkiraan.</p>
+  <h3>Apakah karakter dengan spasi atau tanpa spasi yang dipakai batas media sosial?</h3>
+  <p>Umumnya batas dihitung termasuk spasi. Alat ini menampilkan keduanya agar Anda bisa menyesuaikan.</p>
+</section>
+
+<script>
+function updateHK() {
+  var t = document.getElementById("hk-teks").value;
+  var trim = t.trim();
+  var kata = trim ? (trim.match(/\S+/g) || []).length : 0;
+  var karakter = t.length;
+  var tanpaSpasi = t.replace(/\s/g, "").length;
+  var kalimat = (t.match(/[.!?…]+(\s|$)/g) || []).length;
+  var paragraf = trim ? trim.split(/\n{2,}/).filter(function (p) { return p.trim(); }).length : 0;
+  var baris = trim ? t.replace(/\n+$/, "").split(/\n/).length : 0;
+  var menit = Math.ceil(kata / 200);
+  var f = function (n) { return n.toLocaleString("id-ID"); };
+  show("hk-hasil",
+    '<div class="stat-grid">' +
+    "<div><b>" + f(kata) + "</b><span>Kata</span></div>" +
+    "<div><b>" + f(karakter) + "</b><span>Karakter</span></div>" +
+    "<div><b>" + f(tanpaSpasi) + "</b><span>Tanpa spasi</span></div>" +
+    "<div><b>" + f(kalimat) + "</b><span>Kalimat</span></div>" +
+    "<div><b>" + f(paragraf) + "</b><span>Paragraf</span></div>" +
+    "<div><b>" + f(baris) + "</b><span>Baris</span></div>" +
+    "<div><b>" + (kata ? "±" + menit : 0) + "</b><span>Menit baca</span></div>" +
+    "</div>");
+}
+document.getElementById("hk-teks").addEventListener("input", updateHK);
+updateHK();
+</script>

@@ -1,0 +1,71 @@
+<h1>Generator Link WhatsApp</h1>
+<p>Buat tautan <code>wa.me</code> dari nomor HP, lengkap dengan pesan otomatis yang sudah terisi. Saat diklik pelanggan, WhatsApp langsung terbuka ke chat Anda &mdash; tanpa perlu menyimpan nomor lebih dulu.</p>
+
+<form class="calc" onsubmit="return false">
+  <label>Nomor WhatsApp
+    <input id="wa-nomor" type="tel" inputmode="numeric" placeholder="0812xxxxxxxx" value="081234567890" autocomplete="off">
+  </label>
+  <label>Kode negara
+    <select id="wa-kode">
+      <option value="62" selected>Indonesia (+62)</option>
+      <option value="60">Malaysia (+60)</option>
+      <option value="65">Singapura (+65)</option>
+      <option value="1">Amerika (+1)</option>
+    </select>
+  </label>
+  <label class="wide">Pesan otomatis (opsional)
+    <textarea id="wa-pesan" placeholder="Halo, saya ingin bertanya tentang produk…">Halo, saya ingin bertanya tentang produk Anda.</textarea>
+  </label>
+</form>
+
+<div id="wa-hasil" class="result"></div>
+
+<section class="article">
+  <h2>Cara memakai tautannya</h2>
+  <p>Salin tautan yang dihasilkan, lalu tempel di bio Instagram, tombol "Hubungi" di website, katalog, email, atau QR code. Format resmi WhatsApp adalah <code>https://wa.me/&lt;nomor&gt;</code> dengan nomor dalam format internasional tanpa tanda plus, nol depan, atau spasi. Pesan otomatis ditambahkan lewat parameter <code>?text=</code>.</p>
+
+  <h2>Contoh</h2>
+  <p>Nomor 0812-3456-7890 menjadi <code>https://wa.me/6281234567890</code>. Dengan pesan "Halo", tautannya menjadi <code>https://wa.me/6281234567890?text=Halo</code>. Angka nol di depan otomatis diganti kode negara 62.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Apakah nomor saya jadi terlihat publik?</h3>
+  <p>Nomor memang tercantum di dalam tautan, jadi gunakan nomor yang memang untuk layanan pelanggan. Tautan ini tidak membagikan kontak pribadi lain, hanya membuka jendela chat.</p>
+  <h3>Perlu WhatsApp Business?</h3>
+  <p>Tidak wajib. Tautan <code>wa.me</code> bekerja untuk WhatsApp biasa maupun Business. WhatsApp Business menambah fitur seperti katalog dan balasan cepat.</p>
+  <h3>Kenapa pesan otomatis tidak muncul di sebagian perangkat?</h3>
+  <p>Beberapa versi WhatsApp desktop mengabaikan parameter teks bila chat sudah pernah dibuka. Di perangkat seluler pesan hampir selalu terisi otomatis.</p>
+</section>
+
+<script>
+function updateWA() {
+  var kode = document.getElementById("wa-kode").value;
+  var raw = document.getElementById("wa-nomor").value.replace(/\D/g, "");
+  var nomor = raw;
+  if (nomor.charAt(0) === "0") nomor = kode + nomor.slice(1);
+  else if (nomor.indexOf(kode) !== 0) nomor = kode + nomor;
+  var pesan = document.getElementById("wa-pesan").value.trim();
+  if (!raw) { show("wa-hasil", "Masukkan nomor WhatsApp."); return; }
+  var link = "https://wa.me/" + nomor + (pesan ? "?text=" + encodeURIComponent(pesan) : "");
+  show("wa-hasil",
+    '<strong style="word-break:break-all">' + link + "</strong>" +
+    '<div class="result-actions" data-noprint>' +
+    '<a class="btn-sec" target="_blank" rel="noopener" href="' + link + '">Coba buka chat</a>' +
+    '<button type="button" class="btn-sec" onclick="salinWA(this,\'' + link.replace(/'/g, "\\'") + '\')">Salin link</button>' +
+    "</div>");
+}
+function salinWA(btn, teks) {
+  var done = function () { btn.textContent = "Tersalin ✓"; setTimeout(function () { btn.textContent = "Salin link"; }, 1500); };
+  if (navigator.clipboard) { navigator.clipboard.writeText(teks).then(done, done); }
+  else {
+    var ta = document.createElement("textarea");
+    ta.value = teks; document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); } catch (e) {}
+    document.body.removeChild(ta); done();
+  }
+}
+["wa-nomor", "wa-kode", "wa-pesan"].forEach(function (id) {
+  document.getElementById(id).addEventListener("input", updateWA);
+  document.getElementById(id).addEventListener("change", updateWA);
+});
+updateWA();
+</script>

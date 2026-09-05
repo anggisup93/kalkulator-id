@@ -1,0 +1,76 @@
+<h1>Kalkulator Umur</h1>
+<p>Hitung usia lengkap Anda dalam tahun, bulan, dan hari dari tanggal lahir &mdash; plus total hari hidup, hari lahir jatuh pada hari apa, dan hitung mundur ke ulang tahun berikutnya.</p>
+
+<form class="calc" onsubmit="return hitungUmur(event)">
+  <label>Tanggal lahir
+    <input id="umr-lahir" type="date" required>
+  </label>
+  <label>Hitung sampai tanggal
+    <input id="umr-sampai" type="date">
+  </label>
+  <button type="submit">Hitung Umur</button>
+</form>
+
+<div id="umr-hasil" class="result" hidden></div>
+
+<section class="article">
+  <h2>Cara umur dihitung</h2>
+  <p>Umur dihitung sebagai selisih kalender antara tanggal lahir dan tanggal acuan, bukan sekadar membagi total hari dengan 365. Kalkulator mengurangi tahun, bulan, lalu hari secara bertahap; jika tanggal acuan lebih kecil dari tanggal lahir pada bulan itu, sisa hari "dipinjam" dari jumlah hari bulan sebelumnya. Cara ini otomatis memperhitungkan tahun kabisat dan bulan yang panjangnya berbeda.</p>
+
+  <h2>Contoh</h2>
+  <p>Seseorang lahir 17 Agustus 1995 dan dihitung pada 6 September 2026 berusia 31 tahun, 0 bulan, 20 hari. Total ia sudah hidup sekitar 11.343 hari atau 1.620 minggu, dan ulang tahun ke-32 jatuh 345 hari lagi.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Apakah tahun kabisat sudah diperhitungkan?</h3>
+  <p>Ya. Karena perhitungan memakai selisih tanggal kalender asli, tanggal 29 Februari dan tahun kabisat otomatis ikut terhitung dengan benar, termasuk untuk total jumlah hari.</p>
+  <h3>Bagaimana jika saya lahir tanggal 29 Februari?</h3>
+  <p>Pada tahun non-kabisat, ulang tahun umumnya dianggap jatuh pada 1 Maret. Kalkulator akan menghitung selisih hari ke tanggal valid terdekat sehingga hasilnya tetap konsisten.</p>
+  <h3>Bisakah menghitung umur pada tanggal di masa depan?</h3>
+  <p>Bisa. Isi kolom "Hitung sampai tanggal" dengan tanggal mana pun setelah tanggal lahir untuk memproyeksikan usia pada saat itu, misalnya untuk syarat pendaftaran atau pensiun.</p>
+</section>
+
+<script>
+(function () {
+  var s = document.getElementById("umr-sampai");
+  if (s && !s.value) s.value = new Date().toISOString().slice(0, 10);
+})();
+
+function hitungUmur(e) {
+  e.preventDefault();
+  var hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+  var lahirStr = document.getElementById("umr-lahir").value;
+  var sampaiStr = document.getElementById("umr-sampai").value || new Date().toISOString().slice(0, 10);
+  if (!lahirStr) { show("umr-hasil", "Isi tanggal lahir terlebih dahulu."); return false; }
+
+  var lahir = new Date(lahirStr + "T00:00:00");
+  var ref = new Date(sampaiStr + "T00:00:00");
+  if (ref < lahir) { show("umr-hasil", "Tanggal acuan harus setelah tanggal lahir."); return false; }
+
+  var y = ref.getFullYear() - lahir.getFullYear();
+  var m = ref.getMonth() - lahir.getMonth();
+  var d = ref.getDate() - lahir.getDate();
+  if (d < 0) {
+    m--;
+    d += new Date(ref.getFullYear(), ref.getMonth(), 0).getDate();
+  }
+  if (m < 0) { y--; m += 12; }
+
+  var totalHari = Math.floor((ref - lahir) / 86400000);
+  var totalMinggu = Math.floor(totalHari / 7);
+  var totalBulan = y * 12 + m;
+
+  var next = new Date(ref.getFullYear(), lahir.getMonth(), lahir.getDate());
+  if (next < ref) next = new Date(ref.getFullYear() + 1, lahir.getMonth(), lahir.getDate());
+  var menujuUltah = Math.ceil((next - ref) / 86400000);
+
+  var f = function (n) { return n.toLocaleString("id-ID"); };
+  show("umr-hasil",
+    "<strong>Umur: " + y + " tahun, " + m + " bulan, " + d + " hari</strong><br>" +
+    "Total: " + f(totalHari) + " hari &middot; " + f(totalMinggu) + " minggu &middot; " + f(totalBulan) + " bulan<br>" +
+    "Anda lahir pada hari <strong>" + hari[lahir.getDay()] + "</strong><br>" +
+    "Ulang tahun berikutnya: " + (menujuUltah === 0 ? "hari ini &#127881;" : menujuUltah + " hari lagi"),
+    "Kalkulator Umur — " + y + " tahun " + m + " bulan " + d + " hari (" + f(totalHari) +
+    " hari), lahir hari " + hari[lahir.getDay()] + ".");
+  return false;
+}
+</script>

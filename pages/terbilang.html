@@ -1,0 +1,80 @@
+<h1>Terbilang &mdash; Angka ke Teks</h1>
+<p>Ubah angka menjadi tulisan terbilang bahasa Indonesia secara otomatis. Cocok untuk mengisi kwitansi, faktur, kontrak, dan dokumen resmi lain. Hasil diperbarui saat Anda mengetik.</p>
+
+<form class="calc" onsubmit="return false">
+  <label class="wide">Angka
+    <input id="tb-angka" type="text" inputmode="numeric" data-money value="1250000" autocomplete="off">
+  </label>
+  <label>Tambahkan kata "rupiah"
+    <select id="tb-rupiah">
+      <option value="ya">Ya &mdash; untuk nominal uang</option>
+      <option value="tidak">Tidak &mdash; angka biasa</option>
+    </select>
+  </label>
+  <label>Huruf awal
+    <select id="tb-kapital">
+      <option value="kalimat">Kapital di awal</option>
+      <option value="kecil">Huruf kecil semua</option>
+    </select>
+  </label>
+</form>
+
+<div id="tb-hasil" class="result"></div>
+
+<section class="article">
+  <h2>Cara kerja terbilang</h2>
+  <p>Terbilang memecah angka menjadi kelompok ribuan &mdash; satuan, ribu, juta, miliar, triliun &mdash; lalu menuliskan tiap kelompok dalam kata. Ada dua aturan khas bahasa Indonesia: angka 1 pada posisi ratusan dan ribuan ditulis "seratus" dan "seribu" (bukan "satu ratus" / "satu ribu"), dan angka 11&ndash;19 memakai akhiran "belas".</p>
+
+  <h2>Contoh</h2>
+  <p>1.250.000 &rarr; "satu juta dua ratus lima puluh ribu". Dengan mode rupiah menjadi "satu juta dua ratus lima puluh ribu rupiah". Angka 1.001 &rarr; "seribu satu"; angka 115 &rarr; "seratus lima belas".</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Sampai angka berapa yang didukung?</h3>
+  <p>Sampai ratusan triliun. Di atas kisaran itu, presisi angka desimal komputer mulai berkurang sehingga hasil bisa tidak tepat pada digit terakhir.</p>
+  <h3>Apakah angka desimal atau koma ikut dibaca?</h3>
+  <p>Tidak. Alat ini membulatkan ke bilangan bulat terdekat, sesuai kebiasaan penulisan nominal pada kwitansi. Untuk sen atau pecahan, tuliskan manual setelah kata "rupiah", misalnya "&hellip; rupiah lima puluh sen".</p>
+  <h3>Kenapa hasil terbilang penting di kwitansi?</h3>
+  <p>Nominal dalam huruf berfungsi sebagai pengaman terhadap perubahan angka. Jika angka dan huruf berbeda, umumnya nominal dalam huruf yang dianggap sah.</p>
+</section>
+
+<script>
+function terbilang(n) {
+  n = Math.floor(Math.abs(n));
+  var s = ["", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas"];
+  function w(x) {
+    if (x < 12) return s[x];
+    if (x < 20) return w(x - 10) + " belas";
+    if (x < 100) return w(Math.floor(x / 10)) + " puluh" + (x % 10 ? " " + s[x % 10] : "");
+    if (x < 200) return "seratus" + (x % 100 ? " " + w(x % 100) : "");
+    if (x < 1000) return s[Math.floor(x / 100)] + " ratus" + (x % 100 ? " " + w(x % 100) : "");
+    if (x < 2000) return "seribu" + (x % 1000 ? " " + w(x % 1000) : "");
+    if (x < 1e6) return w(Math.floor(x / 1000)) + " ribu" + (x % 1000 ? " " + w(x % 1000) : "");
+    if (x < 1e9) return w(Math.floor(x / 1e6)) + " juta" + (x % 1e6 ? " " + w(x % 1e6) : "");
+    if (x < 1e12) return w(Math.floor(x / 1e9)) + " miliar" + (x % 1e9 ? " " + w(x % 1e9) : "");
+    return w(Math.floor(x / 1e12)) + " triliun" + (x % 1e12 ? " " + w(x % 1e12) : "");
+  }
+  if (n === 0) return "nol";
+  return w(n).replace(/\s+/g, " ").trim();
+}
+
+function updateTerbilang() {
+  var n = num("tb-angka");
+  var teks = terbilang(n);
+  if (document.getElementById("tb-rupiah").value === "ya") teks += " rupiah";
+  if (document.getElementById("tb-kapital").value === "kalimat") {
+    teks = teks.charAt(0).toUpperCase() + teks.slice(1);
+  }
+  var besar = n >= 1e15
+    ? '<br><span style="color:var(--muted);font-size:14px">Catatan: angka sangat besar, digit terakhir bisa kurang tepat.</span>'
+    : "";
+  show("tb-hasil",
+    "<strong>" + teks + "</strong>" + besar,
+    "Terbilang dari " + rp(n).replace("Rp ", "") + ": " + teks);
+}
+
+["tb-angka", "tb-rupiah", "tb-kapital"].forEach(function (id) {
+  document.getElementById(id).addEventListener("input", updateTerbilang);
+  document.getElementById(id).addEventListener("change", updateTerbilang);
+});
+updateTerbilang();
+</script>

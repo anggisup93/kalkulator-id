@@ -1,0 +1,493 @@
+/* KalkulatorID — tema tampilan (mobile-first, light + dark) */
+
+:root {
+  --bg: #f7f8fa;
+  --surface: #ffffff;
+  --surface-2: #f2f4f7;
+  --fg: #101828;
+  --muted: #667085;
+  --line: #e4e7ec;
+  --accent: #2f6bff;
+  --accent-strong: #1d54e0;
+  --accent-bg: #eef3ff;
+  --ok-fg: #05603a;
+  --ok-bg: #ecfdf3;
+  --ok-line: #a6f4c5;
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, .06), 0 1px 3px rgba(16, 24, 40, .10);
+  --shadow-md: 0 4px 12px rgba(16, 24, 40, .08), 0 2px 6px rgba(16, 24, 40, .06);
+  --shadow-lg: 0 12px 32px rgba(16, 24, 40, .12);
+  --radius: 14px;
+  --radius-sm: 10px;
+  --max: 760px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface-2: #1c232d;
+    --fg: #e6edf3;
+    --muted: #9aa4b2;
+    --line: #2a313c;
+    --accent: #4d82ff;
+    --accent-strong: #6f9bff;
+    --accent-bg: #16233f;
+    --ok-fg: #6ee7b7;
+    --ok-bg: #10231b;
+    --ok-line: #1f5140;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, .4);
+    --shadow-md: 0 4px 14px rgba(0, 0, 0, .45);
+    --shadow-lg: 0 14px 36px rgba(0, 0, 0, .55);
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  color: var(--fg);
+  background: var(--bg);
+  font: 16px/1.7 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ---------- Header ---------- */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+  padding: 14px 20px;
+  background: var(--surface);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  -webkit-backdrop-filter: saturate(180%) blur(10px);
+  backdrop-filter: saturate(180%) blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: -.02em;
+  color: var(--fg);
+}
+.brand::before {
+  content: "";
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--accent), #7aa2ff);
+  box-shadow: var(--shadow-sm);
+}
+.brand:hover { text-decoration: none; }
+.site-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-left: auto; }
+.site-nav a {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 999px;
+  transition: background .15s, color .15s;
+}
+.site-nav a:hover {
+  color: var(--accent);
+  background: var(--accent-bg);
+  text-decoration: none;
+}
+
+/* ---------- Layout ---------- */
+.container {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 36px 20px 56px;
+}
+
+h1 {
+  font-size: clamp(1.6rem, 1.2rem + 1.8vw, 2.15rem);
+  line-height: 1.2;
+  letter-spacing: -.025em;
+  margin: 0 0 10px;
+}
+h2 {
+  font-size: 1.3rem;
+  letter-spacing: -.01em;
+  margin: 40px 0 10px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+h3 { font-size: 1.05rem; margin: 22px 0 6px; }
+.lead { color: var(--muted); font-size: 1.1rem; margin: 0 0 8px; }
+
+/* ---------- Form kalkulator ---------- */
+.calc {
+  display: grid;
+  gap: 16px;
+  margin: 24px 0;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+}
+@media (min-width: 560px) {
+  .calc { grid-template-columns: 1fr 1fr; }
+  .calc button { grid-column: 1 / -1; }
+}
+.calc label {
+  display: grid;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--muted);
+}
+.calc input,
+.calc select {
+  font: inherit;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--fg);
+  padding: 11px 13px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  width: 100%;
+  transition: border-color .15s, box-shadow .15s, background .15s;
+}
+.calc input:focus,
+.calc select:focus {
+  outline: none;
+  background: var(--surface);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(47, 107, 255, .25);
+}
+.calc button {
+  font: inherit;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(180deg, var(--accent), var(--accent-strong));
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: 13px 18px;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform .12s, filter .15s, box-shadow .15s;
+}
+.calc button:hover { filter: brightness(1.06); box-shadow: var(--shadow-md); }
+.calc button:active { transform: translateY(1px); }
+
+/* ---------- Hasil ---------- */
+.result {
+  margin: 8px 0 12px;
+  padding: 18px 20px;
+  background: var(--ok-bg);
+  border: 1px solid var(--ok-line);
+  border-left: 4px solid var(--ok-fg);
+  border-radius: var(--radius-sm);
+  font-size: 1.02rem;
+  color: var(--fg);
+  animation: pop .18s ease-out;
+}
+.result strong { font-size: 1.3rem; color: var(--ok-fg); display: inline-block; margin-bottom: 2px; }
+
+@keyframes pop {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Artikel ---------- */
+.article { margin-top: 8px; }
+.article p { color: var(--fg); }
+.article em { color: var(--muted); }
+
+.formula {
+  display: block;
+  margin: 12px 0;
+  padding: 14px 16px;
+  background: var(--accent-bg);
+  border: 1px solid rgba(47, 107, 255, .2);
+  border-radius: var(--radius-sm);
+  color: var(--fg);
+  font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .95rem;
+  overflow-x: auto;
+}
+
+/* ---------- Grid beranda ---------- */
+.grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  margin-top: 28px;
+}
+.card {
+  position: relative;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--fg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: transform .15s, box-shadow .15s, border-color .15s;
+}
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), #7aa2ff);
+  opacity: 0;
+  transition: opacity .15s;
+}
+.card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-lg);
+  text-decoration: none;
+}
+.card:hover::before { opacity: 1; }
+.card-ic {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  font-size: 1.4rem;
+  line-height: 1;
+  border-radius: 10px;
+  background: var(--accent-bg);
+}
+.card-tx { min-width: 0; }
+.card h3 {
+  margin: 0 0 4px;
+  color: var(--accent);
+  font-size: 1.08rem;
+  letter-spacing: -.01em;
+}
+.card p { margin: 0; font-size: 14px; color: var(--muted); line-height: 1.55; }
+
+/* ---------- Iklan ---------- */
+.ad-slot {
+  margin: 40px 0 0;
+  min-height: 1px;
+}
+.ad-slot:not(:empty) {
+  padding: 12px;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+/* ---------- Footer ---------- */
+.site-footer {
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+  padding: 28px 20px 44px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+}
+.site-footer nav {
+  display: flex;
+  gap: 8px 18px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.site-footer nav a { color: var(--muted); font-weight: 600; }
+.site-footer nav a:hover { color: var(--accent); }
+
+/* ---------- Hero + pencarian (beranda) ---------- */
+.hero {
+  margin: 4px 0 8px;
+  padding: 28px 24px 30px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background:
+    radial-gradient(120% 140% at 100% 0%, var(--accent-bg), transparent 60%),
+    var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+.hero h1 { margin: 0 0 6px; }
+.hero .lead { margin: 0 0 16px; }
+.search {
+  width: 100%;
+  font: inherit;
+  padding: 12px 14px 12px 42px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23667085' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E") no-repeat 14px center;
+  color: var(--fg);
+}
+.search:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(47, 107, 255, .25);
+}
+
+/* ---------- Kategori ---------- */
+.cat { margin-top: 8px; }
+.cat > h2 {
+  font-size: 1.05rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--muted);
+  border: 0;
+  padding: 0;
+  margin: 28px 0 0;
+}
+.empty { color: var(--muted); margin-top: 24px; }
+
+/* ---------- Breadcrumb ---------- */
+.breadcrumb {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+.breadcrumb a { color: var(--muted); }
+.breadcrumb a:hover { color: var(--accent); }
+.breadcrumb .sep { margin: 0 6px; opacity: .5; }
+.breadcrumb [aria-current] { color: var(--fg); font-weight: 600; }
+
+/* ---------- Kalkulator terkait ---------- */
+.related {
+  margin-top: 44px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+.related > h2 {
+  font-size: 1.05rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--muted);
+  border: 0;
+  padding: 0;
+  margin: 16px 0 0;
+}
+
+/* ---------- Bar komposisi (di dalam .result) ---------- */
+.bar {
+  display: flex;
+  height: 12px;
+  margin: 14px 0 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+.bar span { display: block; height: 100%; }
+.bar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.bar-legend i {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* ---------- Tombol aksi hasil ---------- */
+.result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.btn-sec {
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 14px;
+  cursor: pointer;
+  text-decoration: none;
+}
+.btn-sec:hover {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+  text-decoration: none;
+}
+
+/* ---------- Grid statistik (hitung kata) ---------- */
+.stat-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+}
+.stat-grid div {
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+.stat-grid b { display: block; font-size: 1.5rem; color: var(--fg); line-height: 1.2; }
+.stat-grid span {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+/* Textarea dipakai beberapa alat teks */
+.calc textarea {
+  font: inherit;
+  min-height: 140px;
+  resize: vertical;
+  padding: 11px 13px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--fg);
+  width: 100%;
+}
+.calc textarea:focus {
+  outline: none;
+  background: var(--surface);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(47, 107, 255, .25);
+}
+.calc label.wide { grid-column: 1 / -1; }
+
+/* ---------- Cetak ---------- */
+@media print {
+  .site-header, .site-footer, .ad-slot, .related, .breadcrumb,
+  .search, [data-noprint], .calc button { display: none !important; }
+  body { background: #fff; color: #000; }
+  .container { max-width: none; padding: 0; }
+  .result { border: 1px solid #999; background: #fff; }
+  .card, .calc { box-shadow: none; }
+}
+
+/* ---------- Aksesibilitas ---------- */
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}

@@ -1,0 +1,161 @@
+{
+  "site_name": "KalkulatorID",
+  "tagline": "Kumpulan kalkulator online gratis berbahasa Indonesia",
+  "domain": "https://kalkulator-anda.com",
+  "adsense_client": "",
+  "pages": [
+    {
+      "slug": "kpr",
+      "nav": "KPR",
+      "in_index": true,
+      "category": "Keuangan",
+      "icon": "🏠",
+      "title": "Kalkulator KPR - Hitung Cicilan Rumah per Bulan",
+      "description": "Hitung estimasi cicilan KPR per bulan dari harga rumah, uang muka, suku bunga, dan tenor. Gratis, cepat, tanpa daftar."
+    },
+    {
+      "slug": "bunga-majemuk",
+      "nav": "Bunga Majemuk",
+      "in_index": true,
+      "category": "Keuangan",
+      "icon": "📈",
+      "title": "Kalkulator Bunga Majemuk - Proyeksi Investasi dan Tabungan",
+      "description": "Hitung pertumbuhan investasi atau tabungan dengan bunga majemuk plus setoran rutin bulanan."
+    },
+    {
+      "slug": "diskon",
+      "nav": "Diskon",
+      "in_index": true,
+      "category": "Keuangan",
+      "icon": "🏷️",
+      "title": "Kalkulator Diskon - Hitung Harga Setelah Potongan Persen",
+      "description": "Hitung harga akhir setelah diskon, jumlah rupiah yang dihemat, dan diskon bertingkat sekaligus."
+    },
+    {
+      "slug": "gaji-bersih",
+      "nav": "Gaji Bersih",
+      "in_index": true,
+      "category": "Keuangan",
+      "icon": "💰",
+      "title": "Kalkulator Gaji Bersih - Take Home Pay Setelah Pajak & BPJS",
+      "description": "Hitung gaji bersih bulanan setelah potongan PPh 21, BPJS Kesehatan, dan BPJS Ketenagakerjaan berdasarkan status PTKP."
+    },
+    {
+      "slug": "kredit-kendaraan",
+      "nav": "Kredit Kendaraan",
+      "in_index": true,
+      "category": "Keuangan",
+      "icon": "🚗",
+      "title": "Kalkulator Kredit Kendaraan - Cicilan Mobil & Motor per Bulan",
+      "description": "Hitung angsuran kredit mobil atau motor per bulan dari harga OTR, uang muka, bunga, tenor, dan asuransi dengan metode bunga flat."
+    },
+    {
+      "slug": "bmi",
+      "nav": "BMI",
+      "in_index": true,
+      "category": "Kesehatan",
+      "icon": "⚖️",
+      "title": "Kalkulator BMI - Cek Berat Badan Ideal (Indeks Massa Tubuh)",
+      "description": "Hitung Indeks Massa Tubuh (BMI) dari tinggi dan berat badan, lengkap dengan kategori dan rentang berat ideal."
+    },
+    {
+      "slug": "kalori",
+      "nav": "Kalori Harian",
+      "in_index": true,
+      "category": "Kesehatan",
+      "icon": "🔥",
+      "title": "Kalkulator Kalori Harian - Kebutuhan Kalori (BMR & TDEE)",
+      "description": "Hitung kebutuhan kalori harian dari BMR dan tingkat aktivitas, plus target kalori untuk turun atau naik berat badan."
+    },
+    {
+      "slug": "umur",
+      "nav": "Umur",
+      "in_index": true,
+      "category": "Tanggal",
+      "icon": "🎂",
+      "title": "Kalkulator Umur - Hitung Usia dari Tanggal Lahir",
+      "description": "Hitung umur lengkap dalam tahun, bulan, dan hari dari tanggal lahir, plus total hari hidup dan hitung mundur ulang tahun berikutnya."
+    },
+    {
+      "slug": "countdown",
+      "nav": "Countdown",
+      "in_index": true,
+      "category": "Tanggal",
+      "icon": "⏳",
+      "title": "Penghitung Mundur (Countdown) ke Tanggal Acara",
+      "description": "Hitung mundur hari, jam, menit, dan detik menuju tanggal penting seperti pernikahan, wisuda, atau tahun baru."
+    },
+    {
+      "slug": "roda-putar",
+      "nav": "Roda Putar",
+      "in_index": true,
+      "category": "Pengacak",
+      "icon": "🎡",
+      "title": "Roda Putar - Pengacak Nama Online (Spin Wheel)",
+      "description": "Masukkan daftar nama lalu putar roda untuk memilih pemenang secara acak. Cocok untuk giveaway, arisan, dan doorprize."
+    },
+    {
+      "slug": "terbilang",
+      "nav": "Terbilang",
+      "in_index": true,
+      "category": "Konversi",
+      "icon": "🔤",
+      "title": "Terbilang - Ubah Angka Menjadi Teks Bahasa Indonesia",
+      "description": "Ubah angka menjadi tulisan terbilang otomatis, dengan atau tanpa kata 'rupiah', untuk kwitansi dan dokumen resmi."
+    },
+    {
+      "slug": "konversi-satuan",
+      "nav": "Konversi Satuan",
+      "in_index": true,
+      "category": "Konversi",
+      "icon": "📐",
+      "title": "Konversi Satuan - Panjang, Berat, Suhu, Luas, dan Lainnya",
+      "description": "Konversi satuan panjang, berat, suhu, luas, volume, kecepatan, dan data secara instan dalam satu alat."
+    },
+    {
+      "slug": "hitung-kata",
+      "nav": "Hitung Kata",
+      "in_index": true,
+      "category": "Teks & Web",
+      "icon": "📝",
+      "title": "Hitung Kata & Karakter - Word Counter Bahasa Indonesia",
+      "description": "Hitung jumlah kata, karakter, kalimat, paragraf, dan perkiraan waktu baca dari teks secara langsung."
+    },
+    {
+      "slug": "wa-link",
+      "nav": "Link WhatsApp",
+      "in_index": true,
+      "category": "Teks & Web",
+      "icon": "💬",
+      "title": "Generator Link WhatsApp - Buat Tautan wa.me dengan Pesan",
+      "description": "Buat tautan WhatsApp (wa.me) dari nomor HP lengkap dengan pesan otomatis, siap dibagikan ke pelanggan."
+    },
+    {
+      "slug": "tentang",
+      "nav": "",
+      "in_index": false,
+      "category": "",
+      "icon": "",
+      "title": "Tentang KalkulatorID",
+      "description": "Tentang KalkulatorID, situs kumpulan kalkulator online gratis berbahasa Indonesia."
+    },
+    {
+      "slug": "kontak",
+      "nav": "",
+      "in_index": false,
+      "category": "",
+      "icon": "",
+      "title": "Kontak - KalkulatorID",
+      "description": "Hubungi tim KalkulatorID untuk masukan, koreksi, atau kerja sama."
+    },
+    {
+      "slug": "privasi",
+      "nav": "",
+      "in_index": false,
+      "category": "",
+      "icon": "",
+      "title": "Kebijakan Privasi - KalkulatorID",
+      "description": "Kebijakan privasi KalkulatorID mengenai penggunaan cookie dan iklan pihak ketiga seperti Google AdSense."
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+<h1>Kalkulator BMI</h1>
+<p>Hitung Indeks Massa Tubuh (<em>Body Mass Index</em>) dari tinggi dan berat badan Anda, lengkap dengan kategori dan rentang berat badan ideal.</p>
+
+<form class="calc" onsubmit="return hitungBMI(event)">
+  <label>Tinggi badan (cm)
+    <input id="bmi-tinggi" type="number" min="50" max="250" step="0.1" value="170" required>
+  </label>
+  <label>Berat badan (kg)
+    <input id="bmi-berat" type="number" min="10" max="400" step="0.1" value="65" required>
+  </label>
+  <button type="submit">Hitung BMI</button>
+</form>
+
+<div id="bmi-hasil" class="result" hidden></div>
+
+<section class="article">
+  <h2>Cara menghitung BMI</h2>
+  <p>BMI adalah perbandingan berat badan terhadap kuadrat tinggi badan. Nilainya dipakai secara luas untuk menyaring apakah berat badan seseorang tergolong kurang, normal, atau berlebih.</p>
+  <code class="formula">BMI = berat (kg) / (tinggi (m))&sup2;</code>
+
+  <h2>Kategori BMI (standar WHO)</h2>
+  <p>Kurus: di bawah 18,5 &middot; Normal: 18,5&ndash;24,9 &middot; Berlebih: 25&ndash;29,9 &middot; Obesitas: 30 ke atas. Sebagian rujukan Asia-Pasifik memakai ambang lebih rendah, yaitu berlebih mulai 23 dan obesitas mulai 25.</p>
+
+  <h2>Contoh</h2>
+  <p>Seseorang dengan tinggi 170 cm (1,7 m) dan berat 65 kg memiliki BMI = 65 / (1,7 &times; 1,7) = 22,5, yang termasuk kategori normal. Rentang berat badan normal untuk tinggi tersebut kira-kira 53,5 kg sampai 72 kg.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Apakah BMI selalu akurat?</h3>
+  <p>Tidak untuk semua orang. BMI tidak membedakan massa otot dan lemak, sehingga atlet berotot bisa masuk kategori "berlebih" meski lemak tubuhnya rendah. BMI juga kurang tepat untuk ibu hamil, lansia, dan anak-anak.</p>
+  <h3>Apa yang sebaiknya dilakukan setelah tahu BMI?</h3>
+  <p>Gunakan angka ini sebagai indikator awal. Untuk penilaian kesehatan yang menyeluruh, konsultasikan dengan tenaga medis yang juga mempertimbangkan lingkar pinggang, tekanan darah, gula darah, dan gaya hidup.</p>
+</section>
+
+<script>
+function hitungBMI(e) {
+  e.preventDefault();
+  var t = num("bmi-tinggi") / 100;
+  var b = num("bmi-berat");
+  if (t <= 0) { show("bmi-hasil", "Tinggi badan tidak valid."); return false; }
+  var bmi = b / (t * t);
+  var kat;
+  if (bmi < 18.5) kat = "Kurus";
+  else if (bmi < 25) kat = "Normal";
+  else if (bmi < 30) kat = "Berat badan berlebih";
+  else kat = "Obesitas";
+  var min = (18.5 * t * t);
+  var max = (24.9 * t * t);
+  show("bmi-hasil",
+    "<strong>BMI Anda: " + bmi.toFixed(1) + " (" + kat + ")</strong><br>" +
+    "Rentang berat normal untuk tinggi ini: " + min.toFixed(1) + " kg &ndash; " + max.toFixed(1) + " kg",
+    "Kalkulator BMI — nilai " + bmi.toFixed(1) + " (" + kat + "), rentang berat normal " +
+    min.toFixed(1) + "–" + max.toFixed(1) + " kg.");
+  return false;
+}
+</script>

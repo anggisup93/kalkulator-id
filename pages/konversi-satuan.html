@@ -1,0 +1,97 @@
+<h1>Konversi Satuan</h1>
+<p>Konversi satuan panjang, berat, suhu, luas, volume, kecepatan, dan ukuran data dalam satu alat. Hasil berubah otomatis begitu Anda mengganti angka atau satuan.</p>
+
+<form class="calc" onsubmit="return false">
+  <label class="wide">Kategori
+    <select id="ks-kategori"></select>
+  </label>
+  <label>Nilai
+    <input id="ks-nilai" type="number" step="any" value="1" autocomplete="off">
+  </label>
+  <label>Dari
+    <select id="ks-dari"></select>
+  </label>
+  <label>Ke
+    <select id="ks-ke"></select>
+  </label>
+</form>
+
+<div id="ks-hasil" class="result"></div>
+
+<section class="article">
+  <h2>Cara konversi bekerja</h2>
+  <p>Untuk satuan yang bersifat kelipatan (panjang, berat, luas, volume, kecepatan, data), setiap satuan disimpan sebagai faktor terhadap satu satuan dasar &mdash; misalnya meter untuk panjang. Nilai diubah ke satuan dasar lalu dibagi faktor satuan tujuan. Suhu diperlakukan khusus karena melibatkan titik nol yang berbeda, sehingga dikonversi lewat derajat Celsius.</p>
+  <code class="formula">hasil = nilai &times; faktor(dari) / faktor(ke)</code>
+
+  <h2>Contoh</h2>
+  <p>5 kilometer ke mil: 5 &times; 1000 / 1609,344 = 3,107 mil. 100 derajat Celsius ke Fahrenheit: 100 &times; 9/5 + 32 = 212 &deg;F. 1 gigabyte ke megabyte = 1024 MB (memakai basis 1024).</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Apakah "ons" di sini sama dengan ounce?</h3>
+  <p>Bukan. Pada alat ini "ons" memakai pengertian Indonesia, yaitu 100 gram. Satuan <em>ounce</em> internasional (sekitar 28,35 gram) tidak disertakan untuk menghindari kebingungan.</p>
+  <h3>Ukuran data pakai basis 1000 atau 1024?</h3>
+  <p>Alat ini memakai basis 1024 (1 KB = 1024 byte), sesuai cara sistem operasi menampilkan ukuran berkas. Produsen penyimpanan kadang memakai basis 1000, sehingga kapasitas tertera bisa terlihat lebih besar.</p>
+  <h3>Berapa angka desimal yang ditampilkan?</h3>
+  <p>Hasil ditampilkan hingga beberapa angka penting agar mudah dibaca. Untuk keperluan teknis yang menuntut presisi tinggi, gunakan nilai penuh dari sumber resmi.</p>
+</section>
+
+<script>
+var KS = {
+  "Panjang": { "Milimeter (mm)": 1e-3, "Sentimeter (cm)": 1e-2, "Meter (m)": 1, "Kilometer (km)": 1000, "Inci (in)": 0.0254, "Kaki (ft)": 0.3048, "Yard (yd)": 0.9144, "Mil (mi)": 1609.344, "Mil laut (nmi)": 1852 },
+  "Berat / Massa": { "Miligram (mg)": 1e-6, "Gram (g)": 1e-3, "Ons (100 g)": 0.1, "Kilogram (kg)": 1, "Kuintal": 100, "Ton": 1000, "Pon (lb)": 0.45359237 },
+  "Suhu": { "Celsius (°C)": "C", "Fahrenheit (°F)": "F", "Kelvin (K)": "K" },
+  "Luas": { "Sentimeter²": 1e-4, "Meter²": 1, "Are": 100, "Hektare": 1e4, "Kilometer²": 1e6, "Kaki²": 0.09290304, "Acre": 4046.8564224 },
+  "Volume": { "Mililiter (ml)": 1e-3, "Liter (l)": 1, "Meter³": 1000, "Galon (US)": 3.785411784, "Sendok makan": 0.015, "Cangkir (240 ml)": 0.24 },
+  "Kecepatan": { "Meter/detik": 1, "Kilometer/jam": 1 / 3.6, "Mil/jam (mph)": 0.44704, "Knot": 0.514444 },
+  "Data": { "Byte": 1, "Kilobyte (KB)": 1024, "Megabyte (MB)": 1048576, "Gigabyte (GB)": 1073741824, "Terabyte (TB)": 1099511627776 }
+};
+
+function fillSelect(sel, keys, def) {
+  sel.innerHTML = keys.map(function (k) { return '<option>' + k + '</option>'; }).join("");
+  if (def != null) sel.selectedIndex = def;
+}
+
+function toC(v, u) { return u === "F" ? (v - 32) * 5 / 9 : u === "K" ? v - 273.15 : v; }
+function fromC(v, u) { return u === "F" ? v * 9 / 5 + 32 : u === "K" ? v + 273.15 : v; }
+
+function fmtNum(n) {
+  if (!isFinite(n)) return "-";
+  if (n !== 0 && (Math.abs(n) < 1e-4 || Math.abs(n) >= 1e12)) return n.toExponential(4);
+  return parseFloat(n.toPrecision(8)).toLocaleString("id-ID");
+}
+
+function updateKS() {
+  var kat = document.getElementById("ks-kategori").value;
+  var map = KS[kat];
+  var dari = document.getElementById("ks-dari").value;
+  var ke = document.getElementById("ks-ke").value;
+  var v = parseFloat(document.getElementById("ks-nilai").value);
+  if (isNaN(v)) { show("ks-hasil", "Masukkan nilai angka."); return; }
+  var hasil;
+  if (kat === "Suhu") {
+    hasil = fromC(toC(v, map[dari]), map[ke]);
+  } else {
+    hasil = v * map[dari] / map[ke];
+  }
+  show("ks-hasil",
+    "<strong>" + fmtNum(v) + " " + dari + " = " + fmtNum(hasil) + " " + ke + "</strong>",
+    fmtNum(v) + " " + dari + " = " + fmtNum(hasil) + " " + ke);
+}
+
+(function initKS() {
+  var katSel = document.getElementById("ks-kategori");
+  fillSelect(katSel, Object.keys(KS));
+  function onKat() {
+    var keys = Object.keys(KS[katSel.value]);
+    fillSelect(document.getElementById("ks-dari"), keys, 0);
+    fillSelect(document.getElementById("ks-ke"), keys, Math.min(1, keys.length - 1));
+    updateKS();
+  }
+  katSel.addEventListener("change", onKat);
+  ["ks-nilai", "ks-dari", "ks-ke"].forEach(function (id) {
+    document.getElementById(id).addEventListener("input", updateKS);
+    document.getElementById(id).addEventListener("change", updateKS);
+  });
+  onKat();
+})();
+</script>

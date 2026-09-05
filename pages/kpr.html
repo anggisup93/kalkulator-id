@@ -1,0 +1,65 @@
+<h1>Kalkulator KPR</h1>
+<p>Hitung perkiraan cicilan bulanan Kredit Pemilikan Rumah (KPR) berdasarkan harga rumah, uang muka, suku bunga, dan tenor pinjaman.</p>
+
+<form class="calc" onsubmit="return hitungKPR(event)">
+  <label>Harga rumah (Rp)
+    <input id="kpr-harga" type="text" inputmode="numeric" data-money value="500000000" required>
+  </label>
+  <label>Uang muka / DP (Rp)
+    <input id="kpr-dp" type="text" inputmode="numeric" data-money value="100000000" required>
+  </label>
+  <label>Suku bunga per tahun (%)
+    <input id="kpr-bunga" type="number" min="0" step="0.01" value="8" required>
+  </label>
+  <label>Tenor (tahun)
+    <input id="kpr-tenor" type="number" min="1" max="30" value="15" required>
+  </label>
+  <button type="submit">Hitung Cicilan</button>
+</form>
+
+<div id="kpr-hasil" class="result" hidden></div>
+
+<section class="article">
+  <h2>Cara kerja perhitungan</h2>
+  <p>Cicilan pada kalkulator ini dihitung memakai metode <strong>anuitas</strong>, skema yang paling umum dipakai bank di Indonesia. Pada metode anuitas, nilai angsuran per bulan tetap sama sepanjang tenor, tetapi komposisinya berubah: di awal masa kredit porsi bunga besar dan porsi pokok kecil, lalu perlahan terbalik menjelang akhir tenor.</p>
+  <code class="formula">Angsuran = P &times; i / (1 &minus; (1 + i)^-n)</code>
+  <p>dengan <em>P</em> = pokok pinjaman (harga rumah dikurangi uang muka), <em>i</em> = suku bunga tahunan dibagi 12, dan <em>n</em> = tenor dalam bulan.</p>
+
+  <h2>Contoh</h2>
+  <p>Harga rumah Rp500.000.000 dengan uang muka Rp100.000.000 berarti pokok pinjaman Rp400.000.000. Dengan bunga 8% per tahun dan tenor 15 tahun (180 bulan), angsuran per bulan sekitar Rp3.823.000. Total pembayaran selama 15 tahun sekitar Rp688 juta, sehingga total bunga yang dibayar sekitar Rp288 juta.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Apakah hasilnya pasti sama dengan perhitungan bank?</h3>
+  <p>Tidak selalu. Bank umumnya menerapkan bunga <em>fixed</em> pada tahun-tahun awal lalu bunga <em>floating</em> setelahnya, sehingga cicilan bisa naik di kemudian hari. Ada pula biaya provisi, administrasi, asuransi jiwa, dan asuransi kebakaran yang tidak diperhitungkan di sini.</p>
+  <h3>Berapa uang muka minimal KPR?</h3>
+  <p>Umumnya 10%&ndash;20% dari harga rumah untuk rumah pertama, mengikuti kebijakan bank dan ketentuan <em>Loan to Value</em> Bank Indonesia.</p>
+  <h3>Apakah tenor lebih panjang lebih menguntungkan?</h3>
+  <p>Tenor panjang membuat cicilan bulanan lebih ringan, tetapi total bunga yang dibayar sepanjang masa kredit menjadi jauh lebih besar.</p>
+</section>
+
+<script>
+function hitungKPR(e) {
+  e.preventDefault();
+  var pokok = num("kpr-harga") - num("kpr-dp");
+  var i = num("kpr-bunga") / 100 / 12;
+  var n = num("kpr-tenor") * 12;
+  if (pokok <= 0) {
+    show("kpr-hasil", "Uang muka tidak boleh melebihi atau sama dengan harga rumah.");
+    return false;
+  }
+  var cicilan = i === 0 ? pokok / n : pokok * i / (1 - Math.pow(1 + i, -n));
+  var total = cicilan * n;
+  show("kpr-hasil",
+    "<strong>Cicilan per bulan: " + rp(cicilan) + "</strong><br>" +
+    "Pokok pinjaman: " + rp(pokok) + "<br>" +
+    "Total pembayaran: " + rp(total) + "<br>" +
+    "Total bunga: " + rp(total - pokok) +
+    bar([
+      { label: "Pokok", nilai: pokok, warna: "#2f6bff" },
+      { label: "Bunga", nilai: total - pokok, warna: "#f79009" }
+    ]),
+    "Kalkulator KPR — cicilan per bulan " + rp(cicilan) + " (pokok " + rp(pokok) +
+    ", total bunga " + rp(total - pokok) + ").");
+  return false;
+}
+</script>

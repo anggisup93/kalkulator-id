@@ -1,0 +1,87 @@
+<h1>Penghitung Mundur (Countdown)</h1>
+<p>Hitung mundur hari, jam, menit, dan detik menuju tanggal penting Anda &mdash; pernikahan, wisuda, ujian, gajian, atau tahun baru. Target tersimpan di browser ini, jadi tetap ada saat Anda kembali.</p>
+
+<form class="calc" onsubmit="return false">
+  <label>Nama acara
+    <input id="cd-nama" type="text" maxlength="60" value="Tahun Baru" autocomplete="off">
+  </label>
+  <label>Tanggal &amp; waktu target
+    <input id="cd-target" type="datetime-local">
+  </label>
+</form>
+
+<div id="cd-hasil" class="result"></div>
+
+<section class="article">
+  <h2>Untuk apa alat ini</h2>
+  <p>Penghitung mundur membantu menjaga fokus pada tenggat: berapa hari lagi menuju hari-H acara, batas pendaftaran, tanggal rilis, atau target pribadi. Karena target disimpan secara lokal di perangkat, Anda bisa menutup halaman lalu membukanya lagi tanpa mengetik ulang.</p>
+
+  <h2>Cara pakai</h2>
+  <p>Isi nama acara dan pilih tanggal beserta jamnya. Angka langsung berjalan mundur setiap detik. Jika tanggal sudah lewat, alat akan menampilkan sudah berapa lama acara itu berlalu. Gunakan tombol bagikan untuk mengirim hitungan mundur ke teman lewat WhatsApp.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Apakah datanya tersimpan di server?</h3>
+  <p>Tidak. Nama acara dan tanggal hanya disimpan di penyimpanan lokal peramban Anda. Membersihkan data situs atau berpindah perangkat akan menghapusnya.</p>
+  <h3>Zona waktu apa yang dipakai?</h3>
+  <p>Waktu mengikuti jam perangkat Anda. Jika Anda dan penerima tautan berada di zona waktu berbeda, hitungan mundur bisa tampak bergeser beberapa jam.</p>
+  <h3>Bisakah membuat lebih dari satu hitungan mundur?</h3>
+  <p>Saat ini alat menyimpan satu target aktif. Untuk acara lain, cukup ubah tanggalnya; hitungan mundur akan langsung menyesuaikan.</p>
+</section>
+
+<script>
+(function () {
+  var KEY = "kid-countdown";
+  var nama = document.getElementById("cd-nama");
+  var target = document.getElementById("cd-target");
+
+  try {
+    var saved = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (saved) { nama.value = saved.nama || nama.value; target.value = saved.target || ""; }
+  } catch (e) {}
+  if (!target.value) {
+    var d = new Date();
+    target.value = (d.getFullYear() + 1) + "-01-01T00:00";
+  }
+
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+
+  function render() {
+    var t = target.value ? new Date(target.value).getTime() : NaN;
+    if (isNaN(t)) { show("cd-hasil", "Pilih tanggal dan waktu target."); return; }
+    var judul = (nama.value || "Acara").trim();
+    show("cd-hasil",
+      '<strong id="cd-judul">' + judul + '</strong><div id="cd-timer" style="font-size:1.05rem;margin-top:6px">&hellip;</div>',
+      "Hitung mundur menuju " + judul);
+    tick();
+  }
+
+  function tick() {
+    var box = document.getElementById("cd-timer");
+    if (!box) return;
+    var t = new Date(target.value).getTime();
+    var diff = t - Date.now();
+    var lewat = diff < 0;
+    var s = Math.floor(Math.abs(diff) / 1000);
+    var hari = Math.floor(s / 86400);
+    var jam = Math.floor((s % 86400) / 3600);
+    var menit = Math.floor((s % 3600) / 60);
+    var detik = s % 60;
+    box.innerHTML =
+      "<strong>" + hari.toLocaleString("id-ID") + "</strong> hari " +
+      pad(jam) + " jam " + pad(menit) + " menit " + pad(detik) + " detik" +
+      (lewat ? " <span style=\"color:var(--muted)\">(sudah lewat)</span>" : " lagi");
+  }
+
+  ["input", "change"].forEach(function (ev) {
+    nama.addEventListener(ev, save);
+    target.addEventListener(ev, save);
+  });
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify({ nama: nama.value, target: target.value })); } catch (e) {}
+    render();
+  }
+
+  render();
+  setInterval(tick, 1000);
+})();
+</script>
