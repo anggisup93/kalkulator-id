@@ -1,0 +1,83 @@
+<h1>Kalkulator Bunga Deposito</h1>
+<p>Hitung bunga deposito per bulan dan total dana saat jatuh tempo, sudah dipotong pajak bunga 20%, dari nominal penempatan, suku bunga, dan tenor.</p>
+
+<form class="calc" onsubmit="return hitungDeposito(event)">
+  <label>Nominal penempatan (Rp)
+    <input id="dp-pokok" type="text" inputmode="numeric" data-money value="50000000" required>
+  </label>
+  <label>Suku bunga per tahun (%)
+    <input id="dp-bunga" type="number" min="0" step="0.01" value="4" required>
+  </label>
+  <label>Tenor
+    <select id="dp-tenor">
+      <option value="1">1 bulan</option>
+      <option value="3" selected>3 bulan</option>
+      <option value="6">6 bulan</option>
+      <option value="12">12 bulan</option>
+      <option value="24">24 bulan</option>
+    </select>
+  </label>
+  <label>Pajak bunga
+    <select id="dp-pajak">
+      <option value="auto" selected>Otomatis (20% bila pokok &gt; Rp7,5 juta)</option>
+      <option value="ya">Selalu kena 20%</option>
+      <option value="tidak">Tanpa pajak</option>
+    </select>
+  </label>
+  <button type="submit">Hitung Bunga Deposito</button>
+</form>
+
+<div id="dp-hasil" class="result" hidden></div>
+
+<section class="article">
+  <h2>Cara perhitungan</h2>
+  <p>Bunga deposito dihitung sederhana (bukan majemuk) berdasarkan lama penempatan sebenarnya. Bunga yang diterima nasabah dipotong Pajak Penghasilan final atas bunga deposito sebesar 20%.</p>
+  <code class="formula">Bunga bruto = Pokok &times; bunga% &times; (tenor / 12)
+Pajak       = 20% &times; bunga bruto  (bila pokok &gt; Rp7.500.000)
+Bunga bersih = bunga bruto &minus; pajak</code>
+  <p>Untuk deposito dengan nilai penempatan Rp7.500.000 atau kurang, bunga tidak dikenai PPh final. Bunga biasanya dibayarkan tiap bulan ke rekening, atau ditambahkan ke pokok saat jatuh tempo tergantung pilihan Anda di bank.</p>
+
+  <h2>Contoh</h2>
+  <p>Deposito Rp50.000.000 dengan bunga 4% per tahun dan tenor 3 bulan menghasilkan bunga bruto Rp500.000. Setelah pajak 20% sebesar Rp100.000, bunga bersihnya Rp400.000, atau sekitar Rp133.000 per bulan. Dana saat jatuh tempo Rp50.400.000.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Apakah bunga deposito termasuk yang dijamin LPS?</h3>
+  <p>Pokok dan bunga deposito dijamin Lembaga Penjamin Simpanan sampai batas nilai tertentu per nasabah per bank, dan hanya jika suku bunganya tidak melebihi tingkat bunga penjaminan LPS. Bunga di atas batas itu tidak dijamin.</p>
+  <h3>Kenapa bunga bersih lebih kecil dari yang ditawarkan bank?</h3>
+  <p>Angka bunga yang diiklankan adalah bruto per tahun. Yang Anda terima sudah dipotong pajak final 20% dan dihitung sesuai tenor, bukan setahun penuh jika tenornya lebih pendek.</p>
+  <h3>Apakah kalkulator ini memperhitungkan perpanjangan otomatis?</h3>
+  <p>Belum. Hasil dihitung untuk satu periode tenor. Jika deposito diperpanjang otomatis dengan bunga berjalan, ulangi perhitungan memakai pokok baru (pokok lama ditambah bunga bersih bila memilih non-tunai).</p>
+</section>
+
+<script>
+function hitungDeposito(e) {
+  e.preventDefault();
+  var pokok = num("dp-pokok");
+  var bunga = num("dp-bunga") / 100;
+  var tenor = parseInt(document.getElementById("dp-tenor").value, 10);
+  var opsiPajak = document.getElementById("dp-pajak").value;
+  if (pokok <= 0 || bunga < 0) { show("dp-hasil", "Periksa nominal dan suku bunga."); return false; }
+
+  var kenaPajak = opsiPajak === "ya" || (opsiPajak === "auto" && pokok > 7500000);
+  var bruto = pokok * bunga * (tenor / 12);
+  var pajak = kenaPajak ? bruto * 0.2 : 0;
+  var bersih = bruto - pajak;
+  var perBulan = bersih / tenor;
+  var jatuhTempo = pokok + bersih;
+
+  show("dp-hasil",
+    "<strong>Bunga bersih (" + tenor + " bln): " + rp(bersih) + "</strong><br>" +
+    "Setara " + rp(perBulan) + " per bulan<br>" +
+    "Bunga bruto: " + rp(bruto) + "<br>" +
+    "Pajak 20%: " + rp(pajak) + (kenaPajak ? "" : " (tidak kena)") + "<br>" +
+    "Dana saat jatuh tempo: " + rp(jatuhTempo) +
+    bar([
+      { label: "Pokok", nilai: pokok, warna: "#2f6bff" },
+      { label: "Bunga bersih", nilai: bersih, warna: "#12b76a" },
+      { label: "Pajak", nilai: pajak, warna: "#f79009" }
+    ]),
+    "Kalkulator Deposito — " + rp(pokok) + " @ " + num("dp-bunga") + "%/th, " + tenor +
+    " bln: bunga bersih " + rp(bersih) + ", jatuh tempo " + rp(jatuhTempo) + ".");
+  return false;
+}
+</script>

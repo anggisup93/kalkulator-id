@@ -3,6 +3,8 @@
   "tagline": "Kumpulan kalkulator online gratis berbahasa Indonesia",
   "domain": "https://kalkulator-id.anggisup93.workers.dev",
   "adsense_client": "",
+  "cf_analytics_token": "",
+  "primary_nav": ["kpr", "gaji-bersih", "persentase", "bmi", "konversi-satuan"],
   "pages": [
     {
       "slug": "kpr",
@@ -129,6 +131,60 @@
       "icon": "💬",
       "title": "Generator Link WhatsApp - Buat Tautan wa.me dengan Pesan",
       "description": "Buat tautan WhatsApp (wa.me) dari nomor HP lengkap dengan pesan otomatis, siap dibagikan ke pelanggan."
+    },
+    {
+      "slug": "persentase",
+      "nav": "Persentase",
+      "in_index": true,
+      "category": "Matematika",
+      "icon": "%",
+      "title": "Kalkulator Persentase - Hitung Persen dengan Cepat",
+      "description": "Hitung berapa persen dari suatu angka, sebuah angka itu berapa persen dari angka lain, dan persentase kenaikan atau penurunan."
+    },
+    {
+      "slug": "ppn",
+      "nav": "PPN",
+      "in_index": true,
+      "category": "Keuangan",
+      "icon": "🧾",
+      "title": "Kalkulator PPN 11% & 12% - Tambah atau Pisahkan Pajak",
+      "description": "Hitung PPN dari harga sebelum pajak, atau pisahkan PPN dari harga yang sudah termasuk pajak, dengan tarif 11% atau 12%."
+    },
+    {
+      "slug": "selisih-tanggal",
+      "nav": "Selisih Tanggal",
+      "in_index": true,
+      "category": "Tanggal",
+      "icon": "📅",
+      "title": "Kalkulator Selisih Tanggal - Hitung Jarak & Tambah Hari",
+      "description": "Hitung selisih antara dua tanggal dalam hari, minggu, bulan, dan tahun, atau tambah dan kurangi sejumlah hari dari sebuah tanggal."
+    },
+    {
+      "slug": "deposito",
+      "nav": "Deposito",
+      "in_index": true,
+      "category": "Keuangan",
+      "icon": "🏦",
+      "title": "Kalkulator Bunga Deposito - Hitung Imbal Hasil Setelah Pajak",
+      "description": "Hitung bunga deposito per bulan dan saat jatuh tempo, sudah dipotong pajak bunga 20%, dari nominal, suku bunga, dan tenor."
+    },
+    {
+      "slug": "angka-romawi",
+      "nav": "Angka Romawi",
+      "in_index": true,
+      "category": "Konversi",
+      "icon": "Ⅻ",
+      "title": "Konversi Angka Romawi - Angka ke Romawi dan Sebaliknya",
+      "description": "Ubah angka biasa menjadi angka Romawi atau sebaliknya, lengkap dengan aturan penulisannya."
+    },
+    {
+      "slug": "zakat",
+      "nav": "Zakat",
+      "in_index": true,
+      "category": "Keuangan",
+      "icon": "🕌",
+      "title": "Kalkulator Zakat - Zakat Maal, Penghasilan, dan Fitrah",
+      "description": "Hitung zakat maal, zakat penghasilan, dan zakat fitrah sesuai nisab dan kadar 2,5 persen."
     },
     {
       "slug": "tentang",

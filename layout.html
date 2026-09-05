@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#2f6bff">
+<script>(function(){try{var t=localStorage.getItem('kid-theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <title>{{TITLE}}</title>
 <meta name="description" content="{{DESCRIPTION}}">
 <link rel="canonical" href="{{CANONICAL}}">
@@ -22,9 +23,11 @@
 {{ADSENSE_HEAD}}
 </head>
 <body>
-<header class="site-header">
+<header class="site-header" id="site-header">
   <a class="brand" href="/">{{SITE_NAME}}</a>
-  <nav class="site-nav">{{NAV}}</nav>
+  <button type="button" class="icon-btn nav-toggle" id="nav-toggle" aria-label="Buka menu" aria-expanded="false" aria-controls="site-nav">&#9776;</button>
+  <button type="button" class="icon-btn theme-toggle" id="theme-toggle" aria-label="Ganti tema terang / gelap" title="Ganti tema">&#9681;</button>
+  <nav class="site-nav" id="site-nav">{{NAV}}</nav>
 </header>
 
 <main class="container">
@@ -37,12 +40,14 @@
 <footer class="site-footer">
   <nav>
     <a href="/">Beranda</a>
+    <a href="/alat/">Semua Alat</a>
     <a href="/tentang/">Tentang</a>
     <a href="/kontak/">Kontak</a>
     <a href="/privasi/">Kebijakan Privasi</a>
   </nav>
   <p>&copy; {{YEAR}} {{SITE_NAME}}. Semua hasil perhitungan bersifat estimasi.</p>
 </footer>
+{{ANALYTICS}}
 <script>
 if ("serviceWorker" in navigator) {
   addEventListener("load", function () {

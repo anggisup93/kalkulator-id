@@ -1,0 +1,84 @@
+<h1>Konversi Angka Romawi</h1>
+<p>Ubah angka biasa menjadi angka Romawi atau sebaliknya. Kedua arah diperbarui otomatis saat Anda mengetik.</p>
+
+<form class="calc" onsubmit="return false">
+  <label>Angka biasa (1&ndash;3999)
+    <input id="rm-angka" type="number" min="1" max="3999" step="1" value="2026" autocomplete="off">
+  </label>
+</form>
+<div id="rm-hasil1" class="result"></div>
+
+<form class="calc" onsubmit="return false" style="margin-top:24px">
+  <label>Angka Romawi
+    <input id="rm-romawi" type="text" value="MMXXVI" autocomplete="off" style="text-transform:uppercase">
+  </label>
+</form>
+<div id="rm-hasil2" class="result"></div>
+
+<section class="article">
+  <h2>Aturan penulisan angka Romawi</h2>
+  <p>Angka Romawi memakai tujuh simbol: I (1), V (5), X (10), L (50), C (100), D (500), dan M (1000). Simbol ditulis dari nilai terbesar ke terkecil dan dijumlahkan. Bila simbol kecil berada tepat sebelum simbol yang lebih besar, nilainya dikurangi &mdash; misalnya IV (4) dan IX (9).</p>
+  <code class="formula">Contoh: 2026 = MM + XX + V + I = MMXXVI
+        49  = XL + IX = XLIX  (bukan IL)</code>
+  <p>Simbol I, X, C, M boleh diulang paling banyak tiga kali berturut-turut. V, L, dan D tidak pernah diulang. Sistem Romawi standar tidak mengenal nol dan hanya praktis sampai 3999 (MMMCMXCIX).</p>
+
+  <h2>Contoh</h2>
+  <p>Tahun 2026 ditulis MMXXVI. Angka 4 ditulis IV, bukan IIII. Angka 90 ditulis XC, bukan LXXXX. Angka 3888 &mdash; yang terpanjang di bawah 3999 &mdash; ditulis MMMDCCCLXXXVIII.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Kenapa tidak bisa lebih dari 3999?</h3>
+  <p>Untuk angka 4000 ke atas dibutuhkan tanda garis atas (vinculum) yang berarti "kali seribu", dan penulisannya tidak baku di keyboard biasa. Karena itu kalkulator ini dibatasi 1 sampai 3999.</p>
+  <h3>Apakah huruf kecil diterima?</h3>
+  <p>Ya. Input angka Romawi otomatis dibaca sebagai huruf besar, jadi "mmxxvi" dan "MMXXVI" menghasilkan angka yang sama.</p>
+  <h3>Bagaimana jika penulisannya tidak valid?</h3>
+  <p>Jika kombinasi huruf tidak membentuk angka Romawi yang sah (misalnya "IIII" atau "VV"), kalkulator akan memberi tahu bahwa penulisannya tidak valid alih-alih menampilkan angka yang salah.</p>
+</section>
+
+<script>
+(function () {
+  var MAP = [[1000, "M"], [900, "CM"], [500, "D"], [400, "CD"], [100, "C"],
+    [90, "XC"], [50, "L"], [40, "XL"], [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"]];
+
+  function toRoman(n) {
+    n = Math.floor(n);
+    if (n < 1 || n > 3999) return null;
+    var out = "";
+    for (var i = 0; i < MAP.length; i++) {
+      while (n >= MAP[i][0]) { out += MAP[i][1]; n -= MAP[i][0]; }
+    }
+    return out;
+  }
+  function fromRoman(s) {
+    s = String(s).toUpperCase().replace(/\s/g, "");
+    if (!/^[MDCLXVI]+$/.test(s)) return null;
+    var val = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };
+    var total = 0;
+    for (var i = 0; i < s.length; i++) {
+      var cur = val[s[i]], next = val[s[i + 1]] || 0;
+      total += cur < next ? -cur : cur;
+    }
+    // Sah bila hasil dikonversi balik sama persis.
+    return toRoman(total) === s ? total : null;
+  }
+
+  function up1() {
+    var n = parseInt(document.getElementById("rm-angka").value, 10);
+    if (isNaN(n)) { show("rm-hasil1", "Masukkan angka 1 sampai 3999."); return; }
+    var r = toRoman(n);
+    if (!r) { show("rm-hasil1", "Angka harus antara 1 dan 3999."); return; }
+    show("rm-hasil1", "<strong>" + n.toLocaleString("id-ID") + " = " + r + "</strong>",
+      n + " dalam angka Romawi = " + r);
+  }
+  function up2() {
+    var s = document.getElementById("rm-romawi").value.trim();
+    if (!s) { show("rm-hasil2", "Masukkan angka Romawi."); return; }
+    var n = fromRoman(s);
+    if (n === null) { show("rm-hasil2", "Penulisan angka Romawi tidak valid."); return; }
+    show("rm-hasil2", "<strong>" + s.toUpperCase() + " = " + n.toLocaleString("id-ID") + "</strong>",
+      s.toUpperCase() + " dalam angka Romawi = " + n);
+  }
+  document.getElementById("rm-angka").addEventListener("input", up1);
+  document.getElementById("rm-romawi").addEventListener("input", up2);
+  up1(); up2();
+})();
+</script>

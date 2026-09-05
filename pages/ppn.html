@@ -1,0 +1,78 @@
+<h1>Kalkulator PPN</h1>
+<p>Hitung Pajak Pertambahan Nilai (PPN) dari harga sebelum pajak, atau pisahkan PPN dari harga yang sudah termasuk pajak. Mendukung tarif 11% dan 12%.</p>
+
+<form class="calc" onsubmit="return hitungPPN(event)">
+  <label>Nominal (Rp)
+    <input id="ppn-nilai" type="text" inputmode="numeric" data-money value="1000000" required>
+  </label>
+  <label>Tarif PPN
+    <select id="ppn-tarif">
+      <option value="11" selected>11%</option>
+      <option value="12">12%</option>
+      <option value="1">1% (custom di bawah)</option>
+    </select>
+  </label>
+  <label>Tarif custom (%)
+    <input id="ppn-custom" type="number" min="0" step="0.1" value="0">
+  </label>
+  <label>Nominal di atas adalah
+    <select id="ppn-mode">
+      <option value="exclusive" selected>Harga sebelum PPN &mdash; tambahkan PPN</option>
+      <option value="inclusive">Harga sudah termasuk PPN &mdash; pisahkan</option>
+    </select>
+  </label>
+  <button type="submit">Hitung PPN</button>
+</form>
+
+<div id="ppn-hasil" class="result" hidden></div>
+
+<section class="article">
+  <h2>Cara menghitung PPN</h2>
+  <p>PPN dikenakan atas Dasar Pengenaan Pajak (DPP), yaitu harga barang atau jasa sebelum pajak. Jika Anda punya harga sebelum PPN, tinggal kalikan tarif. Jika harga yang Anda punya sudah termasuk PPN, DPP dan PPN harus dipisahkan lebih dulu.</p>
+  <code class="formula">PPN          = DPP &times; tarif%
+DPP (dari harga termasuk PPN) = harga / (1 + tarif%)
+PPN          = harga &minus; DPP</code>
+
+  <h2>Contoh</h2>
+  <p>Harga sebelum PPN Rp1.000.000 dengan tarif 11% menghasilkan PPN Rp110.000 dan total tagihan Rp1.110.000. Sebaliknya, jika Rp1.110.000 sudah termasuk PPN 11%, maka DPP-nya Rp1.000.000 dan PPN yang terkandung Rp110.000.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Tarif PPN sekarang 11% atau 12%?</h3>
+  <p>Tarif umum PPN adalah 11% sejak April 2022. Ketentuan menaikkan menjadi 12% ada dalam UU HPP; penerapannya bertahap dan untuk sebagian objek. Pilih tarif sesuai faktur atau ketentuan yang berlaku pada transaksi Anda.</p>
+  <h3>Apakah semua barang kena PPN?</h3>
+  <p>Tidak. Sebagian barang dan jasa dikecualikan, misalnya kebutuhan pokok tertentu, jasa kesehatan, jasa pendidikan, dan jasa keuangan. Kalkulator ini hanya menghitung angka, bukan menentukan objek kena pajak.</p>
+  <h3>PPN dihitung sebelum atau sesudah diskon?</h3>
+  <p>Umumnya PPN dikenakan atas harga setelah diskon. Hitung dulu harga akhir setelah potongan, baru masukkan angka itu sebagai DPP di sini.</p>
+</section>
+
+<script>
+function hitungPPN(e) {
+  e.preventDefault();
+  var nilai = num("ppn-nilai");
+  var pilih = document.getElementById("ppn-tarif").value;
+  var tarif = pilih === "1" ? num("ppn-custom") : parseFloat(pilih);
+  var mode = document.getElementById("ppn-mode").value;
+  if (nilai <= 0 || tarif < 0) { show("ppn-hasil", "Periksa nominal dan tarif."); return false; }
+  var t = tarif / 100;
+  var dpp, ppn, total;
+  if (mode === "inclusive") {
+    dpp = nilai / (1 + t);
+    ppn = nilai - dpp;
+    total = nilai;
+  } else {
+    dpp = nilai;
+    ppn = nilai * t;
+    total = nilai + ppn;
+  }
+  show("ppn-hasil",
+    "<strong>PPN (" + tarif + "%): " + rp(ppn) + "</strong><br>" +
+    "Dasar Pengenaan Pajak (DPP): " + rp(dpp) + "<br>" +
+    "Total termasuk PPN: " + rp(total) +
+    bar([
+      { label: "DPP", nilai: dpp, warna: "#2f6bff" },
+      { label: "PPN", nilai: ppn, warna: "#f79009" }
+    ]),
+    "Kalkulator PPN " + tarif + "% — DPP " + rp(dpp) + ", PPN " + rp(ppn) + ", total " + rp(total) + ".");
+  return false;
+}
+</script>

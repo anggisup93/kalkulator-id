@@ -1,0 +1,134 @@
+<h1>Kalkulator Zakat</h1>
+<p>Hitung zakat maal, zakat penghasilan, dan zakat fitrah sesuai nisab dan kadar 2,5 persen. Harga emas dan beras bisa Anda sesuaikan dengan harga terbaru.</p>
+
+<h2 style="border:0;padding:0;margin:8px 0 0">1. Zakat Maal (harta simpanan)</h2>
+<form class="calc" onsubmit="return hitungMaal(event)">
+  <label>Total tabungan &amp; uang tunai (Rp)
+    <input id="zm-tabungan" type="text" inputmode="numeric" data-money value="0">
+  </label>
+  <label>Nilai emas, perak, investasi (Rp)
+    <input id="zm-investasi" type="text" inputmode="numeric" data-money value="0">
+  </label>
+  <label>Piutang yang akan diterima (Rp)
+    <input id="zm-piutang" type="text" inputmode="numeric" data-money value="0">
+  </label>
+  <label>Utang jatuh tempo (pengurang) (Rp)
+    <input id="zm-utang" type="text" inputmode="numeric" data-money value="0">
+  </label>
+  <label>Harga emas per gram (Rp)
+    <input id="zm-emas" type="text" inputmode="numeric" data-money value="1350000">
+  </label>
+  <button type="submit">Hitung Zakat Maal</button>
+</form>
+<div id="zm-hasil" class="result" hidden></div>
+
+<h2 style="margin-top:32px">2. Zakat Penghasilan</h2>
+<form class="calc" onsubmit="return hitungPenghasilan(event)">
+  <label>Penghasilan per bulan (Rp)
+    <input id="zp-gaji" type="text" inputmode="numeric" data-money value="10000000">
+  </label>
+  <label>Penghasilan lain per bulan (Rp)
+    <input id="zp-lain" type="text" inputmode="numeric" data-money value="0">
+  </label>
+  <label>Harga emas per gram (Rp)
+    <input id="zp-emas" type="text" inputmode="numeric" data-money value="1350000">
+  </label>
+  <button type="submit">Hitung Zakat Penghasilan</button>
+</form>
+<div id="zp-hasil" class="result" hidden></div>
+
+<h2 style="margin-top:32px">3. Zakat Fitrah</h2>
+<form class="calc" onsubmit="return hitungFitrah(event)">
+  <label>Jumlah jiwa yang dizakati
+    <input id="zf-jiwa" type="number" min="1" step="1" value="4">
+  </label>
+  <label>Harga beras per kg (Rp)
+    <input id="zf-beras" type="text" inputmode="numeric" data-money value="15000">
+  </label>
+  <label>Takaran per jiwa
+    <select id="zf-takaran">
+      <option value="2.5" selected>2,5 kg</option>
+      <option value="2.7">2,7 kg (setara 3,5 liter)</option>
+      <option value="3">3 kg (kehati-hatian)</option>
+    </select>
+  </label>
+  <button type="submit">Hitung Zakat Fitrah</button>
+</form>
+<div id="zf-hasil" class="result" hidden></div>
+
+<section class="article">
+  <h2>Dasar perhitungan</h2>
+  <p>Zakat maal wajib bila total harta bersih (setelah dikurangi utang jatuh tempo) mencapai <strong>nisab</strong>, yaitu senilai 85 gram emas, dan telah dimiliki selama satu tahun (haul). Kadarnya 2,5%. Zakat penghasilan memakai nisab yang sama disetahunkan; bila penghasilan setahun mencapai nilai 85 gram emas, zakatnya 2,5% dari penghasilan. Zakat fitrah dibayar tiap jiwa sebesar satu sha' bahan makanan pokok, umumnya dihitung 2,5 kg beras atau nilai uangnya.</p>
+  <code class="formula">Nisab maal      = 85 &times; harga emas per gram
+Zakat maal      = 2,5% &times; (harta bersih)  bila &ge; nisab
+Zakat penghasilan = 2,5% &times; penghasilan   bila setahun &ge; nisab
+Zakat fitrah    = jumlah jiwa &times; takaran kg &times; harga beras</code>
+
+  <h2>Contoh</h2>
+  <p>Dengan harga emas Rp1.350.000 per gram, nisab maal sekitar Rp114.750.000. Jika harta bersih Rp200.000.000, zakatnya Rp5.000.000. Penghasilan Rp10.000.000 per bulan (Rp120.000.000 setahun) sudah melewati nisab, sehingga zakatnya Rp250.000 per bulan. Zakat fitrah 4 jiwa dengan beras Rp15.000 per kg dan takaran 2,5 kg adalah Rp150.000.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Zakat penghasilan dihitung dari gaji kotor atau bersih?</h3>
+  <p>Ada dua pendapat. BAZNAS mencontohkan penghitungan dari penghasilan bruto. Sebagian ulama membolehkan dikurangi kebutuhan pokok terlebih dahulu. Kalkulator ini memakai penghasilan bruto; sesuaikan sendiri bila Anda mengikuti pendapat lain.</p>
+  <h3>Harga emas yang dipakai berapa?</h3>
+  <p>Gunakan harga emas murni (24 karat) per gram yang berlaku saat Anda berzakat. Nilai bawaan di kalkulator hanya perkiraan dan perlu Anda perbarui.</p>
+  <h3>Bolehkah zakat fitrah dibayar dengan uang?</h3>
+  <p>Mazhab Hanafi membolehkan membayar dengan uang senilai bahan makanan pokok, dan ini yang umum dipraktikkan lembaga amil di Indonesia. Mazhab lain menganjurkan menunaikannya dalam bentuk beras.</p>
+</section>
+
+<script>
+function hitungMaal(e) {
+  e.preventDefault();
+  var harta = num("zm-tabungan") + num("zm-investasi") + num("zm-piutang");
+  var bersih = harta - num("zm-utang");
+  var nisab = 85 * num("zm-emas");
+  if (bersih < nisab) {
+    show("zm-hasil",
+      "Harta bersih " + rp(bersih) + " <strong>belum mencapai nisab</strong> " + rp(nisab) +
+      ".<br>Zakat maal belum wajib, tetapi sedekah tetap dianjurkan.");
+    return false;
+  }
+  var zakat = bersih * 0.025;
+  show("zm-hasil",
+    "<strong>Zakat maal: " + rp(zakat) + "</strong><br>" +
+    "Harta bersih: " + rp(bersih) + "<br>Nisab (85 gram emas): " + rp(nisab),
+    "Zakat Maal — harta bersih " + rp(bersih) + " (nisab " + rp(nisab) + "), zakat " + rp(zakat) + ".");
+  return false;
+}
+
+function hitungPenghasilan(e) {
+  e.preventDefault();
+  var perBulan = num("zp-gaji") + num("zp-lain");
+  var setahun = perBulan * 12;
+  var nisab = 85 * num("zp-emas");
+  if (setahun < nisab) {
+    show("zp-hasil",
+      "Penghasilan setahun " + rp(setahun) + " <strong>belum mencapai nisab</strong> " + rp(nisab) +
+      ".<br>Zakat penghasilan belum wajib.");
+    return false;
+  }
+  var zakatBulan = perBulan * 0.025;
+  show("zp-hasil",
+    "<strong>Zakat penghasilan: " + rp(zakatBulan) + " per bulan</strong><br>" +
+    "Setara " + rp(zakatBulan * 12) + " per tahun<br>" +
+    "Nisab setahun (85 gram emas): " + rp(nisab),
+    "Zakat Penghasilan — " + rp(perBulan) + "/bulan: zakat " + rp(zakatBulan) + "/bulan.");
+  return false;
+}
+
+function hitungFitrah(e) {
+  e.preventDefault();
+  var jiwa = num("zf-jiwa");
+  var beras = num("zf-beras");
+  var kg = parseFloat(document.getElementById("zf-takaran").value);
+  if (jiwa < 1 || beras <= 0) { show("zf-hasil", "Isi jumlah jiwa dan harga beras."); return false; }
+  var totalKg = jiwa * kg;
+  var uang = totalKg * beras;
+  show("zf-hasil",
+    "<strong>Zakat fitrah: " + rp(uang) + "</strong><br>" +
+    "atau " + totalKg.toLocaleString("id-ID") + " kg beras untuk " + jiwa + " jiwa<br>" +
+    "(" + kg.toLocaleString("id-ID") + " kg &times; " + rp(beras) + " &times; " + jiwa + " jiwa)",
+    "Zakat Fitrah — " + jiwa + " jiwa = " + rp(uang) + " (" + totalKg + " kg beras).");
+  return false;
+}
+</script>

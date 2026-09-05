@@ -38,9 +38,44 @@ def plain(s: str) -> str:
 
 
 def build_nav(cfg) -> str:
-    return "\n    ".join(
-        f'<a href="/{p["slug"]}/">{p["nav"]}</a>'
-        for p in cfg["pages"] if p.get("nav")
+    by_slug = {p["slug"]: p for p in cfg["pages"]}
+    slugs = cfg.get("primary_nav") or [
+        p["slug"] for p in cfg["pages"] if p.get("in_index")
+    ][:5]
+    links = [
+        f'<a href="/{s}/">{by_slug[s]["nav"] or by_slug[s]["title"]}</a>'
+        for s in slugs if s in by_slug
+    ]
+    links.append('<a class="nav-all" href="/alat/">Semua Alat</a>')
+    return "\n    ".join(links)
+
+
+def category_sections(cfg) -> str:
+    """Kartu semua alat, dikelompokkan per kategori (dipakai beranda + /alat/)."""
+    index_pages = [p for p in cfg["pages"] if p.get("in_index")]
+    cats = []
+    for p in index_pages:
+        c = p.get("category") or "Lainnya"
+        if c not in cats:
+            cats.append(c)
+    out = []
+    for c in cats:
+        group = [p for p in index_pages if (p.get("category") or "Lainnya") == c]
+        cards = "\n".join(card_html(p) for p in group)
+        out.append(
+            f'<section class="cat"><h2>{c}</h2>'
+            f'<div class="grid">\n{cards}\n</div></section>'
+        )
+    return "\n".join(out)
+
+
+def analytics_tag(cfg) -> str:
+    tok = cfg.get("cf_analytics_token", "").strip()
+    if not tok:
+        return "<!-- Cloudflare Web Analytics belum aktif: isi 'cf_analytics_token' di site.json -->"
+    return (
+        '<script defer src="https://static.cloudflareinsights.com/beacon.min.js" '
+        'data-cf-beacon=\'{"token": "' + tok + '"}\'></script>'
     )
 
 
@@ -263,11 +298,12 @@ def main():
         "ASSET_VER": asset_ver,
         "ADSENSE_HEAD": adsense_head(cfg),
         "ADSENSE_SLOT": adsense_slot(cfg),
+        "ANALYTICS": analytics_tag(cfg),
         "JSONLD": "",
         "BREADCRUMB": "",
         "RELATED": "",
     }
-    urls = [f"{domain}/"]
+    urls = [f"{domain}/", f"{domain}/alat/"]
 
     # --- Halaman per slug ---
     for p in cfg["pages"]:
@@ -289,19 +325,7 @@ def main():
 
     # --- Beranda: hero + pencarian + kartu per kategori ---
     index_pages = [p for p in cfg["pages"] if p.get("in_index")]
-    cats = []
-    for p in index_pages:
-        c = p.get("category") or "Lainnya"
-        if c not in cats:
-            cats.append(c)
-    sections = []
-    for c in cats:
-        group = [p for p in index_pages if (p.get("category") or "Lainnya") == c]
-        cards = "\n".join(card_html(p) for p in group)
-        sections.append(
-            f'<section class="cat"><h2>{c}</h2>'
-            f'<div class="grid">\n{cards}\n</div></section>'
-        )
+    sections = category_sections(cfg)
     index_inner = (
         '<div class="hero">'
         f'<h1>{cfg["site_name"]}</h1>'
@@ -309,7 +333,7 @@ def main():
         '<input type="search" id="cari" class="search" autocomplete="off" '
         'placeholder="Cari kalkulator… (mis. KPR, BMI, umur)">'
         '</div>\n'
-        + "\n".join(sections)
+        + sections
         + '\n<p id="cari-kosong" class="empty" hidden>Tidak ada kalkulator yang cocok.</p>'
         + HOME_SEARCH_JS
     )
@@ -320,6 +344,43 @@ def main():
         "CANONICAL": f"{domain}/",
         "CONTENT": index_inner,
         "JSONLD": jsonld_home(cfg, domain),
+        "ADSENSE_SLOT": "",
+    }))
+
+    # --- /alat/ : indeks semua alat A-Z per kategori ---
+    alat_inner = (
+        '<nav class="breadcrumb" aria-label="Breadcrumb">'
+        '<a href="/">Beranda</a> <span class="sep">/</span> '
+        '<span aria-current="page">Semua Alat</span></nav>'
+        '<h1>Semua Alat</h1>'
+        f'<p class="lead">{len(index_pages)} kalkulator &amp; alat, dikelompokkan per kategori.</p>'
+        '<input type="search" id="cari" class="search" autocomplete="off" '
+        'placeholder="Cari alat…">\n'
+        + sections
+        + '\n<p id="cari-kosong" class="empty" hidden>Tidak ada alat yang cocok.</p>'
+        + HOME_SEARCH_JS
+    )
+    write(DIST / "alat" / "index.html", render(layout, {
+        **base_ctx,
+        "TITLE": f'Semua Alat - {cfg["site_name"]}',
+        "DESCRIPTION": f'Daftar lengkap {len(index_pages)} kalkulator dan alat di {cfg["site_name"]}.',
+        "CANONICAL": f"{domain}/alat/",
+        "CONTENT": alat_inner,
+        "ADSENSE_SLOT": "",
+    }))
+
+    # --- 404 ---
+    write(DIST / "404.html", render(layout, {
+        **base_ctx,
+        "TITLE": f'Halaman tidak ditemukan - {cfg["site_name"]}',
+        "DESCRIPTION": "Halaman yang kamu cari tidak ada.",
+        "CANONICAL": f"{domain}/404",
+        "CONTENT": (
+            '<h1>Halaman tidak ditemukan</h1>'
+            '<p class="lead">Alamat yang kamu buka tidak ada atau sudah dipindah.</p>'
+            '<p><a href="/">Kembali ke beranda</a> &middot; '
+            '<a href="/alat/">Lihat semua alat</a></p>'
+        ),
         "ADSENSE_SLOT": "",
     }))
 
@@ -351,7 +412,7 @@ def main():
     write(DIST / "manifest.webmanifest",
           json.dumps(manifest, ensure_ascii=False, indent=2))
 
-    precache = ["/", "/manifest.webmanifest",
+    precache = ["/", "/alat/", "/manifest.webmanifest",
                 f"/assets/style.css?v={asset_ver}",
                 f"/assets/calc.js?v={asset_ver}",
                 "/assets/icon.svg"]

@@ -27,16 +27,39 @@ function show(id, html, shareText) {
   el.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
-// Tombol aksi hasil: cetak/simpan PDF + bagikan ke WhatsApp (beserta link halaman).
+// Tombol aksi hasil: salin, cetak/simpan PDF, bagikan ke WhatsApp (+ link halaman).
 function actions(shareText) {
   var link = location.origin + location.pathname;
   var wa = "https://wa.me/?text=" + encodeURIComponent(shareText + "\n" + link);
+  var esc = String(shareText).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
   return (
     '<div class="result-actions" data-noprint>' +
+    '<button type="button" class="btn-sec" data-copy="' + esc + '" onclick="salinHasil(this)">Salin</button>' +
     '<button type="button" class="btn-sec" onclick="window.print()">Cetak / PDF</button>' +
     '<a class="btn-sec" target="_blank" rel="noopener" href="' + wa + '">Bagikan ke WhatsApp</a>' +
     "</div>"
   );
+}
+
+// Salin teks hasil ke clipboard.
+function salinHasil(btn) {
+  var t = btn.getAttribute("data-copy") || "";
+  var done = function () {
+    var old = btn.textContent;
+    btn.textContent = "Tersalin ✓";
+    setTimeout(function () { btn.textContent = old; }, 1500);
+  };
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(t).then(done, done);
+  } else {
+    var ta = document.createElement("textarea");
+    ta.value = t;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); } catch (e) {}
+    document.body.removeChild(ta);
+    done();
+  }
 }
 
 // Bar komposisi sederhana: potongan = [{label, nilai, warna}]
@@ -73,6 +96,83 @@ function bar(potongan) {
   function init() {
     var list = document.querySelectorAll("input[data-money]");
     for (var i = 0; i < list.length; i++) wire(list[i]);
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+
+// Toggle tema (terang/gelap) + menu navigasi di layar kecil.
+(function () {
+  function curTheme() {
+    return document.documentElement.getAttribute("data-theme") ||
+      (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  }
+  function init() {
+    var tt = document.getElementById("theme-toggle");
+    if (tt) {
+      tt.addEventListener("click", function () {
+        var next = curTheme() === "dark" ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", next);
+        try { localStorage.setItem("kid-theme", next); } catch (e) {}
+      });
+    }
+    var nt = document.getElementById("nav-toggle");
+    var header = document.getElementById("site-header");
+    if (nt && header) {
+      nt.addEventListener("click", function () {
+        var open = header.classList.toggle("nav-open");
+        nt.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+    }
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+
+// Ingat isian form kalkulator per halaman (localStorage).
+// Nonaktif untuk <form class="calc" data-nosave> atau field ber-atribut data-nosave.
+(function () {
+  function key() { return "kid-form:" + location.pathname; }
+  function fieldsOf(form) {
+    return [].slice.call(form.querySelectorAll("input[id], select[id], textarea[id]"))
+      .filter(function (el) {
+        return el.type !== "submit" && el.type !== "button" && !el.hasAttribute("data-nosave");
+      });
+  }
+  function init() {
+    var forms = [].slice.call(document.querySelectorAll("form.calc"))
+      .filter(function (f) { return !f.hasAttribute("data-nosave"); });
+    if (!forms.length) return;
+    var els = [];
+    forms.forEach(function (f) { els = els.concat(fieldsOf(f)); });
+    if (!els.length) return;
+    var saved = {};
+    try { saved = JSON.parse(localStorage.getItem(key()) || "{}") || {}; } catch (e) {}
+    els.forEach(function (el) {
+      var v = saved[el.id];
+      if (v === undefined || v === "") return;
+      if (el.type === "checkbox") el.checked = !!v;
+      else el.value = v;
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+      el.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    function save() {
+      var o = {};
+      els.forEach(function (el) {
+        o[el.id] = el.type === "checkbox" ? el.checked : el.value;
+      });
+      try { localStorage.setItem(key(), JSON.stringify(o)); } catch (e) {}
+    }
+    forms.forEach(function (f) {
+      f.addEventListener("input", save);
+      f.addEventListener("change", save);
+    });
   }
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);

@@ -1,0 +1,88 @@
+<h1>Kalkulator Persentase</h1>
+<p>Tiga perhitungan persen yang paling sering dipakai, semuanya diperbarui otomatis saat Anda mengetik.</p>
+
+<form class="calc" onsubmit="return false">
+  <label>Berapa persen (%)
+    <input id="ps-a1" type="number" step="any" value="20" autocomplete="off">
+  </label>
+  <label>dari angka
+    <input id="ps-a2" type="number" step="any" value="150000" autocomplete="off">
+  </label>
+</form>
+<div id="ps-h1" class="result"></div>
+
+<form class="calc" onsubmit="return false" style="margin-top:24px">
+  <label>Angka
+    <input id="ps-b1" type="number" step="any" value="30" autocomplete="off">
+  </label>
+  <label>adalah berapa % dari
+    <input id="ps-b2" type="number" step="any" value="150" autocomplete="off">
+  </label>
+</form>
+<div id="ps-h2" class="result"></div>
+
+<form class="calc" onsubmit="return false" style="margin-top:24px">
+  <label>Dari nilai awal
+    <input id="ps-c1" type="number" step="any" value="200000" autocomplete="off">
+  </label>
+  <label>ke nilai akhir
+    <input id="ps-c2" type="number" step="any" value="250000" autocomplete="off">
+  </label>
+</form>
+<div id="ps-h3" class="result"></div>
+
+<section class="article">
+  <h2>Rumus persentase</h2>
+  <p>Persen berarti "per seratus". Ketiga perhitungan di atas memakai rumus dasar yang sama, hanya berbeda variabel yang dicari.</p>
+  <code class="formula">X% dari Y  = Y &times; X / 100
+X dari Y   = X / Y &times; 100  (%)
+Perubahan  = (akhir &minus; awal) / awal &times; 100  (%)</code>
+
+  <h2>Contoh</h2>
+  <p>20% dari 150.000 = 30.000. Angka 30 adalah 20% dari 150. Perubahan dari 200.000 ke 250.000 adalah kenaikan 25%.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Bagaimana menghitung harga setelah naik atau turun sekian persen?</h3>
+  <p>Untuk kenaikan p%, kalikan angka awal dengan (1 + p/100). Untuk penurunan, kalikan dengan (1 &minus; p/100). Contoh: 100.000 naik 15% menjadi 100.000 &times; 1,15 = 115.000.</p>
+  <h3>Kenapa turun 50% lalu naik 50% tidak kembali ke angka semula?</h3>
+  <p>Karena persen kedua dihitung dari angka yang sudah berubah. 100 turun 50% jadi 50; 50 naik 50% hanya jadi 75, bukan 100. Persentase kenaikan dan penurunan tidak saling meniadakan.</p>
+  <h3>Apa beda "poin persen" dan "persen"?</h3>
+  <p>Jika bunga naik dari 5% menjadi 7%, itu naik 2 poin persen, tetapi secara relatif naik 40% (2 dibagi 5). Media sering mencampur keduanya, jadi perhatikan konteksnya.</p>
+</section>
+
+<script>
+function fmtP(n) {
+  if (!isFinite(n)) return "-";
+  return parseFloat(n.toPrecision(6)).toLocaleString("id-ID");
+}
+function updatePersen() {
+  var a1 = parseFloat(document.getElementById("ps-a1").value);
+  var a2 = parseFloat(document.getElementById("ps-a2").value);
+  if (!isNaN(a1) && !isNaN(a2)) {
+    var r = a2 * a1 / 100;
+    show("ps-h1", "<strong>" + fmtP(a1) + "% dari " + fmtP(a2) + " = " + fmtP(r) + "</strong>",
+      fmtP(a1) + "% dari " + fmtP(a2) + " = " + fmtP(r));
+  } else { show("ps-h1", "Isi kedua kolom di atas."); }
+
+  var b1 = parseFloat(document.getElementById("ps-b1").value);
+  var b2 = parseFloat(document.getElementById("ps-b2").value);
+  if (!isNaN(b1) && !isNaN(b2) && b2 !== 0) {
+    var p = b1 / b2 * 100;
+    show("ps-h2", "<strong>" + fmtP(b1) + " adalah " + fmtP(p) + "% dari " + fmtP(b2) + "</strong>",
+      fmtP(b1) + " adalah " + fmtP(p) + "% dari " + fmtP(b2));
+  } else { show("ps-h2", "Isi kedua kolom (pembagi tidak boleh 0)."); }
+
+  var c1 = parseFloat(document.getElementById("ps-c1").value);
+  var c2 = parseFloat(document.getElementById("ps-c2").value);
+  if (!isNaN(c1) && !isNaN(c2) && c1 !== 0) {
+    var d = (c2 - c1) / c1 * 100;
+    var arah = d > 0 ? "kenaikan" : d < 0 ? "penurunan" : "tidak berubah";
+    show("ps-h3", "<strong>" + arah + " " + fmtP(Math.abs(d)) + "%</strong> (selisih " + fmtP(c2 - c1) + ")",
+      "Dari " + fmtP(c1) + " ke " + fmtP(c2) + ": " + arah + " " + fmtP(Math.abs(d)) + "%");
+  } else { show("ps-h3", "Isi kedua kolom (nilai awal tidak boleh 0)."); }
+}
+["ps-a1", "ps-a2", "ps-b1", "ps-b2", "ps-c1", "ps-c2"].forEach(function (id) {
+  document.getElementById(id).addEventListener("input", updatePersen);
+});
+updatePersen();
+</script>

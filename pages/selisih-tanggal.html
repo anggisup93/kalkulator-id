@@ -1,0 +1,122 @@
+<h1>Kalkulator Selisih Tanggal</h1>
+<p>Hitung jarak antara dua tanggal, atau tambah dan kurangi sejumlah hari dari sebuah tanggal. Hasil diperbarui otomatis.</p>
+
+<h2 style="border:0;padding:0;margin:8px 0 0">Selisih antara dua tanggal</h2>
+<form class="calc" onsubmit="return false">
+  <label>Tanggal awal
+    <input id="st-a" type="date" autocomplete="off">
+  </label>
+  <label>Tanggal akhir
+    <input id="st-b" type="date" autocomplete="off">
+  </label>
+</form>
+<div id="st-hasil1" class="result"></div>
+
+<h2 style="margin-top:32px">Tambah / kurang hari dari tanggal</h2>
+<form class="calc" onsubmit="return false">
+  <label>Tanggal acuan
+    <input id="st-c" type="date" autocomplete="off">
+  </label>
+  <label>Jumlah hari (boleh negatif)
+    <input id="st-n" type="number" step="1" value="30" autocomplete="off">
+  </label>
+</form>
+<div id="st-hasil2" class="result"></div>
+
+<section class="article">
+  <h2>Cara perhitungan</h2>
+  <p>Selisih dua tanggal dihitung sebagai jumlah hari kalender di antaranya, lalu dipecah menjadi tahun, bulan, dan hari mengikuti panjang bulan yang sebenarnya. Karena memakai tanggal asli, tahun kabisat otomatis ikut terhitung. Jumlah hari kerja menghitung hanya Senin sampai Jumat dan tidak memperhitungkan hari libur nasional.</p>
+
+  <h2>Contoh</h2>
+  <p>Dari 1 Januari 2026 sampai 6 September 2026 ada 248 hari, atau sekitar 8 bulan 5 hari, dengan 176 hari kerja (Senin&ndash;Jumat). Menambahkan 30 hari ke 6 September 2026 menghasilkan 6 Oktober 2026.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Apakah tanggal akhir ikut dihitung?</h3>
+  <p>Selisih dihitung sebagai jarak antar tanggal, jadi dari tanggal 1 ke tanggal 2 terhitung 1 hari. Untuk menghitung jumlah hari termasuk kedua ujungnya (misalnya lama cuti), tambahkan 1 pada hasil.</p>
+  <h3>Apakah hari libur nasional dikecualikan dari jumlah hari kerja?</h3>
+  <p>Tidak. Perhitungan hari kerja hanya membuang Sabtu dan Minggu. Hari libur nasional dan cuti bersama berbeda tiap tahun sehingga perlu dikurangi manual.</p>
+  <h3>Bisakah menghitung mundur ke masa lalu?</h3>
+  <p>Bisa. Pada bagian tambah/kurang hari, isi jumlah hari dengan angka negatif untuk mendapatkan tanggal sebelum tanggal acuan.</p>
+</section>
+
+<script>
+(function () {
+  var hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+  var bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli",
+    "Agustus", "September", "Oktober", "November", "Desember"];
+  function fmtTgl(d) {
+    return hari[d.getDay()] + ", " + d.getDate() + " " + bulan[d.getMonth()] + " " + d.getFullYear();
+  }
+  var today = new Date().toISOString().slice(0, 10);
+  ["st-a", "st-c"].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (!el.value) el.value = today;
+  });
+  var b = document.getElementById("st-b");
+  if (!b.value) {
+    var d = new Date();
+    d.setDate(d.getDate() + 100);
+    b.value = d.toISOString().slice(0, 10);
+  }
+
+  function selisih() {
+    var sa = document.getElementById("st-a").value;
+    var sb = document.getElementById("st-b").value;
+    if (!sa || !sb) { show("st-hasil1", "Isi kedua tanggal."); return; }
+    var a = new Date(sa + "T00:00:00");
+    var bb = new Date(sb + "T00:00:00");
+    var neg = bb < a;
+    if (neg) { var t = a; a = bb; bb = t; }
+    var totalHari = Math.round((bb - a) / 86400000);
+
+    var y = bb.getFullYear() - a.getFullYear();
+    var m = bb.getMonth() - a.getMonth();
+    var dd = bb.getDate() - a.getDate();
+    if (dd < 0) { m--; dd += new Date(bb.getFullYear(), bb.getMonth(), 0).getDate(); }
+    if (m < 0) { y--; m += 12; }
+
+    var kerja = 0;
+    var cur = new Date(a);
+    for (var i = 0; i < totalHari; i++) {
+      cur.setDate(cur.getDate() + 1);
+      var w = cur.getDay();
+      if (w !== 0 && w !== 6) kerja++;
+    }
+    var f = function (n) { return n.toLocaleString("id-ID"); };
+    var rincian = [];
+    if (y) rincian.push(y + " tahun");
+    if (m) rincian.push(m + " bulan");
+    rincian.push(dd + " hari");
+    show("st-hasil1",
+      "<strong>" + f(totalHari) + " hari</strong> (" + rincian.join(" ") + ")<br>" +
+      f(Math.floor(totalHari / 7)) + " minggu " + (totalHari % 7) + " hari &middot; " +
+      (y * 12 + m) + " bulan<br>" +
+      "Hari kerja (Sen&ndash;Jum): " + f(kerja) +
+      (neg ? "<br><span style=\"color:var(--muted)\">tanggal akhir lebih awal dari tanggal awal</span>" : ""),
+      "Selisih " + sa + " dan " + sb + ": " + f(totalHari) + " hari (" + rincian.join(" ") + ").");
+  }
+
+  function tambah() {
+    var sc = document.getElementById("st-c").value;
+    var n = parseInt(document.getElementById("st-n").value, 10);
+    if (!sc || isNaN(n)) { show("st-hasil2", "Isi tanggal acuan dan jumlah hari."); return; }
+    var d = new Date(sc + "T00:00:00");
+    d.setDate(d.getDate() + n);
+    show("st-hasil2",
+      "<strong>" + fmtTgl(d) + "</strong><br>" +
+      (n >= 0 ? n + " hari setelah" : (-n) + " hari sebelum") + " " + sc,
+      (n >= 0 ? n + " hari setelah " : (-n) + " hari sebelum ") + sc + " = " + fmtTgl(d));
+  }
+
+  ["st-a", "st-b"].forEach(function (id) {
+    document.getElementById(id).addEventListener("input", selisih);
+    document.getElementById(id).addEventListener("change", selisih);
+  });
+  ["st-c", "st-n"].forEach(function (id) {
+    document.getElementById(id).addEventListener("input", tambah);
+    document.getElementById(id).addEventListener("change", tambah);
+  });
+  selisih();
+  tambah();
+})();
+</script>
