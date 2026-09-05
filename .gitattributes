@@ -1,0 +1,6 @@
+# Normalkan akhir baris: simpan sebagai LF di repo, biarkan checkout apa adanya.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.ico binary
