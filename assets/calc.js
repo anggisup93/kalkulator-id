@@ -325,16 +325,26 @@ function kirimForm(form, onDone) {
       el.dispatchEvent(new Event("input", { bubbles: true }));
       el.dispatchEvent(new Event("change", { bubbles: true }));
     });
-    function save() {
+    function persist() {
       var o = {};
       els.forEach(function (el) {
         o[el.id] = el.type === "checkbox" ? el.checked : el.value;
       });
       try { localStorage.setItem(key(), JSON.stringify(o)); } catch (e) {}
     }
+    // Tunda penyimpanan agar penulisan localStorage tidak membebani tiap ketukan.
+    var timer;
+    function save() {
+      clearTimeout(timer);
+      timer = setTimeout(persist, 600);
+    }
     forms.forEach(function (f) {
       f.addEventListener("input", save);
       f.addEventListener("change", save);
+    });
+    addEventListener("pagehide", persist);
+    document.addEventListener("visibilitychange", function () {
+      if (document.visibilityState === "hidden") persist();
     });
   }
   if (document.readyState === "loading") {
