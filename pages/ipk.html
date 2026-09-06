@@ -1,0 +1,111 @@
+<h1>Kalkulator IPK &amp; Konversi Nilai</h1>
+<p>Hitung Indeks Prestasi semester dari SKS dan nilai tiap mata kuliah, lalu gabungkan dengan IPK lama untuk mendapat IPK kumulatif terbaru.</p>
+
+<h2 style="border:0;padding:0;margin:8px 0 0">IP semester ini</h2>
+<form class="calc" onsubmit="return false">
+  <label class="wide">Daftar mata kuliah &mdash; satu baris: <em>SKS spasi NILAI</em> (huruf A/B+/C atau angka 0&ndash;4)
+    <textarea id="ip-daftar">3 A
+3 A-
+2 B+
+2 B
+3 C</textarea>
+  </label>
+</form>
+<div id="ip-hasil1" class="result"></div>
+
+<h2 style="margin-top:32px">Gabung dengan IPK lama</h2>
+<form class="calc" onsubmit="return false">
+  <label>IPK lama
+    <input id="ip-lama" type="number" min="0" max="4" step="0.01" value="3.40">
+  </label>
+  <label>Total SKS yang sudah ditempuh
+    <input id="ip-sks-lama" type="number" min="0" step="1" value="72">
+  </label>
+</form>
+<div id="ip-hasil2" class="result"></div>
+
+<section class="article">
+  <h2>Konversi nilai huruf ke bobot</h2>
+  <p>Sebagian besar kampus di Indonesia memakai skala 4 dengan bobot berikut. Beberapa kampus tidak memakai nilai minus atau plus, jadi sesuaikan dengan pedoman akademik Anda.</p>
+  <table>
+    <thead><tr><th>Huruf</th><th>Bobot</th><th>Huruf</th><th>Bobot</th></tr></thead>
+    <tbody>
+      <tr><td>A</td><td>4,00</td><td>C+</td><td>2,30</td></tr>
+      <tr><td>A-</td><td>3,70</td><td>C</td><td>2,00</td></tr>
+      <tr><td>B+</td><td>3,30</td><td>C-</td><td>1,70</td></tr>
+      <tr><td>B</td><td>3,00</td><td>D</td><td>1,00</td></tr>
+      <tr><td>B-</td><td>2,70</td><td>E / F</td><td>0,00</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Cara perhitungan</h2>
+  <code class="formula">IP = &Sigma;(bobot &times; SKS) / &Sigma;(SKS)
+IPK baru = (IPK lama &times; SKS lama + &Sigma;(bobot &times; SKS baru)) / (SKS lama + SKS baru)</code>
+  <p>Indeks Prestasi semester adalah rata-rata bobot nilai yang ditimbang jumlah SKS tiap mata kuliah. IPK kumulatif menimbang seluruh SKS yang pernah ditempuh, sehingga semester dengan SKS lebih banyak berpengaruh lebih besar.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Mata kuliah mengulang dihitung bagaimana?</h3>
+  <p>Kebijakan tiap kampus berbeda. Ada yang memakai nilai terbaru menggantikan nilai lama, ada yang mengambil nilai tertinggi, ada pula yang tetap menghitung keduanya. Masukkan sesuai aturan program studi Anda.</p>
+  <h3>Apakah nilai D membuat saya harus mengulang?</h3>
+  <p>Tidak selalu. D umumnya lulus tetapi menekan IPK. Banyak prodi mensyaratkan tidak ada nilai E, jumlah D dibatasi, dan IPK minimal tertentu untuk lulus. Cek pedoman akademik.</p>
+  <h3>IPK berapa yang tergolong baik?</h3>
+  <p>Sebagai gambaran umum: di atas 3,00 memuaskan, di atas 3,50 sangat memuaskan, dan mendekati 4,00 dengan pujian. Predikat resmi dan syaratnya ditetapkan masing-masing kampus.</p>
+</section>
+
+<script>
+(function () {
+  var BOBOT = { "A": 4, "A-": 3.7, "B+": 3.3, "B": 3, "B-": 2.7, "C+": 2.3, "C": 2, "C-": 1.7, "D": 1, "E": 0, "F": 0 };
+
+  function nilaiKe(v) {
+    v = String(v).trim().toUpperCase();
+    if (BOBOT[v] != null) return BOBOT[v];
+    var n = parseFloat(v.replace(",", "."));
+    return isNaN(n) ? null : Math.max(0, Math.min(4, n));
+  }
+
+  function ipSemester() {
+    var baris = document.getElementById("ip-daftar").value.split(/\n/);
+    var totalSks = 0, totalBobot = 0, valid = 0, salah = [];
+    baris.forEach(function (b, i) {
+      b = b.trim();
+      if (!b) return;
+      var m = b.split(/\s+/);
+      var sks = parseFloat(m[0]);
+      var bobot = m.length > 1 ? nilaiKe(m.slice(1).join(" ")) : null;
+      if (isNaN(sks) || bobot === null) { salah.push(i + 1); return; }
+      totalSks += sks; totalBobot += bobot * sks; valid++;
+    });
+    if (!valid) { show("ip-hasil1", "Belum ada baris valid. Format: <em>3 A</em> atau <em>3 3.7</em>."); return 0; }
+    var ip = totalBobot / totalSks;
+    show("ip-hasil1",
+      "<strong>IP semester: " + ip.toFixed(2) + "</strong><br>" +
+      valid + " mata kuliah &middot; " + totalSks + " SKS &middot; total bobot " + totalBobot.toFixed(2) +
+      (salah.length ? "<br><span style=\"color:var(--muted)\">Baris diabaikan (format salah): " + salah.join(", ") + "</span>" : ""),
+      "IP semester " + ip.toFixed(2) + " dari " + totalSks + " SKS.");
+    return { ip: ip, sks: totalSks, bobot: totalBobot };
+  }
+
+  function ipkGabung() {
+    var r = ipSemester();
+    if (!r) { show("ip-hasil2", "Lengkapi daftar mata kuliah di atas dulu."); return; }
+    var ipkLama = parseFloat(document.getElementById("ip-lama").value);
+    var sksLama = parseFloat(document.getElementById("ip-sks-lama").value);
+    if (isNaN(ipkLama) || isNaN(sksLama) || sksLama < 0) {
+      show("ip-hasil2", "Isi IPK lama dan total SKS yang sudah ditempuh."); return;
+    }
+    var totalSks = sksLama + r.sks;
+    var ipk = (ipkLama * sksLama + r.bobot) / totalSks;
+    show("ip-hasil2",
+      "<strong>IPK kumulatif baru: " + ipk.toFixed(2) + "</strong><br>" +
+      "Total SKS setelah semester ini: " + totalSks + "<br>" +
+      "Perubahan dari IPK lama: " + (ipk - ipkLama >= 0 ? "+" : "") + (ipk - ipkLama).toFixed(2),
+      "IPK kumulatif baru " + ipk.toFixed(2) + " (" + totalSks + " SKS).");
+  }
+
+  document.getElementById("ip-daftar").addEventListener("input", ipkGabung);
+  ["ip-lama", "ip-sks-lama"].forEach(function (id) {
+    document.getElementById(id).addEventListener("input", ipkGabung);
+  });
+  ipkGabung();
+})();
+</script>

@@ -174,7 +174,40 @@ a:hover { text-decoration: underline; }
   .nav-search-t { display: none; }
   .nav-search kbd { display: none; }
   .nav-search { padding: 8px 10px; }
-  .nav-link { padding: 7px 8px; }
+  .nav-link { padding: 7px 8px; font-size: 13px; }
+  .nav-link-2 { display: none; }
+}
+
+/* ---------- Artikel / panduan ---------- */
+.art-meta {
+  margin: -2px 0 18px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.article > h2:first-child,
+.article > h3:first-child { margin-top: 0; border-top: 0; padding-top: 0; }
+.article ul, .article ol { margin: 10px 0; padding-left: 22px; }
+.article li { margin: 4px 0; }
+.article table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0;
+  font-size: .95rem;
+  display: block;
+  overflow-x: auto;
+}
+.article th, .article td {
+  border: 1px solid var(--line);
+  padding: 8px 10px;
+  text-align: left;
+}
+.article th { background: var(--surface-2); font-weight: 700; }
+.article blockquote {
+  margin: 14px 0;
+  padding: 10px 16px;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-bg);
+  color: var(--fg);
 }
 
 /* ---------- Overlay pencarian ---------- */
@@ -363,6 +396,7 @@ h3 { font-size: 1.05rem; margin: 22px 0 6px; }
   color: var(--fg);
   font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
   font-size: .95rem;
+  white-space: pre-wrap;
   overflow-x: auto;
 }
 

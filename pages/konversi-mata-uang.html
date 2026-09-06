@@ -1,0 +1,128 @@
+<h1>Konversi Mata Uang</h1>
+<p>Konversi antar mata uang memakai kurs terbaru yang diambil otomatis saat halaman dibuka. Jika sedang offline, kalkulator memakai kurs terakhir yang tersimpan atau kurs perkiraan bawaan.</p>
+
+<form class="calc" onsubmit="return false">
+  <label>Jumlah
+    <input id="kr-jumlah" type="number" step="any" value="100" autocomplete="off">
+  </label>
+  <label>Dari
+    <select id="kr-dari"></select>
+  </label>
+  <label>Ke
+    <select id="kr-ke"></select>
+  </label>
+</form>
+<p style="margin:12px 0 0"><button type="button" class="btn-sec" id="kr-tukar">&#8646; Tukar arah</button></p>
+<div id="kr-hasil" class="result"></div>
+<p id="kr-info" class="art-meta"></p>
+
+<section class="article">
+  <h2>Cara kerja</h2>
+  <p>Kalkulator mengambil kurs referensi dari layanan terbuka open.er-api.com, yang memakai data bank sentral dan penyedia pasar. Kurs disimpan sementara di peramban Anda dan diperbarui otomatis paling lama setiap 12 jam. Konversi antar dua mata uang dihitung lewat dolar AS sebagai perantara.</p>
+  <code class="formula">hasil = jumlah &times; kurs(ke) / kurs(dari)</code>
+  <p>Kurs ini adalah kurs tengah pasar (mid-market). Kurs yang Anda dapat di bank, money changer, atau kartu biasanya lebih rendah untuk menjual dan lebih tinggi untuk membeli, karena ada selisih (spread) dan biaya.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Kenapa angkanya beda dengan di bank?</h3>
+  <p>Yang ditampilkan di sini kurs tengah pasar. Bank dan money changer mengambil margin, sehingga kurs beli dan kurs jual mereka mengapit angka ini. Selisihnya bisa 1&ndash;3% atau lebih untuk pecahan kecil.</p>
+  <h3>Seberapa sering kurs diperbarui?</h3>
+  <p>Setiap kali Anda membuka halaman dan kurs tersimpan sudah lebih dari 12 jam, kalkulator mengambil data baru. Layanan sumbernya sendiri memperbarui kurs sekali sehari pada hari kerja.</p>
+  <h3>Apa yang terjadi kalau tidak ada internet?</h3>
+  <p>Kalkulator memakai kurs terakhir yang berhasil diambil. Jika belum pernah, ia memakai kurs perkiraan bawaan yang bisa jadi sudah lama. Keterangan sumber dan tanggal kurs selalu ditampilkan di bawah hasil.</p>
+</section>
+
+<script>
+(function () {
+  var KEY = "kid-kurs";
+  var MAX_AGE = 12 * 3600 * 1000;
+  // Daftar mata uang yang ditampilkan (kode : nama).
+  var NAMA = {
+    USD: "Dolar AS", IDR: "Rupiah", EUR: "Euro", SGD: "Dolar Singapura",
+    MYR: "Ringgit Malaysia", JPY: "Yen Jepang", GBP: "Pound Inggris",
+    AUD: "Dolar Australia", SAR: "Riyal Saudi", CNY: "Yuan Tiongkok",
+    KRW: "Won Korea", THB: "Baht Thailand", HKD: "Dolar Hong Kong", AED: "Dirham UEA"
+  };
+  // Kurs perkiraan bawaan (per 1 USD) - dipakai bila belum ada data & offline.
+  var FALLBACK = {
+    USD: 1, IDR: 16300, EUR: 0.92, SGD: 1.35, MYR: 4.45, JPY: 157, GBP: 0.79,
+    AUD: 1.52, SAR: 3.75, CNY: 7.25, KRW: 1375, THB: 36, HKD: 7.82, AED: 3.67
+  };
+
+  var rates = FALLBACK, sumber = "kurs perkiraan bawaan", tanggal = "";
+
+  function fillSelect(sel, def) {
+    sel.innerHTML = Object.keys(NAMA).map(function (k) {
+      return '<option value="' + k + '">' + k + " &mdash; " + NAMA[k] + "</option>";
+    }).join("");
+    sel.value = def;
+  }
+  function fmt(n) {
+    if (!isFinite(n)) return "-";
+    var d = Math.abs(n) >= 100 ? 2 : Math.abs(n) >= 1 ? 4 : 6;
+    return n.toLocaleString("id-ID", { maximumFractionDigits: d });
+  }
+  function hitung() {
+    var jml = parseFloat(document.getElementById("kr-jumlah").value);
+    var dari = document.getElementById("kr-dari").value;
+    var ke = document.getElementById("kr-ke").value;
+    if (isNaN(jml)) { show("kr-hasil", "Masukkan jumlah."); return; }
+    var hasil = jml * (rates[ke] / rates[dari]);
+    var kurs1 = rates[ke] / rates[dari];
+    show("kr-hasil",
+      "<strong>" + fmt(jml) + " " + dari + " = " + fmt(hasil) + " " + ke + "</strong><br>" +
+      "1 " + dari + " = " + fmt(kurs1) + " " + ke,
+      fmt(jml) + " " + dari + " = " + fmt(hasil) + " " + ke + " (kurs " + (tanggal || "perkiraan") + ")");
+    document.getElementById("kr-info").textContent =
+      "Sumber: " + sumber + (tanggal ? " · " + tanggal : "");
+  }
+  function applyData(data, src, ts) {
+    var r = {};
+    Object.keys(NAMA).forEach(function (k) {
+      if (data[k] != null) r[k] = data[k];
+    });
+    if (r.USD && r.IDR) { rates = r; sumber = src; tanggal = ts || ""; }
+    hitung();
+  }
+  function loadCache() {
+    try {
+      var c = JSON.parse(localStorage.getItem(KEY) || "null");
+      if (c && c.rates) {
+        applyData(c.rates, "kurs tersimpan", c.tanggal);
+        return c.ts || 0;
+      }
+    } catch (e) {}
+    return 0;
+  }
+  function fetchRates() {
+    fetch("https://open.er-api.com/v6/latest/USD")
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (j && j.result === "success" && j.rates) {
+          var ts = Date.now();
+          var tgl = (j.time_last_update_utc || "").replace(" 00:00:00 +0000", "");
+          applyData(j.rates, "open.er-api.com", tgl);
+          try {
+            localStorage.setItem(KEY, JSON.stringify({ rates: j.rates, ts: ts, tanggal: tgl }));
+          } catch (e) {}
+        }
+      })
+      .catch(function () { /* biarkan pakai cache / fallback */ });
+  }
+
+  fillSelect(document.getElementById("kr-dari"), "USD");
+  fillSelect(document.getElementById("kr-ke"), "IDR");
+  ["kr-jumlah", "kr-dari", "kr-ke"].forEach(function (id) {
+    document.getElementById(id).addEventListener("input", hitung);
+    document.getElementById(id).addEventListener("change", hitung);
+  });
+  document.getElementById("kr-tukar").addEventListener("click", function () {
+    var d = document.getElementById("kr-dari"), k = document.getElementById("kr-ke");
+    var t = d.value; d.value = k.value; k.value = t;
+    hitung();
+  });
+
+  var age = loadCache();
+  if (Date.now() - age > MAX_AGE) fetchRates();
+  hitung();
+})();
+</script>

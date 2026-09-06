@@ -1,0 +1,34 @@
+[
+  {
+    "slug": "cara-hitung-pph-21-ter",
+    "title": "Cara Menghitung PPh 21 dengan Metode TER Bulanan",
+    "description": "Penjelasan skema Tarif Efektif Rata-rata (TER) untuk potongan PPh 21 bulanan sejak 2024, kategori TER A/B/C, dan kenapa berbeda dengan slip gaji.",
+    "date": "2026-02-01",
+    "updated": "2026-02-01",
+    "related": ["gaji-bersih"]
+  },
+  {
+    "slug": "bunga-flat-vs-efektif",
+    "title": "Beda Bunga Flat dan Bunga Efektif (dan Cara Membandingkannya)",
+    "description": "Kenapa bunga flat 6% terasa jauh lebih mahal saat dibayar, cara mengubahnya ke bunga efektif, dan mana yang dipakai KPR, kredit kendaraan, dan pinjol.",
+    "date": "2026-01-20",
+    "updated": "2026-01-20",
+    "related": ["kredit-kendaraan", "kpr", "pinjol"]
+  },
+  {
+    "slug": "opsen-pajak-kendaraan",
+    "title": "Opsen Pajak Kendaraan 2025: Apa Itu dan Apakah Bikin Pajak Naik?",
+    "description": "Penjelasan opsen PKB dan BBNKB yang berlaku sejak Januari 2025, cara membacanya di STNK, dan kenapa total pajak dirancang tetap.",
+    "date": "2026-01-10",
+    "updated": "2026-01-10",
+    "related": ["pajak-kendaraan"]
+  },
+  {
+    "slug": "cara-baca-hasil-bmi",
+    "title": "Cara Membaca Hasil BMI dan Batasannya",
+    "description": "Kategori BMI menurut WHO dan ambang Asia-Pasifik, kenapa atlet bisa masuk kategori berlebih, dan apa yang sebaiknya dilakukan setelah tahu angka BMI.",
+    "date": "2026-01-05",
+    "updated": "2026-01-05",
+    "related": ["bmi", "kalori"]
+  }
+]

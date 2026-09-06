@@ -250,6 +250,33 @@
       "description": "Tentukan harga jual dari modal (HPP), target margin atau markup, biaya admin marketplace, dan ongkos lain."
     },
     {
+      "slug": "konversi-mata-uang",
+      "nav": "Kurs Mata Uang",
+      "in_index": true,
+      "category": "Konversi",
+      "icon": "💱",
+      "title": "Konversi Mata Uang - Kurs Dollar, Euro, dan Lainnya ke Rupiah",
+      "description": "Konversi antar mata uang memakai kurs terbaru yang diambil otomatis, lengkap dengan cadangan kurs saat offline."
+    },
+    {
+      "slug": "kehamilan",
+      "nav": "Kehamilan",
+      "in_index": true,
+      "category": "Kesehatan",
+      "icon": "🤰",
+      "title": "Kalkulator Kehamilan - Usia Kehamilan, HPL, dan Masa Subur",
+      "description": "Hitung usia kehamilan, hari perkiraan lahir (HPL) dari HPHT, jadwal trimester, serta perkiraan masa subur dari siklus haid."
+    },
+    {
+      "slug": "ipk",
+      "nav": "IPK",
+      "in_index": true,
+      "category": "Pendidikan",
+      "icon": "🎓",
+      "title": "Kalkulator IPK & Konversi Nilai - Hitung IP Semester dan IPK Kumulatif",
+      "description": "Hitung Indeks Prestasi semester dari SKS dan nilai tiap mata kuliah, gabungkan dengan IPK lama, dan konversi nilai huruf ke bobot."
+    },
+    {
       "slug": "tentang",
       "nav": "",
       "in_index": false,

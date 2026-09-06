@@ -1,0 +1,109 @@
+<h1>Kalkulator Kehamilan</h1>
+<p>Hitung usia kehamilan dan hari perkiraan lahir (HPL) dari hari pertama haid terakhir, plus jadwal trimester. Ada juga perhitungan perkiraan masa subur dari siklus haid.</p>
+
+<h2 style="border:0;padding:0;margin:8px 0 0">Usia kehamilan &amp; HPL</h2>
+<form class="calc" onsubmit="return false">
+  <label>Hari pertama haid terakhir (HPHT)
+    <input id="kh-hpht" type="date" autocomplete="off">
+  </label>
+  <label>Panjang siklus haid (hari)
+    <input id="kh-siklus" type="number" min="20" max="45" value="28">
+  </label>
+</form>
+<div id="kh-hasil1" class="result"></div>
+
+<h2 style="margin-top:32px">Perkiraan masa subur</h2>
+<form class="calc" onsubmit="return false">
+  <label>Tanggal mulai haid terakhir
+    <input id="kh-haid" type="date" autocomplete="off">
+  </label>
+  <label>Panjang siklus haid (hari)
+    <input id="kh-siklus2" type="number" min="20" max="45" value="28">
+  </label>
+</form>
+<div id="kh-hasil2" class="result"></div>
+
+<section class="article">
+  <h2>Cara perhitungan</h2>
+  <p>Usia kehamilan dihitung sejak hari pertama haid terakhir (HPHT), bukan sejak pembuahan, sesuai konvensi medis. HPL dihitung dengan <strong>rumus Naegele</strong>: HPHT ditambah 280 hari (40 minggu). Jika siklus haid Anda bukan 28 hari, HPL digeser sesuai selisihnya.</p>
+  <code class="formula">HPL = HPHT + 280 hari + (panjang siklus &minus; 28)
+Usia kehamilan = selisih hari dari HPHT, dibagi 7 minggu</code>
+  <p>Masa subur diperkirakan dari perkiraan ovulasi, yaitu sekitar 14 hari sebelum haid berikutnya. Sel telur bertahan sekitar 1 hari dan sperma sampai 5 hari, sehingga jendela subur mencakup kira-kira 5 hari sebelum ovulasi hingga 1 hari sesudahnya.</p>
+
+  <h2>Contoh</h2>
+  <p>HPHT 1 Januari 2026 dengan siklus 28 hari: HPL sekitar 8 Oktober 2026. Jika hari ini 6 Maret 2026, usia kehamilan sekitar 9 minggu (trimester pertama). Untuk siklus 30 hari, HPL bergeser dua hari lebih lambat.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Seberapa akurat HPL dari kalkulator ini?</h3>
+  <p>HPL hanya perkiraan. Hanya sekitar 1 dari 20 bayi lahir tepat pada HPL; sebagian besar lahir dalam rentang dua minggu sebelum atau sesudahnya. Pemeriksaan USG pada trimester pertama memberi taksiran usia kehamilan yang lebih tepat.</p>
+  <h3>Bagaimana jika saya tidak ingat tanggal HPHT?</h3>
+  <p>Perkiraan berbasis HPHT tidak bisa dipakai. Mintalah dokter atau bidan melakukan USG; usia kehamilan akan ditaksir dari ukuran janin, dan HPL dihitung dari situ.</p>
+  <h3>Apakah kalkulator masa subur bisa dipakai untuk KB alami?</h3>
+  <p>Metode kalender punya tingkat kegagalan cukup tinggi karena ovulasi bisa bergeser, apalagi bila siklus tidak teratur. Untuk mencegah kehamilan, kombinasikan dengan metode lain atau konsultasikan pilihan kontrasepsi dengan tenaga medis.</p>
+</section>
+
+<script>
+(function () {
+  var hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+  var bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli",
+    "Agustus", "September", "Oktober", "November", "Desember"];
+  function fmtTgl(d) {
+    return hari[d.getDay()] + ", " + d.getDate() + " " + bulan[d.getMonth()] + " " + d.getFullYear();
+  }
+  function addDays(d, n) { var x = new Date(d); x.setDate(x.getDate() + n); return x; }
+  var today = new Date(); today.setHours(0, 0, 0, 0);
+  var def = addDays(today, -63).toISOString().slice(0, 10);
+  ["kh-hpht", "kh-haid"].forEach(function (id) {
+    var el = document.getElementById(id); if (!el.value) el.value = def;
+  });
+
+  function kehamilan() {
+    var s = document.getElementById("kh-hpht").value;
+    var siklus = num("kh-siklus") || 28;
+    if (!s) { show("kh-hasil1", "Isi tanggal HPHT."); return; }
+    var hpht = new Date(s + "T00:00:00");
+    var geser = siklus - 28;
+    var hpl = addDays(hpht, 280 + geser);
+    var selisih = Math.floor((today - hpht) / 86400000);
+    if (selisih < 0) { show("kh-hasil1", "Tanggal HPHT ada di masa depan."); return; }
+    var minggu = Math.floor(selisih / 7), sisaHari = selisih % 7;
+    var trimester = minggu < 13 ? "pertama" : minggu < 27 ? "kedua" : "ketiga";
+    var sisaKeLahir = Math.ceil((hpl - today) / 86400000);
+
+    show("kh-hasil1",
+      "<strong>Usia kehamilan: " + minggu + " minggu " + sisaHari + " hari</strong> (trimester " + trimester + ")<br>" +
+      "HPL (perkiraan lahir): <strong>" + fmtTgl(hpl) + "</strong>" +
+      (sisaKeLahir > 0 ? " &mdash; " + sisaKeLahir + " hari lagi" : "") + "<br>" +
+      "Akhir trimester 1 (13 mg): " + fmtTgl(addDays(hpht, 13 * 7)) + "<br>" +
+      "Akhir trimester 2 (27 mg): " + fmtTgl(addDays(hpht, 27 * 7)) + "<br>" +
+      "Mulai cukup bulan (37 mg): " + fmtTgl(addDays(hpht, 37 * 7)) + "<br>" +
+      "Perkiraan pembuahan: " + fmtTgl(addDays(hpht, 14 + geser)),
+      "Kehamilan &mdash; usia " + minggu + " mg " + sisaHari + " hr, HPL " + fmtTgl(hpl) + ".");
+  }
+
+  function subur() {
+    var s = document.getElementById("kh-haid").value;
+    var siklus = num("kh-siklus2") || 28;
+    if (!s) { show("kh-hasil2", "Isi tanggal mulai haid terakhir."); return; }
+    var haid = new Date(s + "T00:00:00");
+    var haidBerikut = addDays(haid, siklus);
+    var ovulasi = addDays(haidBerikut, -14);
+    var mulai = addDays(ovulasi, -5), akhir = addDays(ovulasi, 1);
+    show("kh-hasil2",
+      "<strong>Jendela subur: " + fmtTgl(mulai) + " &ndash; " + fmtTgl(akhir) + "</strong><br>" +
+      "Perkiraan ovulasi: " + fmtTgl(ovulasi) + "<br>" +
+      "Perkiraan haid berikutnya: " + fmtTgl(haidBerikut),
+      "Masa subur &mdash; " + fmtTgl(mulai) + " sampai " + fmtTgl(akhir) + " (ovulasi " + fmtTgl(ovulasi) + ").");
+  }
+
+  ["kh-hpht", "kh-siklus"].forEach(function (id) {
+    document.getElementById(id).addEventListener("input", kehamilan);
+    document.getElementById(id).addEventListener("change", kehamilan);
+  });
+  ["kh-haid", "kh-siklus2"].forEach(function (id) {
+    document.getElementById(id).addEventListener("input", subur);
+    document.getElementById(id).addEventListener("change", subur);
+  });
+  kehamilan(); subur();
+})();
+</script>

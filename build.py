@@ -127,6 +127,66 @@ def related_html(cfg, current) -> str:
     )
 
 
+def load_articles():
+    f = ROOT / "articles.json"
+    if not f.exists():
+        return []
+    arts = json.loads(f.read_text(encoding="utf-8"))
+    return sorted(arts, key=lambda a: a.get("date", ""), reverse=True)
+
+
+def crumbs(trail) -> str:
+    """trail: list of (nama, href|None). href None = halaman aktif."""
+    parts = []
+    for name, href in trail:
+        if href:
+            parts.append(f'<a href="{href}">{name}</a>')
+        else:
+            parts.append(f'<span aria-current="page">{name}</span>')
+    return ('<nav class="breadcrumb" aria-label="Breadcrumb">'
+            + ' <span class="sep">/</span> '.join(parts) + '</nav>')
+
+
+def related_slugs_html(cfg, slugs) -> str:
+    by = {p["slug"]: p for p in cfg["pages"]}
+    picks = [by[s] for s in slugs if s in by]
+    if not picks:
+        return ""
+    cards = "\n".join(card_html(p) for p in picks)
+    return ('<aside class="related"><h2>Kalkulator terkait</h2>'
+            f'<div class="grid">\n{cards}\n</div></aside>')
+
+
+def jsonld_article(a, inner, domain, site_name) -> str:
+    url = f'{domain}/panduan/{a["slug"]}/'
+    org = {"@type": "Organization", "name": site_name}
+    blocks = [
+        {"@context": "https://schema.org", "@type": "BreadcrumbList",
+         "itemListElement": [
+             {"@type": "ListItem", "position": 1, "name": "Beranda", "item": f"{domain}/"},
+             {"@type": "ListItem", "position": 2, "name": "Panduan", "item": f"{domain}/panduan/"},
+             {"@type": "ListItem", "position": 3, "name": a["title"], "item": url},
+         ]},
+        {"@context": "https://schema.org", "@type": "Article",
+         "headline": a["title"], "description": a["description"],
+         "datePublished": a.get("date"),
+         "dateModified": a.get("updated") or a.get("date"),
+         "author": org, "publisher": org, "mainEntityOfPage": url},
+    ]
+    faqs = [(plain(q), plain(ans)) for q, ans in FAQ_PAIR.findall(inner)]
+    faqs = [(q, ans) for q, ans in faqs if q and ans]
+    if faqs:
+        blocks.append({
+            "@context": "https://schema.org", "@type": "FAQPage",
+            "mainEntity": [
+                {"@type": "Question", "name": q,
+                 "acceptedAnswer": {"@type": "Answer", "text": ans}}
+                for q, ans in faqs
+            ],
+        })
+    return "\n".join(jsonld_tag(b) for b in blocks)
+
+
 def jsonld_tag(data) -> str:
     return ('<script type="application/ld+json">'
             + json.dumps(data, ensure_ascii=False, separators=(",", ":"))
@@ -282,6 +342,8 @@ def main():
     domain = cfg["domain"].rstrip("/")
     year = str(date.today().year)
     today = date.today().isoformat()
+    articles = load_articles()
+    ART = ROOT / "articles"
 
     # Versi build: hash dari semua sumber (aset, layout, halaman, konfigurasi).
     # Dipakai untuk cache-busting ?v= dan nama cache service worker, sehingga
@@ -292,6 +354,10 @@ def main():
            (ROOT / "assets" / "calc.js").read_bytes(),
            (ROOT / "assets" / "icon.svg").read_bytes()]
     src += [f.read_bytes() for f in sorted(PAGES.glob("*.html"))]
+    if (ROOT / "articles.json").exists():
+        src.append((ROOT / "articles.json").read_bytes())
+    if ART.exists():
+        src += [f.read_bytes() for f in sorted(ART.glob("*.html"))]
     asset_ver = hashlib.sha1(b"".join(src)).hexdigest()[:8]
 
     if DIST.exists():
@@ -392,6 +458,49 @@ def main():
         "ADSENSE_SLOT": "",
     }))
 
+    # --- Panduan (artikel penjelasan + referensi) ---
+    for a in articles:
+        body = (ART / f'{a["slug"]}.html').read_text(encoding="utf-8")
+        art_inner = (
+            crumbs([("Beranda", "/"), ("Panduan", "/panduan/"), (a["title"], None)])
+            + f'<h1>{a["title"]}</h1>'
+            + f'<p class="art-meta">Diperbarui {a.get("updated") or a.get("date", "")}</p>'
+            + f'<div class="article">{body}</div>'
+            + related_slugs_html(cfg, a.get("related", []))
+        )
+        write(DIST / "panduan" / a["slug"] / "index.html", render(layout, {
+            **base_ctx,
+            "TITLE": f'{a["title"]} - {cfg["site_name"]}',
+            "DESCRIPTION": a["description"],
+            "CANONICAL": f'{domain}/panduan/{a["slug"]}/',
+            "CONTENT": art_inner,
+            "JSONLD": jsonld_article(a, body, domain, cfg["site_name"]),
+            "ADSENSE_SLOT": "",
+        }))
+        urls.append(f'{domain}/panduan/{a["slug"]}/')
+
+    if articles:
+        cards = "\n".join(
+            f'<a class="card" href="/panduan/{a["slug"]}/"><span class="card-tx">'
+            f'<h3>{a["title"]}</h3><p>{a["description"]}</p></span></a>'
+            for a in articles
+        )
+        pand_inner = (
+            crumbs([("Beranda", "/"), ("Panduan", None)])
+            + "<h1>Panduan</h1>"
+            + '<p class="lead">Artikel penjelasan cara menghitung dan istilah keuangan.</p>'
+            + f'<div class="grid">\n{cards}\n</div>'
+        )
+        write(DIST / "panduan" / "index.html", render(layout, {
+            **base_ctx,
+            "TITLE": f'Panduan - {cfg["site_name"]}',
+            "DESCRIPTION": f'Kumpulan artikel panduan dan penjelasan dari {cfg["site_name"]}.',
+            "CANONICAL": f"{domain}/panduan/",
+            "CONTENT": pand_inner,
+            "ADSENSE_SLOT": "",
+        }))
+        urls.append(f"{domain}/panduan/")
+
     # --- sitemap.xml + robots.txt ---
     sm = ['<?xml version="1.0" encoding="UTF-8"?>',
           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
@@ -425,6 +534,9 @@ def main():
                 f"/assets/calc.js?v={asset_ver}",
                 "/assets/icon.svg"]
     precache += [f"/{p['slug']}/" for p in cfg["pages"]]
+    if articles:
+        precache.append("/panduan/")
+        precache += [f'/panduan/{a["slug"]}/' for a in articles]
     sw = SW_TEMPLATE.replace("__CACHE__", "kalkulatorid-" + asset_ver).replace(
         "__PRECACHE__", json.dumps(precache))
     write(DIST / "sw.js", sw)
