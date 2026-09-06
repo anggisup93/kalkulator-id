@@ -1,5 +1,61 @@
 [
   {
+    "slug": "cara-hitung-dana-darurat",
+    "title": "Cara Menghitung Dana Darurat dan Berapa Idealnya",
+    "description": "Menentukan target dana darurat dari pengeluaran wajib bulanan dan status keluarga, di mana menyimpannya, dan urutan prioritas terhadap investasi.",
+    "date": "2026-03-20",
+    "updated": "2026-03-20",
+    "related": ["dana-darurat", "dana-pensiun"]
+  },
+  {
+    "slug": "cara-hitung-kebutuhan-kalori-harian",
+    "title": "Cara Menghitung Kebutuhan Kalori Harian (BMR dan TDEE)",
+    "description": "Rumus Mifflin-St Jeor untuk BMR, faktor aktivitas untuk TDEE, dan cara menentukan target kalori untuk menurunkan atau menaikkan berat badan dengan aman.",
+    "date": "2026-03-15",
+    "updated": "2026-03-15",
+    "related": ["kalori", "bmi", "berat-ideal"]
+  },
+  {
+    "slug": "cara-membuat-link-whatsapp",
+    "title": "Cara Membuat Link WhatsApp (wa.me) dengan Pesan Otomatis",
+    "description": "Format resmi tautan wa.me, cara mengubah nomor 08 menjadi format internasional, menambahkan pesan otomatis, dan memakainya di bio Instagram atau website.",
+    "date": "2026-03-10",
+    "updated": "2026-03-10",
+    "related": ["wa-link"]
+  },
+  {
+    "slug": "beda-kurs-jual-beli-dan-tengah",
+    "title": "Beda Kurs Jual, Kurs Beli, dan Kurs Tengah",
+    "description": "Kenapa kurs di bank dan money changer berbeda dari yang Anda lihat di internet, apa itu spread, dan kurs mana yang dipakai untuk berbagai keperluan.",
+    "date": "2026-03-05",
+    "updated": "2026-03-05",
+    "related": ["konversi-mata-uang"]
+  },
+  {
+    "slug": "pajak-bunga-deposito-20-persen",
+    "title": "Pajak Bunga Deposito 20% dan Cara Menghitung Bunga Bersih",
+    "description": "Kapan bunga deposito kena PPh final 20%, batas bebas pajak Rp7,5 juta, dan cara menghitung bunga bersih per bulan serta saat jatuh tempo.",
+    "date": "2026-02-28",
+    "updated": "2026-02-28",
+    "related": ["deposito", "sbn-ritel"]
+  },
+  {
+    "slug": "ppn-11-atau-12-persen",
+    "title": "PPN 11% atau 12%? Cara Menghitung dan Memisahkannya dari Harga",
+    "description": "Status tarif PPN terkini, cara menambahkan PPN ke harga sebelum pajak, dan cara memisahkan PPN dari harga yang sudah termasuk pajak.",
+    "date": "2026-02-22",
+    "updated": "2026-02-22",
+    "related": ["ppn", "harga-jual"]
+  },
+  {
+    "slug": "cara-hitung-umur-dan-selisih-tanggal",
+    "title": "Cara Menghitung Umur dan Selisih Antara Dua Tanggal",
+    "description": "Menghitung usia dalam tahun, bulan, dan hari secara benar, menghitung total hari antara dua tanggal, dan menambah atau mengurangi hari dari sebuah tanggal.",
+    "date": "2026-02-18",
+    "updated": "2026-02-18",
+    "related": ["umur", "selisih-tanggal", "kehamilan"]
+  },
+  {
     "slug": "cara-menghitung-persentase",
     "title": "Cara Menghitung Persentase dengan Cepat (Lengkap dengan Contoh)",
     "description": "Cara menghitung berapa persen dari suatu angka, sebuah angka itu berapa persen dari angka lain, persentase kenaikan dan penurunan, plus trik menghitung persen di kepala.",
