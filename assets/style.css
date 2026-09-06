@@ -457,6 +457,36 @@ h3 { font-size: 1.05rem; margin: 22px 0 6px; }
 }
 .card p { margin: 0; font-size: 14px; color: var(--muted); line-height: 1.55; }
 
+/* Kartu "Segera Hadir" - tidak bisa diklik */
+.card-soon {
+  cursor: default;
+  opacity: .7;
+  background: var(--surface-2);
+  box-shadow: none;
+}
+.card-soon:hover {
+  transform: none;
+  border-color: var(--line);
+  box-shadow: none;
+}
+.card-soon:hover::before { opacity: 0; }
+.card-soon .card-ic { filter: grayscale(1); }
+.card-soon h3 { color: var(--muted); }
+.badge-soon {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-bg);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.cat-soon > h2 { color: var(--muted); }
+
 /* ---------- Iklan ---------- */
 .ad-slot {
   margin: 40px 0 0;

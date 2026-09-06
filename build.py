@@ -74,6 +74,25 @@ def category_sections(cfg) -> str:
     return "\n".join(out)
 
 
+def coming_soon_section(cfg) -> str:
+    """Kartu 'Segera Hadir' (tidak bisa diklik) untuk alat yang sedang disiapkan."""
+    items = cfg.get("coming_soon") or []
+    if not items:
+        return ""
+    cards = "\n".join(
+        f'<div class="card card-soon" aria-disabled="true">'
+        f'<span class="card-ic" aria-hidden="true">{it.get("icon", "")}</span>'
+        f'<span class="card-tx"><h3>{it["name"]} '
+        f'<span class="badge-soon">Segera</span></h3>'
+        f'<p>{it.get("note", "")}</p></span></div>'
+        for it in items
+    )
+    return (
+        '<section class="cat cat-soon"><h2>Segera Hadir</h2>'
+        f'<div class="grid">\n{cards}\n</div></section>'
+    )
+
+
 def analytics_tag(cfg) -> str:
     tok = cfg.get("cf_analytics_token", "").strip()
     if not tok:
@@ -272,8 +291,9 @@ HOME_SEARCH_JS = """
   var q = document.getElementById('cari');
   if (!q) return;
   var cards = [].slice.call(document.querySelectorAll('.card[data-terms]'));
-  var cats = [].slice.call(document.querySelectorAll('.cat'));
+  var cats = [].slice.call(document.querySelectorAll('.cat:not(.cat-soon)'));
   var kosong = document.getElementById('cari-kosong');
+  var soon = [].slice.call(document.querySelectorAll('.cat-soon'));
   function apply(s) {
     s = (s || '').trim().toLowerCase();
     var any = false;
@@ -283,8 +303,9 @@ HOME_SEARCH_JS = """
       if (hit) any = true;
     });
     cats.forEach(function (sec) {
-      sec.hidden = sec.querySelectorAll('.card:not([hidden])').length === 0;
+      sec.hidden = sec.querySelectorAll('.card[data-terms]:not([hidden])').length === 0;
     });
+    soon.forEach(function (sec) { sec.hidden = !!s; });
     if (kosong) kosong.hidden = any;
   }
   q.addEventListener('input', function () { apply(q.value); });
@@ -399,7 +420,7 @@ def main():
 
     # --- Beranda: hero + pencarian + kartu per kategori ---
     index_pages = [p for p in cfg["pages"] if p.get("in_index")]
-    sections = category_sections(cfg)
+    sections = category_sections(cfg) + "\n" + coming_soon_section(cfg)
     index_inner = (
         '<div class="hero">'
         f'<h1>{cfg["site_name"]}</h1>'

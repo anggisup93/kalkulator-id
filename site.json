@@ -5,6 +5,14 @@
   "adsense_client": "",
   "cf_analytics_token": "995ca47d66ef4c8c900115e967928641",
   "primary_nav": ["kpr", "gaji-bersih", "persentase", "bmi", "konversi-satuan"],
+  "coming_soon": [
+    { "icon": "🧾", "name": "PPh 21 Metode TER", "note": "Potongan pajak gaji bulanan skema TER 2024" },
+    { "icon": "📊", "name": "Simulasi Kredit", "note": "Bandingkan bunga flat, efektif, dan anuitas" },
+    { "icon": "🗓️", "name": "Weton & Kalender Jawa", "note": "Konversi tanggal ke weton dan pasaran" },
+    { "icon": "🎁", "name": "Kalkulator THR", "note": "Hitung THR sesuai masa kerja" },
+    { "icon": "⚡", "name": "Token Listrik PLN", "note": "Konversi rupiah ke kWh dan sebaliknya" },
+    { "icon": "📆", "name": "Hari Libur Nasional", "note": "Daftar libur & cuti bersama per tahun" }
+  ],
   "pages": [
     {
       "slug": "kpr",
