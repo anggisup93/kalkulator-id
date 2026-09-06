@@ -1,0 +1,101 @@
+<h1>Kalkulator Masa Kerja &amp; Usia Pensiun</h1>
+<p>Hitung masa kerja Anda dalam tahun, bulan, dan hari dari tanggal mulai bekerja, sekaligus tanggal pensiun dan sisa waktu menuju pensiun.</p>
+
+<form class="calc" onsubmit="return false">
+  <label>Tanggal mulai bekerja
+    <input id="mk-mulai" type="date" autocomplete="off">
+  </label>
+  <label>Tanggal lahir
+    <input id="mk-lahir" type="date" autocomplete="off">
+  </label>
+  <label>Usia pensiun
+    <select id="mk-pensiun">
+      <option value="55">55 tahun</option>
+      <option value="56">56 tahun</option>
+      <option value="58" selected>58 tahun</option>
+      <option value="60">60 tahun</option>
+      <option value="65">65 tahun</option>
+    </select>
+  </label>
+  <label>Hitung sampai tanggal
+    <input id="mk-sampai" type="date" autocomplete="off">
+  </label>
+</form>
+<div id="mk-hasil" class="result"></div>
+
+<section class="article">
+  <h2>Cara perhitungan</h2>
+  <p>Masa kerja dihitung sebagai selisih kalender antara tanggal mulai bekerja dan tanggal acuan: kurangi tahun, lalu bulan, lalu hari, dengan meminjam dari jumlah hari bulan sebelumnya bila diperlukan. Cara ini otomatis memperhitungkan tahun kabisat dan bulan yang panjangnya berbeda.</p>
+  <p>Tanggal pensiun dihitung dari tanggal lahir ditambah usia pensiun yang berlaku. Batas usia pensiun berbeda antar sektor: program Jaminan Pensiun BPJS memakai 58 tahun (bertahap naik ke 65), sedangkan PNS dan banyak perusahaan swasta memakai 56, 58, atau 60 tahun sesuai peraturan atau perjanjian kerja.</p>
+
+  <h2>Contoh</h2>
+  <p>Mulai bekerja 1 Maret 2015, lahir 10 Juli 1990, usia pensiun 58. Dihitung pada 7 September 2026, masa kerja 11 tahun 6 bulan 6 hari. Tanggal pensiun 10 Juli 2048, sekitar 21 tahun 10 bulan lagi.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Masa kerja untuk pesangon dihitung sampai kapan?</h3>
+  <p>Sampai tanggal berakhirnya hubungan kerja. Isi kolom "Hitung sampai tanggal" dengan tanggal PHK untuk mendapatkan masa kerja yang dipakai menghitung pesangon dan penghargaan masa kerja.</p>
+  <h3>Apakah masa cuti besar atau cuti di luar tanggungan dihitung?</h3>
+  <p>Umumnya masa kerja dihitung sejak tanggal pengangkatan tanpa memotong cuti, kecuali perjanjian kerja atau peraturan perusahaan mengatur lain, misalnya cuti di luar tanggungan yang tidak dihitung sebagai masa kerja.</p>
+  <h3>Batas usia pensiun saya berapa?</h3>
+  <p>Cek perjanjian kerja, peraturan perusahaan, atau ketentuan sektor Anda. Untuk klaim Jaminan Pensiun BPJS Ketenagakerjaan, batas usianya 58 tahun dan dijadwalkan naik satu tahun setiap tiga tahun hingga 65.</p>
+</section>
+
+<script>
+(function () {
+  var bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli",
+    "Agustus", "September", "Oktober", "November", "Desember"];
+  function fmt(d) { return d.getDate() + " " + bulan[d.getMonth()] + " " + d.getFullYear(); }
+  function selisih(a, b) {
+    var y = b.getFullYear() - a.getFullYear();
+    var m = b.getMonth() - a.getMonth();
+    var d = b.getDate() - a.getDate();
+    if (d < 0) { m--; d += new Date(b.getFullYear(), b.getMonth(), 0).getDate(); }
+    if (m < 0) { y--; m += 12; }
+    return { y: y, m: m, d: d };
+  }
+  var today = new Date().toISOString().slice(0, 10);
+  var s = document.getElementById("mk-sampai");
+  if (!s.value) s.value = today;
+
+  function hitung() {
+    var mulaiV = document.getElementById("mk-mulai").value;
+    var sampaiV = document.getElementById("mk-sampai").value || today;
+    if (!mulaiV) { show("mk-hasil", "Isi tanggal mulai bekerja."); return; }
+    var mulai = new Date(mulaiV + "T00:00:00");
+    var ref = new Date(sampaiV + "T00:00:00");
+    if (ref < mulai) { show("mk-hasil", "Tanggal acuan harus setelah tanggal mulai bekerja."); return; }
+
+    var mk = selisih(mulai, ref);
+    var totalHari = Math.floor((ref - mulai) / 86400000);
+    var html = "<strong>Masa kerja: " + mk.y + " tahun, " + mk.m + " bulan, " + mk.d + " hari</strong><br>" +
+      "Setara " + totalHari.toLocaleString("id-ID") + " hari &middot; " + (mk.y * 12 + mk.m) + " bulan";
+
+    var lahirV = document.getElementById("mk-lahir").value;
+    var shareTail = "";
+    if (lahirV) {
+      var lahir = new Date(lahirV + "T00:00:00");
+      var usiaPensiun = parseInt(document.getElementById("mk-pensiun").value, 10);
+      var tglPensiun = new Date(lahir.getFullYear() + usiaPensiun, lahir.getMonth(), lahir.getDate());
+      var usia = selisih(lahir, ref);
+      html += "<br>Usia sekarang: " + usia.y + " tahun " + usia.m + " bulan";
+      if (tglPensiun > ref) {
+        var sisa = selisih(ref, tglPensiun);
+        var mkNanti = selisih(mulai, tglPensiun);
+        html += "<br>Tanggal pensiun (usia " + usiaPensiun + "): <strong>" + fmt(tglPensiun) + "</strong>" +
+          " &mdash; " + sisa.y + " tahun " + sisa.m + " bulan lagi" +
+          "<br>Total masa kerja saat pensiun (bila terus bekerja): " + mkNanti.y + " tahun " + mkNanti.m + " bulan";
+        shareTail = " Pensiun " + fmt(tglPensiun) + ".";
+      } else {
+        html += "<br>Sudah melewati usia pensiun " + usiaPensiun + " tahun.";
+      }
+    }
+    show("mk-hasil", html,
+      "Masa kerja " + mk.y + " th " + mk.m + " bln " + mk.d + " hari (sejak " + fmt(mulai) + ")." + shareTail);
+  }
+  ["mk-mulai", "mk-lahir", "mk-pensiun", "mk-sampai"].forEach(function (id) {
+    document.getElementById(id).addEventListener("input", hitung);
+    document.getElementById(id).addEventListener("change", hitung);
+  });
+  hitung();
+})();
+</script>

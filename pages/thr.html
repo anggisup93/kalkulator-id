@@ -1,0 +1,55 @@
+<h1>Kalkulator THR</h1>
+<p>Hitung Tunjangan Hari Raya keagamaan sesuai Peraturan Menteri Ketenagakerjaan Nomor 6 Tahun 2016, termasuk perhitungan prorata untuk masa kerja di bawah satu tahun.</p>
+<p data-policy></p>
+
+<form class="calc" onsubmit="return hitungTHR(event)">
+  <label>Upah sebulan (gaji pokok + tunjangan tetap) (Rp)
+    <input id="thr-upah" type="text" inputmode="numeric" data-money value="4500000" required>
+  </label>
+  <label>Masa kerja (bulan)
+    <input id="thr-bulan" type="number" min="1" max="600" value="8" required>
+  </label>
+</form>
+<div id="thr-hasil" class="result"></div>
+
+<section class="article">
+  <h2>Aturan THR</h2>
+  <p>THR wajib diberikan kepada pekerja yang punya masa kerja minimal <strong>1 bulan terus-menerus</strong>, dibayarkan paling lambat <strong>7 hari sebelum hari raya</strong> keagamaan.</p>
+  <code class="formula">Masa kerja &ge; 12 bulan : THR = 1 &times; upah sebulan
+Masa kerja 1&ndash;12 bulan : THR = (masa kerja / 12) &times; upah sebulan</code>
+  <p>Upah sebulan yang dipakai adalah upah tanpa tunjangan, atau upah pokok ditambah tunjangan tetap. Untuk pekerja dengan upah harian atau borongan, dasar perhitungannya adalah rata-rata upah 12 bulan terakhir (atau selama masa kerja jika kurang dari 12 bulan).</p>
+
+  <h2>Contoh</h2>
+  <p>Upah sebulan Rp4.500.000, masa kerja 8 bulan: THR = (8 / 12) &times; 4.500.000 = Rp3.000.000. Jika masa kerja sudah 12 bulan atau lebih, THR-nya penuh Rp4.500.000.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Apakah THR dipotong pajak?</h3>
+  <p>Ya. THR termasuk penghasilan bruto dan ikut dihitung dalam pemotongan PPh 21 pada bulan diterimanya, sehingga potongan pajak pada bulan ber-THR biasanya lebih besar.</p>
+  <h3>Karyawan kontrak atau harian dapat THR?</h3>
+  <p>Dapat, selama masa kerjanya sudah minimal 1 bulan terus-menerus, tanpa memandang status PKWT (kontrak) atau PKWTT (tetap).</p>
+  <h3>Kalau perusahaan telat atau tidak membayar THR?</h3>
+  <p>Keterlambatan kena denda 5% dari total THR, dan tidak membayar dikenai sanksi administratif. Denda tidak menghapus kewajiban membayar THR-nya.</p>
+</section>
+
+<script>
+function hitungTHR() {
+  var upah = num("thr-upah");
+  var bulan = num("thr-bulan");
+  if (upah <= 0 || bulan < 1) { show("thr-hasil", "Isi upah sebulan dan masa kerja (minimal 1 bulan)."); return; }
+  var thr, ket;
+  if (bulan >= 12) {
+    thr = upah;
+    ket = "Masa kerja 12 bulan atau lebih &rarr; THR penuh 1&times; upah.";
+  } else {
+    thr = (bulan / 12) * upah;
+    ket = "Prorata: (" + bulan + " / 12) &times; " + rp(upah) + ".";
+  }
+  show("thr-hasil",
+    "<strong>THR: " + rp(thr) + "</strong><br>" + ket,
+    "THR — upah " + rp(upah) + ", masa kerja " + bulan + " bulan: " + rp(thr) + ".");
+}
+["thr-upah", "thr-bulan"].forEach(function (id) {
+  document.getElementById(id).addEventListener("input", hitungTHR);
+});
+hitungTHR();
+</script>

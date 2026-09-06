@@ -7,8 +7,6 @@
   "web3forms_key": "54cf5c1a-8ff5-45d1-98a0-34c74824da9a",
   "primary_nav": ["kpr", "gaji-bersih", "persentase", "bmi", "konversi-satuan"],
   "coming_soon": [
-    { "icon": "🗓️", "name": "Weton & Kalender Jawa", "note": "Konversi tanggal ke weton dan pasaran" },
-    { "icon": "🎁", "name": "Kalkulator THR", "note": "Hitung THR sesuai masa kerja" },
     { "icon": "⚡", "name": "Token Listrik PLN", "note": "Konversi rupiah ke kWh dan sebaliknya" },
     { "icon": "📆", "name": "Hari Libur Nasional", "note": "Daftar libur & cuti bersama per tahun" },
     { "icon": "🧮", "name": "Kalkulator Ilmiah", "note": "Trigonometri, logaritma, akar, pangkat" }
@@ -256,6 +254,51 @@
       "icon": "🏪",
       "title": "Kalkulator Harga Jual Produk - HPP, Margin, dan Biaya Marketplace",
       "description": "Tentukan harga jual dari modal (HPP), target margin atau markup, biaya admin marketplace, dan ongkos lain."
+    },
+    {
+      "slug": "lembur",
+      "nav": "Upah Lembur",
+      "in_index": true,
+      "category": "Keuangan",
+      "icon": "⏱️",
+      "title": "Kalkulator Upah Lembur - Hitung Uang Lembur per Jam",
+      "description": "Hitung upah lembur sesuai Kepmenaker 102/2004 untuk hari kerja biasa maupun hari libur, dari upah sebulan dan jumlah jam lembur."
+    },
+    {
+      "slug": "pesangon",
+      "nav": "Pesangon PHK",
+      "in_index": true,
+      "category": "Keuangan",
+      "icon": "📄",
+      "title": "Kalkulator Pesangon PHK - Uang Pesangon, UPMK, dan UPH",
+      "description": "Hitung uang pesangon, uang penghargaan masa kerja, dan uang penggantian hak sesuai PP 35/2021 berdasarkan masa kerja dan alasan PHK."
+    },
+    {
+      "slug": "thr",
+      "nav": "THR",
+      "in_index": true,
+      "category": "Keuangan",
+      "icon": "🎁",
+      "title": "Kalkulator THR - Hitung Tunjangan Hari Raya (Termasuk Prorata)",
+      "description": "Hitung THR sesuai Permenaker 6/2016: satu bulan upah untuk masa kerja 12 bulan atau lebih, dan prorata untuk masa kerja 1 sampai 12 bulan."
+    },
+    {
+      "slug": "masa-kerja",
+      "nav": "Masa Kerja & Pensiun",
+      "in_index": true,
+      "category": "Tanggal",
+      "icon": "🗓️",
+      "title": "Kalkulator Masa Kerja dan Usia Pensiun",
+      "description": "Hitung masa kerja dalam tahun, bulan, dan hari dari tanggal mulai kerja, serta tanggal pensiun dan sisa waktu menuju pensiun."
+    },
+    {
+      "slug": "weton",
+      "nav": "Weton",
+      "in_index": true,
+      "category": "Tanggal",
+      "icon": "🌙",
+      "title": "Kalkulator Weton Jawa - Hari, Pasaran, dan Neptu dari Tanggal Lahir",
+      "description": "Cari weton, hari pasaran, dan neptu dari tanggal lahir Masehi. Konversi tanggal ke kalender pasaran Jawa lima harian."
     },
     {
       "slug": "simulasi-kredit",

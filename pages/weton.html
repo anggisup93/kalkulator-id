@@ -1,0 +1,80 @@
+<h1>Kalkulator Weton Jawa</h1>
+<p>Cari <strong>weton</strong> Anda &mdash; gabungan hari dan pasaran &mdash; beserta neptu-nya, dari tanggal lahir Masehi. Weton dipakai dalam tradisi Jawa sebagai penanda hari kelahiran.</p>
+
+<form class="calc" onsubmit="return false">
+  <label>Tanggal (Masehi)
+    <input id="wt-tgl" type="date" autocomplete="off">
+  </label>
+</form>
+<div id="wt-hasil" class="result"></div>
+
+<section class="article">
+  <h2>Apa itu weton</h2>
+  <p>Weton adalah gabungan <strong>hari</strong> dalam siklus tujuh harian (Minggu sampai Sabtu) dan <strong>pasaran</strong> dalam siklus lima harian: Legi, Pahing, Pon, Wage, dan Kliwon. Karena 7 dan 5 tidak punya faktor persekutuan selain 1, kombinasi weton yang sama berulang setiap <strong>35 hari</strong>. Contoh weton: Jumat Legi, Selasa Kliwon, Minggu Pon.</p>
+
+  <h2>Neptu</h2>
+  <p>Tiap hari dan pasaran punya nilai (neptu). Neptu weton adalah jumlah keduanya.</p>
+  <table>
+    <thead><tr><th>Hari</th><th>Neptu</th><th>Pasaran</th><th>Neptu</th></tr></thead>
+    <tbody>
+      <tr><td>Minggu</td><td>5</td><td>Legi</td><td>5</td></tr>
+      <tr><td>Senin</td><td>4</td><td>Pahing</td><td>9</td></tr>
+      <tr><td>Selasa</td><td>3</td><td>Pon</td><td>7</td></tr>
+      <tr><td>Rabu</td><td>7</td><td>Wage</td><td>4</td></tr>
+      <tr><td>Kamis</td><td>8</td><td>Kliwon</td><td>8</td></tr>
+      <tr><td>Jumat</td><td>6</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>Sabtu</td><td>9</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+    </tbody>
+  </table>
+  <p>Perhitungan pasaran di sini dikalibrasi ke tanggal 17 Agustus 1945 yang jatuh pada <strong>Jumat Legi</strong> &mdash; penanggalan yang paling luas dikenal. Sebagian aplikasi lain memakai fase pasaran yang sedikit berbeda, sehingga hasilnya bisa bergeser satu atau dua pasaran.</p>
+
+  <h2>Contoh</h2>
+  <p>Tanggal 17 Agustus 1945 (hari Proklamasi) adalah <strong>Jumat Legi</strong>, dengan neptu 6 (Jumat) + 5 (Legi) = 11. Tanggal 14 Februari 2024 jatuh pada hari Rabu, dan pasarannya sama dengan 17 Agustus 2024 karena berjarak kelipatan lima hari.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Untuk apa weton dan neptu dipakai?</h3>
+  <p>Dalam tradisi Jawa, neptu weton dipakai antara lain untuk memperkirakan hari baik hajatan, menghitung kecocokan pasangan, dan penanggalan adat. Ini bagian dari budaya dan bukan perhitungan ilmiah; kalkulator ini hanya mengonversi tanggal, bukan meramal.</p>
+  <h3>Kenapa hasil weton saya beda dengan penghitungan keluarga atau aplikasi lain?</h3>
+  <p>Dua sebab. Pertama, hari dalam tradisi Jawa berganti saat matahari terbenam, bukan tengah malam; kelahiran menjelang atau setelah magrib bisa dihitung mengikuti hari berikutnya, sedangkan kalkulator ini memakai tanggal kalender biasa. Kedua, tidak semua sumber menyepakati fase pasaran yang sama, sehingga bisa ada selisih satu atau dua pasaran. Kalkulator ini memakai acuan 17 Agustus 1945 = Jumat Legi.</p>
+  <h3>Bagaimana mencari tanggal dengan weton tertentu?</h3>
+  <p>Weton yang sama berulang setiap 35 hari. Dari satu tanggal yang wetonnya cocok, tambahkan kelipatan 35 hari untuk menemukan tanggal lain dengan weton sama.</p>
+</section>
+
+<script>
+(function () {
+  var HARI = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+  var HARI_NEPTU = [5, 4, 3, 7, 8, 6, 9];
+  var PASARAN = ["Legi", "Pahing", "Pon", "Wage", "Kliwon"];
+  var PASARAN_NEPTU = [5, 9, 7, 4, 8];
+  var bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli",
+    "Agustus", "September", "Oktober", "November", "Desember"];
+  // Hari sejak epoch untuk 17 Agustus 1945 (Jumat Legi -> pasaran indeks 0).
+  var ANCHOR = Math.round(Date.UTC(1945, 7, 16) / 86400000) + 1;
+
+  function fmt(d) { return d.getDate() + " " + bulan[d.getMonth()] + " " + d.getFullYear(); }
+
+  var t = document.getElementById("wt-tgl");
+  if (!t.value) t.value = "1990-01-01";
+
+  function hitung() {
+    var v = document.getElementById("wt-tgl").value;
+    if (!v) { show("wt-hasil", "Pilih tanggal."); return; }
+    var d = new Date(v + "T00:00:00");
+    var days = Math.round(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000);
+    var hariIdx = ((days + 4) % 7 + 7) % 7;          // epoch 1 Jan 1970 = Kamis (4)
+    var pasIdx = ((days - ANCHOR) % 5 + 5) % 5;
+    var neptu = HARI_NEPTU[hariIdx] + PASARAN_NEPTU[pasIdx];
+    var berikut = new Date(d); berikut.setDate(berikut.getDate() + 35);
+
+    show("wt-hasil",
+      "<strong>Weton: " + HARI[hariIdx] + " " + PASARAN[pasIdx] + "</strong><br>" +
+      "Neptu: " + HARI_NEPTU[hariIdx] + " (" + HARI[hariIdx] + ") + " +
+      PASARAN_NEPTU[pasIdx] + " (" + PASARAN[pasIdx] + ") = <strong>" + neptu + "</strong><br>" +
+      "Weton yang sama berikutnya: " + fmt(berikut) + " (tiap 35 hari)",
+      "Weton " + fmt(d) + ": " + HARI[hariIdx] + " " + PASARAN[pasIdx] + ", neptu " + neptu + ".");
+  }
+  t.addEventListener("input", hitung);
+  t.addEventListener("change", hitung);
+  hitung();
+})();
+</script>

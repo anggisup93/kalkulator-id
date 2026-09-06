@@ -1,0 +1,85 @@
+<h1>Kalkulator Upah Lembur</h1>
+<p>Hitung upah kerja lembur sesuai Keputusan Menteri Tenaga Kerja Nomor 102 Tahun 2004, dari upah sebulan dan jumlah jam lembur.</p>
+<p data-policy></p>
+
+<form class="calc" onsubmit="return hitungLembur(event)">
+  <label>Upah sebulan (gaji pokok + tunjangan tetap) (Rp)
+    <input id="lb-upah" type="text" inputmode="numeric" data-money value="4000000" required>
+  </label>
+  <label>Lembur pada
+    <select id="lb-hari">
+      <option value="kerja" selected>Hari kerja biasa</option>
+      <option value="libur6">Hari istirahat mingguan / libur resmi (6 hari kerja)</option>
+      <option value="libur5">Hari istirahat mingguan / libur resmi (5 hari kerja)</option>
+    </select>
+  </label>
+  <label>Jumlah jam lembur
+    <input id="lb-jam" type="number" min="1" max="14" step="0.5" value="3" required>
+  </label>
+  <button type="submit">Hitung Upah Lembur</button>
+</form>
+
+<div id="lb-hasil" class="result" hidden></div>
+
+<section class="article">
+  <h2>Dasar perhitungan</h2>
+  <p>Upah lembur dihitung dari <strong>upah sejam</strong>, yaitu 1/173 dari upah sebulan. Upah sebulan mencakup gaji pokok dan tunjangan tetap. Bila upah pokok ditambah tunjangan tetap kurang dari 75% total upah, dasar perhitungan adalah 75% dari total.</p>
+  <code class="formula">Upah sejam = upah sebulan / 173</code>
+  <p><strong>Hari kerja biasa:</strong> jam pertama dibayar 1,5&times; upah sejam, jam kedua dan seterusnya 2&times;.</p>
+  <p><strong>Hari istirahat mingguan atau libur resmi (6 hari kerja/minggu):</strong> jam ke-1 sampai ke-7 dibayar 2&times;, jam ke-8 dibayar 3&times;, jam ke-9 dan ke-10 dibayar 4&times;.</p>
+  <p><strong>Untuk 5 hari kerja/minggu:</strong> jam ke-1 sampai ke-8 dibayar 2&times;, jam ke-9 dibayar 3&times;, jam ke-10 dan ke-11 dibayar 4&times;.</p>
+
+  <h2>Contoh</h2>
+  <p>Upah sebulan Rp4.000.000 berarti upah sejam Rp23.121. Lembur 3 jam pada hari kerja biasa: jam ke-1 = 1,5 &times; 23.121 = Rp34.682, jam ke-2 dan ke-3 = 2 &times; 23.121 &times; 2 = Rp92.486. Total upah lembur sekitar Rp127.168.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Apakah lembur wajib dibayar?</h3>
+  <p>Ya. Kerja melebihi 7 jam sehari (6 hari kerja) atau 8 jam sehari (5 hari kerja), atau kerja pada hari istirahat dan libur resmi, wajib dihitung sebagai lembur dan dibayar sesuai ketentuan, kecuali untuk golongan jabatan tertentu yang diatur khusus.</p>
+  <h3>Berapa batas jam lembur?</h3>
+  <p>Berdasarkan aturan turunan UU Cipta Kerja, lembur paling banyak 4 jam sehari dan 18 jam seminggu, di luar lembur pada hari libur. Pengusaha juga wajib memberi makan dan minum minimal 1.400 kalori bila lembur 4 jam atau lebih.</p>
+  <h3>Apakah upah lembur kena pajak?</h3>
+  <p>Ya, upah lembur termasuk penghasilan bruto dan ikut dihitung dalam pemotongan PPh 21 pada bulan diterimanya.</p>
+</section>
+
+<script>
+function hitungLembur(e) {
+  e.preventDefault();
+  var upah = num("lb-upah");
+  var jam = num("lb-jam");
+  var jenis = document.getElementById("lb-hari").value;
+  if (upah <= 0 || jam <= 0) { show("lb-hasil", "Isi upah sebulan dan jumlah jam lembur."); return false; }
+
+  var perJam = upah / 173;
+  var total = 0, rincian = [];
+
+  if (jenis === "kerja") {
+    var j1 = Math.min(1, jam);
+    var sisa = Math.max(0, jam - 1);
+    total = perJam * 1.5 * j1 + perJam * 2 * sisa;
+    rincian.push("Jam ke-1 (" + j1 + " jam): 1,5&times; = " + rp(perJam * 1.5 * j1));
+    if (sisa > 0) rincian.push("Jam berikutnya (" + sisa + " jam): 2&times; = " + rp(perJam * 2 * sisa));
+  } else {
+    var batas2 = jenis === "libur6" ? 7 : 8;
+    var j2 = Math.min(batas2, jam);
+    total += perJam * 2 * j2;
+    rincian.push("Jam ke-1 s.d. ke-" + batas2 + " (" + j2 + " jam): 2&times; = " + rp(perJam * 2 * j2));
+    if (jam > batas2) {
+      var j3 = Math.min(1, jam - batas2);
+      total += perJam * 3 * j3;
+      rincian.push("Jam ke-" + (batas2 + 1) + " (" + j3 + " jam): 3&times; = " + rp(perJam * 3 * j3));
+    }
+    if (jam > batas2 + 1) {
+      var j4 = jam - batas2 - 1;
+      total += perJam * 4 * j4;
+      rincian.push("Jam ke-" + (batas2 + 2) + " dst (" + j4 + " jam): 4&times; = " + rp(perJam * 4 * j4));
+    }
+  }
+
+  show("lb-hasil",
+    "<strong>Total upah lembur: " + rp(total) + "</strong><br>" +
+    "Upah sejam (1/173): " + rp(perJam) + "<br>" +
+    rincian.join("<br>"),
+    "Upah Lembur — " + jam + " jam, upah sebulan " + rp(upah) + ": total " + rp(total) + ".");
+  return false;
+}
+</script>

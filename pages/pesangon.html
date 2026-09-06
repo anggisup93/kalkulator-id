@@ -1,0 +1,105 @@
+<h1>Kalkulator Pesangon PHK</h1>
+<p>Perkirakan uang pesangon, uang penghargaan masa kerja (UPMK), dan uang penggantian hak (UPH) sesuai Peraturan Pemerintah Nomor 35 Tahun 2021, berdasarkan masa kerja dan alasan pemutusan hubungan kerja.</p>
+<p data-policy></p>
+
+<form class="calc" onsubmit="return hitungPesangon(event)">
+  <label>Upah sebulan (gaji pokok + tunjangan tetap) (Rp)
+    <input id="ps-upah" type="text" inputmode="numeric" data-money value="5000000" required>
+  </label>
+  <label>Masa kerja &mdash; tahun
+    <input id="ps-tahun" type="number" min="0" max="45" value="7" required>
+  </label>
+  <label>Masa kerja &mdash; bulan tambahan
+    <input id="ps-bulan" type="number" min="0" max="11" value="6">
+  </label>
+  <label>Alasan PHK
+    <select id="ps-alasan">
+      <option value="1,1" selected>Efisiensi mencegah kerugian / PHK umum (1&times; pesangon)</option>
+      <option value="0.5,1">Efisiensi karena perusahaan rugi</option>
+      <option value="0.5,1b">Perusahaan tutup karena rugi 2 tahun</option>
+      <option value="1,1b">Perusahaan tutup bukan karena rugi</option>
+      <option value="0.5,1c">Perusahaan pailit</option>
+      <option value="1.75,1">Pekerja memasuki usia pensiun</option>
+      <option value="2,1">Pekerja meninggal dunia</option>
+      <option value="2,2">Sakit berkepanjangan / cacat kerja (&gt; 12 bulan)</option>
+      <option value="0.5,1d">Pekerja melanggar PK/PP/PKB (setelah SP ke-3)</option>
+      <option value="0,0">Mengundurkan diri (hanya UPH + uang pisah)</option>
+    </select>
+  </label>
+  <label>Uang penggantian hak / uang pisah (Rp)
+    <input id="ps-uph" type="text" inputmode="numeric" data-money value="0">
+  </label>
+  <button type="submit">Hitung Pesangon</button>
+</form>
+
+<div id="ps-hasil" class="result" hidden></div>
+
+<section class="article">
+  <h2>Komponen pesangon</h2>
+  <p><strong>Uang Pesangon (UP)</strong> naik menurut masa kerja: kurang dari 1 tahun = 1 bulan upah, dan bertambah 1 bulan tiap tahun sampai maksimal 9 bulan upah untuk masa kerja 8 tahun atau lebih.</p>
+  <p><strong>Uang Penghargaan Masa Kerja (UPMK)</strong> mulai dihitung pada masa kerja 3 tahun: 3&ndash;6 tahun = 2 bulan, lalu bertambah tiap 3 tahun sampai 10 bulan untuk masa kerja 24 tahun atau lebih.</p>
+  <p><strong>Uang Penggantian Hak (UPH)</strong> meliputi cuti tahunan yang belum diambil dan belum gugur, biaya pulang pekerja dan keluarga ke tempat perekrutan, serta hal lain yang diatur dalam perjanjian kerja. Isi sendiri nilainya.</p>
+  <p>Besaran akhir dikalikan faktor sesuai alasan PHK. Contoh: PHK efisiensi untuk mencegah kerugian memakai 1&times; UP + 1&times; UPMK + UPH; PHK karena perusahaan rugi memakai 0,5&times; UP + 1&times; UPMK + UPH.</p>
+
+  <h2>Contoh</h2>
+  <p>Upah Rp5.000.000, masa kerja 7 tahun 6 bulan, PHK efisiensi mencegah kerugian. UP untuk masa kerja 7&ndash;8 tahun = 8 bulan = Rp40.000.000. UPMK untuk 6&ndash;9 tahun = 3 bulan = Rp15.000.000. Dengan faktor 1&times;, total sebelum UPH = Rp55.000.000.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Apakah pesangon dipotong pajak?</h3>
+  <p>Ya. Pesangon yang dibayar sekaligus dikenai PPh Pasal 21 bersifat final dengan tarif khusus: 0% sampai Rp50 juta, 5% untuk Rp50&ndash;100 juta, 15% untuk Rp100&ndash;500 juta, dan 25% di atas Rp500 juta. Kalkulator ini menampilkan nilai bruto sebelum pajak.</p>
+  <h3>Bagaimana jika masa kerja saya 7 tahun 6 bulan?</h3>
+  <p>Tabel memakai rentang tahun penuh. Masa kerja 7 tahun 6 bulan masuk rentang "7 sampai kurang dari 8 tahun", sehingga UP-nya 8 bulan upah.</p>
+  <h3>Alasan PHK saya tidak ada di daftar, bagaimana?</h3>
+  <p>PP 35/2021 mengatur belasan skenario dengan faktor berbeda. Daftar di sini memuat yang paling umum. Untuk kasus spesifik seperti penggabungan perusahaan atau putusan lembaga penyelesaian perselisihan, rujuk pasal terkait di PP 35/2021 atau konsultasikan dengan pengawas ketenagakerjaan.</p>
+</section>
+
+<script>
+function tabelUP(mk) {
+  if (mk < 1) return 1;
+  if (mk < 8) return Math.floor(mk) + 1;
+  return 9;
+}
+function tabelUPMK(mk) {
+  if (mk < 3) return 0;
+  if (mk < 6) return 2;
+  if (mk < 9) return 3;
+  if (mk < 12) return 4;
+  if (mk < 15) return 5;
+  if (mk < 18) return 6;
+  if (mk < 21) return 7;
+  if (mk < 24) return 8;
+  return 10;
+}
+function hitungPesangon(e) {
+  e.preventDefault();
+  var upah = num("ps-upah");
+  var mk = num("ps-tahun") + num("ps-bulan") / 12;
+  var uph = num("ps-uph");
+  if (upah <= 0) { show("ps-hasil", "Isi upah sebulan."); return false; }
+
+  var opt = document.getElementById("ps-alasan").value.split(",");
+  var fUP = parseFloat(opt[0]);
+  var fUPMK = opt[1].charAt(0) === "2" ? 2 : (opt[1].charAt(0) === "0" ? 0 : 1);
+
+  var bulanUP = tabelUP(mk);
+  var bulanUPMK = tabelUPMK(mk);
+  var up = bulanUP * upah * fUP;
+  var upmk = bulanUPMK * upah * fUPMK;
+  var total = up + upmk + uph;
+
+  show("ps-hasil",
+    "<strong>Total (bruto): " + rp(total) + "</strong><br>" +
+    "Uang Pesangon: " + bulanUP + " bulan &times; " + (fUP === 1 ? "" : fUP + "&times; ") + rp(upah) + " = " + rp(up) + "<br>" +
+    "UPMK: " + bulanUPMK + " bulan" + (bulanUPMK ? " &times; " + rp(upah) : "") + " = " + rp(upmk) + "<br>" +
+    "Uang Penggantian Hak / uang pisah: " + rp(uph) +
+    "<br><span style=\"color:var(--muted);font-size:14px\">Belum dipotong PPh 21 final atas pesangon.</span>" +
+    bar([
+      { label: "Pesangon", nilai: up, warna: "#2f6bff" },
+      { label: "UPMK", nilai: upmk, warna: "#12b76a" },
+      { label: "UPH", nilai: uph, warna: "#f79009" }
+    ]),
+    "Pesangon PHK — masa kerja " + num("ps-tahun") + " th " + num("ps-bulan") + " bln, upah " + rp(upah) +
+    ": UP " + rp(up) + " + UPMK " + rp(upmk) + " + UPH " + rp(uph) + " = " + rp(total) + " (bruto).");
+  return false;
+}
+</script>
