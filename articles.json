@@ -1,11 +1,75 @@
 [
   {
+    "slug": "cara-menghitung-persentase",
+    "title": "Cara Menghitung Persentase dengan Cepat (Lengkap dengan Contoh)",
+    "description": "Cara menghitung berapa persen dari suatu angka, sebuah angka itu berapa persen dari angka lain, persentase kenaikan dan penurunan, plus trik menghitung persen di kepala.",
+    "date": "2026-03-01",
+    "updated": "2026-03-01",
+    "related": ["persentase", "diskon"]
+  },
+  {
+    "slug": "cara-hitung-usia-kehamilan-dan-hpl",
+    "title": "Cara Menghitung Usia Kehamilan dan HPL dari HPHT",
+    "description": "Menghitung usia kehamilan dalam minggu dan hari perkiraan lahir memakai rumus Naegele, penyesuaian untuk siklus haid tidak 28 hari, dan mengapa HPL hanya perkiraan.",
+    "date": "2026-02-25",
+    "updated": "2026-02-25",
+    "related": ["kehamilan", "selisih-tanggal"]
+  },
+  {
+    "slug": "cara-menghitung-ipk-dan-konversi-nilai",
+    "title": "Cara Menghitung IPK, IP Semester, dan Konversi Nilai Huruf",
+    "description": "Rumus IP semester dan IPK kumulatif, tabel bobot nilai huruf skala 4, cara menggabungkan IPK lama dengan semester baru, dan aturan mata kuliah mengulang.",
+    "date": "2026-02-20",
+    "updated": "2026-02-20",
+    "related": ["ipk", "persentase"]
+  },
+  {
+    "slug": "batas-bunga-pinjol-menurut-ojk",
+    "title": "Batas Bunga Pinjol Menurut OJK dan Cara Menghitung Beban Sebenarnya",
+    "description": "Aturan batas bunga dan biaya harian pinjaman online dari OJK, cara mengubah bunga flat harian menjadi bunga efektif tahunan, dan tanda pinjol ilegal.",
+    "date": "2026-02-15",
+    "updated": "2026-02-15",
+    "related": ["pinjol", "simulasi-kredit"]
+  },
+  {
+    "slug": "nisab-dan-cara-menghitung-zakat",
+    "title": "Nisab dan Cara Menghitung Zakat Maal, Penghasilan, serta Fitrah",
+    "description": "Ambang nisab senilai 85 gram emas, kadar 2,5 persen, cara menghitung zakat harta simpanan dan penghasilan, serta zakat fitrah per jiwa.",
+    "date": "2026-02-10",
+    "updated": "2026-02-10",
+    "related": ["zakat"]
+  },
+  {
+    "slug": "berapa-dana-pensiun-dan-aturan-4-persen",
+    "title": "Berapa Dana Pensiun yang Dibutuhkan dan Apa Itu Aturan 4%",
+    "description": "Cara memperkirakan target dana pensiun dari pengeluaran bulanan dan inflasi, penjelasan aturan 4 persen sebagai patokan kasar, dan kenapa mulai dini sangat penting.",
+    "date": "2026-02-05",
+    "updated": "2026-02-05",
+    "related": ["dana-pensiun", "bunga-majemuk"]
+  },
+  {
+    "slug": "biaya-biaya-kpr-selain-cicilan",
+    "title": "Biaya-biaya KPR Selain Cicilan yang Sering Terlewat",
+    "description": "Uang muka, BPHTB, biaya notaris, provisi, administrasi, appraisal, asuransi jiwa dan kebakaran, serta perkiraan totalnya saat akad KPR.",
+    "date": "2026-01-30",
+    "updated": "2026-01-30",
+    "related": ["kpr", "sewa-vs-beli"]
+  },
+  {
+    "slug": "cara-menghitung-pace-lari",
+    "title": "Cara Menghitung Pace Lari dan Memprediksi Waktu Lomba",
+    "description": "Menghitung pace per kilometer dan kecepatan dari jarak dan waktu, memprediksi waktu 5K sampai maraton dengan rumus Riegel, dan pace wajar untuk pelari pemula.",
+    "date": "2026-01-25",
+    "updated": "2026-01-25",
+    "related": ["pace-lari", "kalori"]
+  },
+  {
     "slug": "cara-hitung-pph-21-ter",
     "title": "Cara Menghitung PPh 21 dengan Metode TER Bulanan",
     "description": "Penjelasan skema Tarif Efektif Rata-rata (TER) untuk potongan PPh 21 bulanan sejak 2024, kategori TER A/B/C, dan kenapa berbeda dengan slip gaji.",
     "date": "2026-02-01",
     "updated": "2026-02-01",
-    "related": ["gaji-bersih"]
+    "related": ["gaji-bersih", "pph21-ter"]
   },
   {
     "slug": "bunga-flat-vs-efektif",
@@ -13,7 +77,7 @@
     "description": "Kenapa bunga flat 6% terasa jauh lebih mahal saat dibayar, cara mengubahnya ke bunga efektif, dan mana yang dipakai KPR, kredit kendaraan, dan pinjol.",
     "date": "2026-01-20",
     "updated": "2026-01-20",
-    "related": ["kredit-kendaraan", "kpr", "pinjol"]
+    "related": ["kredit-kendaraan", "kpr", "simulasi-kredit"]
   },
   {
     "slug": "opsen-pajak-kendaraan",
@@ -29,6 +93,6 @@
     "description": "Kategori BMI menurut WHO dan ambang Asia-Pasifik, kenapa atlet bisa masuk kategori berlebih, dan apa yang sebaiknya dilakukan setelah tahu angka BMI.",
     "date": "2026-01-05",
     "updated": "2026-01-05",
-    "related": ["bmi", "kalori"]
+    "related": ["bmi", "berat-ideal", "kalori"]
   }
 ]
