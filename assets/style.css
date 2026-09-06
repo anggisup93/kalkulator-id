@@ -640,6 +640,57 @@ h3 { font-size: 1.05rem; margin: 22px 0 6px; }
   text-decoration: none;
 }
 
+/* ---------- Widget masukan ---------- */
+.feedback {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin: 36px 0 0;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font-size: 14px;
+}
+.feedback .fb-q { color: var(--muted); font-weight: 600; }
+.feedback .fb-buttons { display: flex; gap: 8px; }
+.fb-btn {
+  font: inherit;
+  font-size: 14px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--fg);
+  border-radius: 999px;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+.fb-btn:hover { border-color: var(--accent); }
+.feedback .fb-link { margin-left: auto; font-size: 13px; }
+.fb-form {
+  flex-basis: 100%;
+  display: grid;
+  gap: 8px;
+  margin-top: 4px;
+}
+.fb-form textarea,
+.fb-form input {
+  font: inherit;
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--fg);
+}
+.fb-form textarea:focus,
+.fb-form input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(47, 107, 255, .25);
+}
+.fb-form .btn-sec { justify-self: start; }
+
 /* ---------- Grid statistik (hitung kata) ---------- */
 .stat-grid {
   display: grid;

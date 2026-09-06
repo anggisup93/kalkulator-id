@@ -1,5 +1,6 @@
 <h1>Kalkulator Zakat</h1>
 <p>Hitung zakat maal, zakat penghasilan, dan zakat fitrah sesuai nisab dan kadar 2,5 persen. Harga emas dan beras bisa Anda sesuaikan dengan harga terbaru.</p>
+<p data-policy></p>
 
 <h2 style="border:0;padding:0;margin:8px 0 0">1. Zakat Maal (harta simpanan)</h2>
 <form class="calc" onsubmit="return hitungMaal(event)">
@@ -16,7 +17,7 @@
     <input id="zm-utang" type="text" inputmode="numeric" data-money value="0">
   </label>
   <label>Harga emas per gram (Rp)
-    <input id="zm-emas" type="text" inputmode="numeric" data-money value="1350000">
+    <input id="zm-emas" type="text" inputmode="numeric" data-money value="{{HARGA_EMAS}}">
   </label>
   <button type="submit">Hitung Zakat Maal</button>
 </form>
@@ -31,7 +32,7 @@
     <input id="zp-lain" type="text" inputmode="numeric" data-money value="0">
   </label>
   <label>Harga emas per gram (Rp)
-    <input id="zp-emas" type="text" inputmode="numeric" data-money value="1350000">
+    <input id="zp-emas" type="text" inputmode="numeric" data-money value="{{HARGA_EMAS}}">
   </label>
   <button type="submit">Hitung Zakat Penghasilan</button>
 </form>
@@ -43,7 +44,7 @@
     <input id="zf-jiwa" type="number" min="1" step="1" value="4">
   </label>
   <label>Harga beras per kg (Rp)
-    <input id="zf-beras" type="text" inputmode="numeric" data-money value="15000">
+    <input id="zf-beras" type="text" inputmode="numeric" data-money value="{{HARGA_BERAS}}">
   </label>
   <label>Takaran per jiwa
     <select id="zf-takaran">
@@ -77,21 +78,25 @@ Zakat fitrah    = jumlah jiwa &times; takaran kg &times; harga beras</code>
 </section>
 
 <script>
+var ZK = (window.KID_DATA && window.KID_DATA.zakat) || {};
+var Z_KADAR = ZK.kadar || 0.025;
+var Z_NISAB_G = ZK.nisab_gram_emas || 85;
+
 function hitungMaal(e) {
   e.preventDefault();
   var harta = num("zm-tabungan") + num("zm-investasi") + num("zm-piutang");
   var bersih = harta - num("zm-utang");
-  var nisab = 85 * num("zm-emas");
+  var nisab = Z_NISAB_G * num("zm-emas");
   if (bersih < nisab) {
     show("zm-hasil",
       "Harta bersih " + rp(bersih) + " <strong>belum mencapai nisab</strong> " + rp(nisab) +
       ".<br>Zakat maal belum wajib, tetapi sedekah tetap dianjurkan.");
     return false;
   }
-  var zakat = bersih * 0.025;
+  var zakat = bersih * Z_KADAR;
   show("zm-hasil",
     "<strong>Zakat maal: " + rp(zakat) + "</strong><br>" +
-    "Harta bersih: " + rp(bersih) + "<br>Nisab (85 gram emas): " + rp(nisab),
+    "Harta bersih: " + rp(bersih) + "<br>Nisab (" + Z_NISAB_G + " gram emas): " + rp(nisab),
     "Zakat Maal — harta bersih " + rp(bersih) + " (nisab " + rp(nisab) + "), zakat " + rp(zakat) + ".");
   return false;
 }
@@ -100,18 +105,18 @@ function hitungPenghasilan(e) {
   e.preventDefault();
   var perBulan = num("zp-gaji") + num("zp-lain");
   var setahun = perBulan * 12;
-  var nisab = 85 * num("zp-emas");
+  var nisab = Z_NISAB_G * num("zp-emas");
   if (setahun < nisab) {
     show("zp-hasil",
       "Penghasilan setahun " + rp(setahun) + " <strong>belum mencapai nisab</strong> " + rp(nisab) +
       ".<br>Zakat penghasilan belum wajib.");
     return false;
   }
-  var zakatBulan = perBulan * 0.025;
+  var zakatBulan = perBulan * Z_KADAR;
   show("zp-hasil",
     "<strong>Zakat penghasilan: " + rp(zakatBulan) + " per bulan</strong><br>" +
     "Setara " + rp(zakatBulan * 12) + " per tahun<br>" +
-    "Nisab setahun (85 gram emas): " + rp(nisab),
+    "Nisab setahun (" + Z_NISAB_G + " gram emas): " + rp(nisab),
     "Zakat Penghasilan — " + rp(perBulan) + "/bulan: zakat " + rp(zakatBulan) + "/bulan.");
   return false;
 }

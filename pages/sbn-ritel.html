@@ -1,5 +1,6 @@
 <h1>Kalkulator SBN Ritel</h1>
 <p>Hitung kupon (imbal hasil) bulanan dan total pendapatan dari Surat Berharga Negara ritel seperti ORI, SR, ST, dan SBR, setelah dipotong pajak kupon 10%.</p>
+<p data-policy></p>
 
 <form class="calc" onsubmit="return hitungSBN(event)">
   <label>Nominal pembelian (Rp)
@@ -47,15 +48,16 @@ function hitungSBN(e) {
   var tenor = parseInt(document.getElementById("sb-tenor").value, 10);
   if (nominal <= 0 || kupon < 0) { show("sb-hasil", "Periksa nominal dan kupon."); return false; }
 
+  var pjk = ((window.KID_DATA && window.KID_DATA.pajak && window.KID_DATA.pajak.pajak_kupon_sbn) || 0.10);
   var bruto = nominal * kupon / 12;
-  var bersih = bruto * 0.9;
+  var bersih = bruto * (1 - pjk);
   var totalKupon = bersih * tenor;
   var totalTerima = totalKupon + nominal;
   var yieldBersih = nominal > 0 ? totalKupon / nominal / (tenor / 12) * 100 : 0;
 
   show("sb-hasil",
     "<strong>Kupon bersih: " + rp(bersih) + " per bulan</strong><br>" +
-    "Kupon bruto: " + rp(bruto) + " &minus; pajak 10% " + rp(bruto - bersih) + "<br>" +
+    "Kupon bruto: " + rp(bruto) + " &minus; pajak " + (pjk * 100) + "% " + rp(bruto - bersih) + "<br>" +
     "Total kupon bersih selama " + tenor + " bulan: " + rp(totalKupon) + "<br>" +
     "Total diterima saat jatuh tempo: " + rp(totalTerima) + " (termasuk pokok)<br>" +
     "Imbal hasil bersih: " + yieldBersih.toFixed(2) + "% per tahun",

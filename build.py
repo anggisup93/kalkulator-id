@@ -25,9 +25,67 @@ def load_config():
     return json.loads((ROOT / "site.json").read_text(encoding="utf-8"))
 
 
+def load_data():
+    f = ROOT / "data.json"
+    return json.loads(f.read_text(encoding="utf-8")) if f.exists() else {}
+
+
+def feedback_html(cfg) -> str:
+    key = (cfg.get("web3forms_key") or "").strip()
+    form = ""
+    if key:
+        form = (
+            '<form class="fb-form" hidden method="POST" action="https://api.web3forms.com/submit">'
+            f'<input type="hidden" name="access_key" value="{key}">'
+            '<input type="hidden" name="subject" value="Masukan KalkulatorID">'
+            '<input type="hidden" name="halaman" class="fb-page" value="">'
+            '<textarea name="pesan" rows="3" required '
+            'placeholder="Apa yang kurang tepat atau bisa diperbaiki?"></textarea>'
+            '<input type="email" name="email" placeholder="Email (opsional, jika ingin dibalas)">'
+            '<button type="submit" class="btn-sec">Kirim masukan</button>'
+            '</form>'
+        )
+    return (
+        '<div class="feedback" data-noprint data-feedback>'
+        '<span class="fb-q">Halaman ini membantu?</span>'
+        '<span class="fb-buttons">'
+        '<button type="button" class="fb-btn" data-fb="ya">&#128077; Ya</button>'
+        '<button type="button" class="fb-btn" data-fb="tidak">&#128078; Kurang</button>'
+        '</span>'
+        '<a class="fb-link" href="/kontak/">Kirim masukan / koreksi</a>'
+        f'{form}</div>'
+    )
+
+
 def render(template: str, ctx: dict) -> str:
     """Substitusi {{KEY}} satu kali (nilai pengganti tidak ikut dipindai)."""
     return PLACEHOLDER.sub(lambda m: str(ctx.get(m.group(1), "")), template)
+
+
+def render_partial(text: str, ctx: dict) -> str:
+    """Seperti render(), tapi hanya kunci yang dikenal; sisanya dibiarkan."""
+    return PLACEHOLDER.sub(
+        lambda m: str(ctx[m.group(1)]) if m.group(1) in ctx else m.group(0), text)
+
+
+def contact_form_html(cfg) -> str:
+    key = (cfg.get("web3forms_key") or "").strip()
+    if not key:
+        return ('<p class="art-meta">Formulir kirim langsung belum aktif. '
+                'Untuk sekarang, kirim email ke alamat di atas.</p>')
+    return (
+        '<form id="kontak-form" class="fb-form" method="POST" '
+        'action="https://api.web3forms.com/submit">'
+        f'<input type="hidden" name="access_key" value="{key}">'
+        '<input type="hidden" name="subject" value="Pesan dari halaman Kontak KalkulatorID">'
+        '<input type="text" name="nama" placeholder="Nama (opsional)">'
+        '<input type="email" name="email" placeholder="Email (jika ingin dibalas)">'
+        '<textarea name="pesan" rows="5" required '
+        'placeholder="Tulis masukan, koreksi rumus, atau pertanyaan Anda…"></textarea>'
+        '<button type="submit" class="btn-sec">Kirim pesan</button>'
+        '</form>'
+        '<p id="kontak-msg" class="art-meta"></p>'
+    )
 
 
 def plain(s: str) -> str:
@@ -365,6 +423,8 @@ def main():
     today = date.today().isoformat()
     articles = load_articles()
     ART = ROOT / "articles"
+    data = load_data()
+    feedback = feedback_html(cfg)
 
     # Versi build: hash dari semua sumber (aset, layout, halaman, konfigurasi).
     # Dipakai untuk cache-busting ?v= dan nama cache service worker, sehingga
@@ -377,6 +437,8 @@ def main():
     src += [f.read_bytes() for f in sorted(PAGES.glob("*.html"))]
     if (ROOT / "articles.json").exists():
         src.append((ROOT / "articles.json").read_bytes())
+    if (ROOT / "data.json").exists():
+        src.append((ROOT / "data.json").read_bytes())
     if ART.exists():
         src += [f.read_bytes() for f in sorted(ART.glob("*.html"))]
     asset_ver = hashlib.sha1(b"".join(src)).hexdigest()[:8]
@@ -391,19 +453,32 @@ def main():
         "SITE_NAME": cfg["site_name"],
         "ASSET_VER": asset_ver,
         "TOOLS_JSON": tools_json(cfg),
+        "DATA_JSON": json.dumps(
+            {k: v for k, v in data.items() if not k.startswith("_")},
+            ensure_ascii=False, separators=(",", ":")),
         "ADSENSE_HEAD": adsense_head(cfg),
         "ADSENSE_SLOT": adsense_slot(cfg),
         "ANALYTICS": analytics_tag(cfg),
         "JSONLD": "",
         "BREADCRUMB": "",
         "RELATED": "",
+        "FEEDBACK": "",
     }
     urls = [f"{domain}/", f"{domain}/alat/"]
 
     # --- Halaman per slug ---
+    zk = data.get("zakat", {})
+    page_tokens = {
+        "CONTACTFORM": contact_form_html(cfg),
+        "SITE_NAME": cfg["site_name"],
+        "TAHUN": str(data.get("tahun_berlaku", year)),
+        "HARGA_EMAS": str(zk.get("harga_emas_per_gram", 1350000)),
+        "HARGA_BERAS": str(zk.get("harga_beras_per_kg", 15000)),
+    }
     for p in cfg["pages"]:
         slug = p["slug"]
-        inner = (PAGES / f"{slug}.html").read_text(encoding="utf-8")
+        inner = render_partial(
+            (PAGES / f"{slug}.html").read_text(encoding="utf-8"), page_tokens)
         is_calc = bool(p.get("in_index"))
         ctx = {
             **base_ctx,
@@ -414,6 +489,7 @@ def main():
             "JSONLD": jsonld_page(cfg, p, inner, domain) if is_calc else "",
             "BREADCRUMB": breadcrumb_html(p) if is_calc else "",
             "RELATED": related_html(cfg, p) if is_calc else "",
+            "FEEDBACK": feedback if is_calc else "",
         }
         write(DIST / slug / "index.html", render(layout, ctx))
         urls.append(f"{domain}/{slug}/")
@@ -496,6 +572,7 @@ def main():
             "CANONICAL": f'{domain}/panduan/{a["slug"]}/',
             "CONTENT": art_inner,
             "JSONLD": jsonld_article(a, body, domain, cfg["site_name"]),
+            "FEEDBACK": feedback,
             "ADSENSE_SLOT": "",
         }))
         urls.append(f'{domain}/panduan/{a["slug"]}/')

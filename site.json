@@ -4,6 +4,7 @@
   "domain": "https://kalkulator-id.anggisup93.workers.dev",
   "adsense_client": "",
   "cf_analytics_token": "995ca47d66ef4c8c900115e967928641",
+  "web3forms_key": "",
   "primary_nav": ["kpr", "gaji-bersih", "persentase", "bmi", "konversi-satuan"],
   "coming_soon": [
     { "icon": "🧾", "name": "PPh 21 Metode TER", "note": "Potongan pajak gaji bulanan skema TER 2024" },

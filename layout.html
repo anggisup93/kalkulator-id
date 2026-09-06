@@ -18,6 +18,7 @@
 <link rel="apple-touch-icon" href="/assets/icon.svg">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="stylesheet" href="/assets/style.css?v={{ASSET_VER}}">
+<script>window.KID_TOOLS={{TOOLS_JSON}};window.KID_DATA={{DATA_JSON}};</script>
 <script src="/assets/calc.js?v={{ASSET_VER}}"></script>
 {{JSONLD}}
 {{ADSENSE_HEAD}}
@@ -46,6 +47,7 @@
 <main class="container">
 {{BREADCRUMB}}
 {{CONTENT}}
+{{FEEDBACK}}
 {{RELATED}}
 <div class="ad-slot">{{ADSENSE_SLOT}}</div>
 </main>
@@ -62,7 +64,6 @@
   <p>&copy; {{YEAR}} {{SITE_NAME}}. Semua hasil perhitungan bersifat estimasi.</p>
 </footer>
 {{ANALYTICS}}
-<script>window.KID_TOOLS={{TOOLS_JSON}};</script>
 <script>
 if ("serviceWorker" in navigator) {
   addEventListener("load", function () {

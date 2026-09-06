@@ -1,5 +1,6 @@
 <h1>Kalkulator Pajak Kendaraan (PKB)</h1>
 <p>Perkirakan Pajak Kendaraan Bermotor tahunan dari nilai jual kendaraan, tarif PKB, <strong>opsen pajak</strong> yang berlaku sejak 2025, dan iuran SWDKLLJ.</p>
+<p data-policy></p>
 
 <form class="calc" onsubmit="return hitungPKB(event)">
   <label>Nilai Jual Kendaraan Bermotor / NJKB (Rp)
@@ -63,8 +64,9 @@ function hitungPKB(e) {
   var pakaiOpsen = document.getElementById("pk-opsen").value === "ya";
   if (njkb <= 0 || tarif <= 0) { show("pk-hasil", "Periksa NJKB dan tarif PKB."); return false; }
 
+  var opsenR = ((window.KID_DATA && window.KID_DATA.kendaraan && window.KID_DATA.kendaraan.opsen) || 0.66);
   var pkb = njkb * tarif;
-  var opsen = pakaiOpsen ? pkb * 0.66 : 0;
+  var opsen = pakaiOpsen ? pkb * opsenR : 0;
   var total = pkb + opsen + swd;
   var catatanProg = urutan !== "1"
     ? "<br><span style=\"color:var(--muted)\">Kepemilikan ke-" + urutan + ": pastikan tarif progresif daerah Anda sudah dimasukkan di kolom tarif.</span>"
@@ -73,7 +75,7 @@ function hitungPKB(e) {
   show("pk-hasil",
     "<strong>Perkiraan total: " + rp(total) + " per tahun</strong><br>" +
     "PKB pokok: " + rp(pkb) + "<br>" +
-    (opsen ? "Opsen pajak (66%): " + rp(opsen) + "<br>" : "") +
+    (opsen ? "Opsen pajak (" + (opsenR * 100) + "%): " + rp(opsen) + "<br>" : "") +
     "SWDKLLJ: " + rp(swd) + catatanProg +
     bar([
       { label: "PKB", nilai: pkb, warna: "#2f6bff" },

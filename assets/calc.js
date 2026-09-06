@@ -104,6 +104,101 @@ function bar(potongan) {
   }
 })();
 
+// Label "tarif & ketentuan berlaku" pada kalkulator kebijakan (elemen [data-policy]).
+(function () {
+  function init() {
+    var d = window.KID_DATA || {};
+    var list = document.querySelectorAll("[data-policy]");
+    for (var i = 0; i < list.length; i++) {
+      list[i].className = "art-meta";
+      list[i].textContent = "Tarif & ketentuan mengikuti aturan " + (d.tahun_berlaku || "") +
+        (d.diperbarui ? " · diperbarui " + d.diperbarui : "") +
+        ". Selalu verifikasi dengan sumber resmi.";
+    }
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else { init(); }
+})();
+
+// Kirim form (masukan / kontak) via AJAX ke Web3Forms tanpa pindah halaman.
+function kirimForm(form, onDone) {
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var btn = form.querySelector('button[type="submit"]');
+    if (btn) { btn.disabled = true; btn.textContent = "Mengirim…"; }
+    fetch(form.action, { method: "POST", body: new FormData(form) })
+      .then(function (r) { return r.json(); })
+      .then(function (j) { onDone(j && j.success, j); })
+      .catch(function () { onDone(false); });
+  });
+}
+
+// Widget masukan (jempol + form opsional).
+(function () {
+  function init() {
+    var box = document.querySelector("[data-feedback]");
+    if (!box) return;
+    var key = "kid-fb:" + location.pathname;
+    var form = box.querySelector(".fb-form");
+    var q = box.querySelector(".fb-q");
+    var buttons = box.querySelector(".fb-buttons");
+    function thanks(msg) {
+      if (buttons) buttons.hidden = true;
+      if (form) form.hidden = true;
+      q.textContent = msg;
+    }
+    try { if (localStorage.getItem(key)) thanks("Terima kasih, masukan Anda sudah tercatat."); } catch (e) {}
+
+    box.querySelectorAll(".fb-btn").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var v = b.getAttribute("data-fb");
+        try { localStorage.setItem(key, v); } catch (e) {}
+        if (v === "tidak" && form) {
+          if (buttons) buttons.hidden = true;
+          var pg = form.querySelector(".fb-page");
+          if (pg) pg.value = location.href;
+          form.hidden = false;
+          q.textContent = "Terima kasih. Apa yang bisa diperbaiki?";
+          var ta = form.querySelector("textarea");
+          if (ta) ta.focus();
+        } else {
+          thanks(v === "ya"
+            ? "Senang bisa membantu. Terima kasih!"
+            : "Terima kasih. Anda juga bisa mengirim koreksi lewat halaman Kontak.");
+        }
+      });
+    });
+    if (form) {
+      kirimForm(form, function (ok) {
+        thanks(ok ? "Masukan terkirim. Terima kasih!"
+          : "Gagal mengirim. Coba lagi atau hubungi kami lewat halaman Kontak.");
+      });
+    }
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else { init(); }
+})();
+
+// Form kontak (di halaman Kontak).
+(function () {
+  function init() {
+    var form = document.getElementById("kontak-form");
+    if (!form) return;
+    var msg = document.getElementById("kontak-msg");
+    kirimForm(form, function (ok) {
+      form.hidden = true;
+      if (msg) msg.textContent = ok
+        ? "Pesan terkirim. Terima kasih, kami akan menindaklanjuti."
+        : "Maaf, pengiriman gagal. Silakan kirim email langsung ke alamat di atas.";
+    });
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else { init(); }
+})();
+
 // Toggle tema terang/gelap.
 (function () {
   function curTheme() {

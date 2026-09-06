@@ -1,5 +1,6 @@
 <h1>Kalkulator Gaji Bersih</h1>
 <p>Perkirakan gaji bersih (<em>take home pay</em>) bulanan Anda setelah potongan PPh 21, BPJS Kesehatan, dan BPJS Ketenagakerjaan, berdasarkan status PTKP.</p>
+<p data-policy></p>
 
 <form class="calc" onsubmit="return hitungGaji(event)">
   <label>Penghasilan bruto per bulan (Rp)
@@ -72,24 +73,35 @@ function hitungGaji(e) {
   var ikutKes = document.getElementById("gj-kes").value === "ya";
   var npwp = document.getElementById("gj-npwp").value === "ya";
 
-  var biayaJabatan = Math.min(bruto * 0.05, 500000);
-  var jht = ikutTK ? bruto * 0.02 : 0;
-  var jp = ikutTK ? Math.min(bruto, 10547400) * 0.01 : 0;
-  var bpjsKes = ikutKes ? Math.min(bruto, 12000000) * 0.01 : 0;
+  var P = (window.KID_DATA && window.KID_DATA.pajak) || {};
+  var B = (window.KID_DATA && window.KID_DATA.bpjs) || {};
+  var jabPersen = P.biaya_jabatan_persen || 0.05;
+  var jabMaks = P.biaya_jabatan_maks_bulan || 500000;
+  var jhtR = B.jht_karyawan || 0.02, jpR = B.jp_karyawan || 0.01;
+  var jpCap = B.jp_batas_upah || 10547400;
+  var kesR = B.kesehatan_karyawan || 0.01, kesCap = B.kesehatan_batas_upah || 12000000;
+
+  var biayaJabatan = Math.min(bruto * jabPersen, jabMaks);
+  var jht = ikutTK ? bruto * jhtR : 0;
+  var jp = ikutTK ? Math.min(bruto, jpCap) * jpR : 0;
+  var bpjsKes = ikutKes ? Math.min(bruto, kesCap) * kesR : 0;
 
   var netoBulan = bruto - biayaJabatan - jht - jp;
   var netoTahun = netoBulan * 12;
-  var ptkp = 54000000 + (kawin ? 4500000 : 0) + Math.min(tanggungan, 3) * 4500000;
+  var ptkp = (P.ptkp_wp || 54000000)
+    + (kawin ? (P.ptkp_kawin || 4500000) : 0)
+    + Math.min(tanggungan, P.ptkp_maks_tanggungan || 3) * (P.ptkp_tanggungan || 4500000);
   var pkp = Math.max(0, Math.floor((netoTahun - ptkp) / 1000) * 1000);
 
-  var lapis = [[60000000, 0.05], [190000000, 0.15], [250000000, 0.25], [4500000000, 0.30], [Infinity, 0.35]];
+  var lapis = (P.progresif || [[60000000, 0.05], [190000000, 0.15], [250000000, 0.25], [4500000000, 0.30], [null, 0.35]])
+    .map(function (x) { return [x[0] === null ? Infinity : x[0], x[1]]; });
   var sisa = pkp, pphTahun = 0;
   for (var i = 0; i < lapis.length && sisa > 0; i++) {
     var kena = Math.min(sisa, lapis[i][0]);
     pphTahun += kena * lapis[i][1];
     sisa -= kena;
   }
-  if (!npwp) pphTahun *= 1.2;
+  if (!npwp) pphTahun *= (P.non_npwp_faktor || 1.2);
   var pphBulan = pphTahun / 12;
 
   var potongan = jht + jp + bpjsKes + pphBulan;

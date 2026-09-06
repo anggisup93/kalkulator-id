@@ -1,0 +1,39 @@
+{
+  "_catatan": "Konstanta kebijakan terpusat. Ubah di sini saat aturan berubah, lalu build ulang. 'progresif': null pada batas berarti tak terhingga.",
+  "tahun_berlaku": 2026,
+  "diperbarui": "Februari 2026",
+  "pajak": {
+    "ptkp_wp": 54000000,
+    "ptkp_kawin": 4500000,
+    "ptkp_tanggungan": 4500000,
+    "ptkp_maks_tanggungan": 3,
+    "progresif": [[60000000, 0.05], [190000000, 0.15], [250000000, 0.25], [4500000000, 0.30], [null, 0.35]],
+    "biaya_jabatan_persen": 0.05,
+    "biaya_jabatan_maks_bulan": 500000,
+    "non_npwp_faktor": 1.2,
+    "ppn_default": 11,
+    "ppn_opsi": [11, 12],
+    "pajak_bunga_deposito": 0.20,
+    "deposito_bebas_pajak_maks": 7500000,
+    "pajak_kupon_sbn": 0.10
+  },
+  "bpjs": {
+    "jht_karyawan": 0.02,
+    "jp_karyawan": 0.01,
+    "jp_batas_upah": 10547400,
+    "kesehatan_karyawan": 0.01,
+    "kesehatan_batas_upah": 12000000
+  },
+  "kendaraan": {
+    "opsen": 0.66,
+    "swdkllj_mobil": 143000,
+    "swdkllj_motor": 35000,
+    "swdkllj_motor_besar": 83000
+  },
+  "zakat": {
+    "kadar": 0.025,
+    "nisab_gram_emas": 85,
+    "harga_emas_per_gram": 1350000,
+    "harga_beras_per_kg": 15000
+  }
+}

@@ -1,5 +1,6 @@
 <h1>Kalkulator Bunga Deposito</h1>
 <p>Hitung bunga deposito per bulan dan total dana saat jatuh tempo, sudah dipotong pajak bunga 20%, dari nominal penempatan, suku bunga, dan tenor.</p>
+<p data-policy></p>
 
 <form class="calc" onsubmit="return hitungDeposito(event)">
   <label>Nominal penempatan (Rp)
@@ -58,9 +59,12 @@ function hitungDeposito(e) {
   var opsiPajak = document.getElementById("dp-pajak").value;
   if (pokok <= 0 || bunga < 0) { show("dp-hasil", "Periksa nominal dan suku bunga."); return false; }
 
-  var kenaPajak = opsiPajak === "ya" || (opsiPajak === "auto" && pokok > 7500000);
+  var P = (window.KID_DATA && window.KID_DATA.pajak) || {};
+  var tarifPajak = P.pajak_bunga_deposito || 0.20;
+  var batasBebas = P.deposito_bebas_pajak_maks || 7500000;
+  var kenaPajak = opsiPajak === "ya" || (opsiPajak === "auto" && pokok > batasBebas);
   var bruto = pokok * bunga * (tenor / 12);
-  var pajak = kenaPajak ? bruto * 0.2 : 0;
+  var pajak = kenaPajak ? bruto * tarifPajak : 0;
   var bersih = bruto - pajak;
   var perBulan = bersih / tenor;
   var jatuhTempo = pokok + bersih;
@@ -69,7 +73,7 @@ function hitungDeposito(e) {
     "<strong>Bunga bersih (" + tenor + " bln): " + rp(bersih) + "</strong><br>" +
     "Setara " + rp(perBulan) + " per bulan<br>" +
     "Bunga bruto: " + rp(bruto) + "<br>" +
-    "Pajak 20%: " + rp(pajak) + (kenaPajak ? "" : " (tidak kena)") + "<br>" +
+    "Pajak " + (tarifPajak * 100) + "%: " + rp(pajak) + (kenaPajak ? "" : " (tidak kena)") + "<br>" +
     "Dana saat jatuh tempo: " + rp(jatuhTempo) +
     bar([
       { label: "Pokok", nilai: pokok, warna: "#2f6bff" },
