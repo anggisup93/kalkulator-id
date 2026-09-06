@@ -667,6 +667,7 @@ h3 { font-size: 1.05rem; margin: 22px 0 6px; }
 }
 .fb-btn:hover { border-color: var(--accent); }
 .feedback .fb-link { margin-left: auto; font-size: 13px; }
+.fb-form[hidden] { display: none; }
 .fb-form {
   flex-basis: 100%;
   display: grid;
@@ -690,6 +691,62 @@ h3 { font-size: 1.05rem; margin: 22px 0 6px; }
   box-shadow: 0 0 0 3px rgba(47, 107, 255, .25);
 }
 .fb-form .btn-sec { justify-self: start; }
+
+/* ---------- Tabel angsuran (amortisasi) ---------- */
+.amort {
+  margin: 14px 0 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.amort > summary {
+  padding: 12px 16px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--accent);
+  list-style: none;
+}
+.amort > summary::-webkit-details-marker { display: none; }
+.amort > summary::before { content: "▸ "; }
+.amort[open] > summary::before { content: "▾ "; }
+.amort-mode {
+  display: block;
+  padding: 0 16px 10px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.amort-mode select {
+  font: inherit;
+  margin-left: 8px;
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--fg);
+}
+.amort-wrap {
+  max-height: 420px;
+  overflow: auto;
+  border-top: 1px solid var(--line);
+}
+.amort table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.amort th, .amort td {
+  padding: 7px 12px;
+  text-align: right;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+.amort th:first-child, .amort td:first-child { text-align: left; }
+.amort thead th {
+  position: sticky;
+  top: 0;
+  background: var(--surface-2);
+  font-weight: 700;
+}
 
 /* ---------- Grid statistik (hitung kata) ---------- */
 .stat-grid {

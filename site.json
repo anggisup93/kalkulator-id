@@ -7,7 +7,6 @@
   "web3forms_key": "54cf5c1a-8ff5-45d1-98a0-34c74824da9a",
   "primary_nav": ["kpr", "gaji-bersih", "persentase", "bmi", "konversi-satuan"],
   "coming_soon": [
-    { "icon": "🧾", "name": "PPh 21 Metode TER", "note": "Potongan pajak gaji bulanan skema TER 2024" },
     { "icon": "📊", "name": "Simulasi Kredit", "note": "Bandingkan bunga flat, efektif, dan anuitas" },
     { "icon": "🗓️", "name": "Weton & Kalender Jawa", "note": "Konversi tanggal ke weton dan pasaran" },
     { "icon": "🎁", "name": "Kalkulator THR", "note": "Hitung THR sesuai masa kerja" },
@@ -257,6 +256,42 @@
       "icon": "🏪",
       "title": "Kalkulator Harga Jual Produk - HPP, Margin, dan Biaya Marketplace",
       "description": "Tentukan harga jual dari modal (HPP), target margin atau markup, biaya admin marketplace, dan ongkos lain."
+    },
+    {
+      "slug": "pph21-ter",
+      "nav": "PPh 21 TER",
+      "in_index": true,
+      "category": "Keuangan",
+      "icon": "🧾",
+      "title": "Kalkulator PPh 21 TER Bulanan - Potongan Pajak Gaji 2024",
+      "description": "Hitung potongan PPh 21 bulanan dengan Tarif Efektif Rata-rata (TER) sesuai PMK 168/2023, berdasarkan penghasilan bruto dan status PTKP."
+    },
+    {
+      "slug": "dana-pensiun",
+      "nav": "Dana Pensiun",
+      "in_index": true,
+      "category": "Keuangan",
+      "icon": "🌴",
+      "title": "Kalkulator Dana Pensiun - Berapa yang Harus Ditabung untuk Pensiun",
+      "description": "Hitung target dana pensiun dari pengeluaran bulanan, inflasi, dan usia pensiun, plus setoran bulanan yang dibutuhkan dan cek aturan 4%."
+    },
+    {
+      "slug": "dana-pendidikan",
+      "nav": "Dana Pendidikan Anak",
+      "in_index": true,
+      "category": "Keuangan",
+      "icon": "🎒",
+      "title": "Kalkulator Dana Pendidikan Anak - Tabungan Biaya Kuliah",
+      "description": "Hitung perkiraan biaya kuliah anak saat waktunya tiba dengan inflasi pendidikan, dan setoran bulanan yang perlu disisihkan sejak sekarang."
+    },
+    {
+      "slug": "sewa-vs-beli",
+      "nav": "Sewa vs Beli Rumah",
+      "in_index": true,
+      "category": "Keuangan",
+      "icon": "🏘️",
+      "title": "Kalkulator Sewa vs Beli Rumah - Mana yang Lebih Menguntungkan",
+      "description": "Bandingkan kekayaan bersih setelah beberapa tahun antara membeli rumah lewat KPR dan menyewa sambil menginvestasikan selisihnya."
     },
     {
       "slug": "konversi-mata-uang",

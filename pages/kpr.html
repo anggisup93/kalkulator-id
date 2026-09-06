@@ -19,6 +19,17 @@
 
 <div id="kpr-hasil" class="result" hidden></div>
 
+<details class="amort" id="kpr-amort" hidden>
+  <summary>Lihat tabel angsuran (jadwal amortisasi)</summary>
+  <label class="amort-mode">Tampilan
+    <select id="kpr-amort-mode">
+      <option value="tahun" selected>Ringkas per tahun</option>
+      <option value="bulan">Rinci per bulan</option>
+    </select>
+  </label>
+  <div class="amort-wrap"><table id="kpr-amort-tabel"></table></div>
+</details>
+
 <section class="article">
   <h2>Cara kerja perhitungan</h2>
   <p>Cicilan pada kalkulator ini dihitung memakai metode <strong>anuitas</strong>, skema yang paling umum dipakai bank di Indonesia. Pada metode anuitas, nilai angsuran per bulan tetap sama sepanjang tenor, tetapi komposisinya berubah: di awal masa kredit porsi bunga besar dan porsi pokok kecil, lalu perlahan terbalik menjelang akhir tenor.</p>
@@ -60,6 +71,51 @@ function hitungKPR(e) {
     ]),
     "Kalkulator KPR — cicilan per bulan " + rp(cicilan) + " (pokok " + rp(pokok) +
     ", total bunga " + rp(total - pokok) + ").");
+
+  kprJadwal = amortisasiAnuitas(pokok, i, Math.round(n), cicilan);
+  document.getElementById("kpr-amort").hidden = false;
+  renderKprAmort();
   return false;
 }
+
+var kprJadwal = null;
+
+// Jadwal amortisasi anuitas: array baris {bulan, angsuran, bunga, pokok, sisa}.
+function amortisasiAnuitas(pokok, i, n, angsuran) {
+  var rows = [], sisa = pokok;
+  for (var m = 1; m <= n; m++) {
+    var bunga = sisa * i;
+    var kePokok = angsuran - bunga;
+    if (m === n) { kePokok = sisa; angsuran = bunga + kePokok; }
+    sisa = Math.max(0, sisa - kePokok);
+    rows.push({ bulan: m, angsuran: angsuran, bunga: bunga, pokok: kePokok, sisa: sisa });
+  }
+  return rows;
+}
+
+function renderKprAmort() {
+  if (!kprJadwal) return;
+  var mode = document.getElementById("kpr-amort-mode").value;
+  var t = document.getElementById("kpr-amort-tabel");
+  var body = "";
+  if (mode === "bulan") {
+    body = kprJadwal.map(function (r) {
+      return "<tr><td>" + r.bulan + "</td><td>" + rp(r.angsuran) + "</td><td>" +
+        rp(r.bunga) + "</td><td>" + rp(r.pokok) + "</td><td>" + rp(r.sisa) + "</td></tr>";
+    }).join("");
+  } else {
+    for (var y = 0; y * 12 < kprJadwal.length; y++) {
+      var seg = kprJadwal.slice(y * 12, y * 12 + 12);
+      var sb = seg.reduce(function (a, r) { return a + r.bunga; }, 0);
+      var sp = seg.reduce(function (a, r) { return a + r.pokok; }, 0);
+      var sa = seg.reduce(function (a, r) { return a + r.angsuran; }, 0);
+      body += "<tr><td>Tahun " + (y + 1) + "</td><td>" + rp(sa) + "</td><td>" +
+        rp(sb) + "</td><td>" + rp(sp) + "</td><td>" + rp(seg[seg.length - 1].sisa) + "</td></tr>";
+    }
+  }
+  t.innerHTML = "<thead><tr><th>" + (mode === "bulan" ? "Bulan" : "Periode") +
+    "</th><th>Angsuran</th><th>Bunga</th><th>Pokok</th><th>Sisa pokok</th></tr></thead><tbody>" +
+    body + "</tbody>";
+}
+document.getElementById("kpr-amort-mode").addEventListener("change", renderKprAmort);
 </script>

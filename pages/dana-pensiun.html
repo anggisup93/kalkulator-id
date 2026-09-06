@@ -1,0 +1,95 @@
+<h1>Kalkulator Dana Pensiun</h1>
+<p>Hitung berapa dana yang perlu Anda kumpulkan untuk pensiun, dan berapa yang harus ditabung tiap bulan mulai sekarang agar targetnya tercapai.</p>
+
+<form class="calc" onsubmit="return hitungPensiun(event)">
+  <label>Usia sekarang
+    <input id="pn-usia" type="number" min="15" max="70" value="30" required>
+  </label>
+  <label>Usia pensiun
+    <input id="pn-pensiun" type="number" min="40" max="75" value="56" required>
+  </label>
+  <label>Perkiraan usia hidup
+    <input id="pn-hidup" type="number" min="60" max="100" value="80" required>
+  </label>
+  <label>Pengeluaran bulanan saat ini (Rp)
+    <input id="pn-belanja" type="text" inputmode="numeric" data-money value="7000000" required>
+  </label>
+  <label>Inflasi per tahun (%)
+    <input id="pn-inflasi" type="number" min="0" step="0.1" value="4">
+  </label>
+  <label>Imbal hasil sebelum pensiun (%/th)
+    <input id="pn-return1" type="number" min="0" step="0.1" value="8">
+  </label>
+  <label>Imbal hasil saat pensiun (%/th)
+    <input id="pn-return2" type="number" min="0" step="0.1" value="5">
+  </label>
+  <label>Dana pensiun yang sudah ada (Rp)
+    <input id="pn-awal" type="text" inputmode="numeric" data-money value="0">
+  </label>
+  <button type="submit">Hitung Dana Pensiun</button>
+</form>
+
+<div id="pn-hasil" class="result" hidden></div>
+
+<section class="article">
+  <h2>Cara perhitungan</h2>
+  <p>Pengeluaran bulanan hari ini diproyeksikan ke masa pensiun memakai inflasi. Dari situ dihitung berapa dana yang harus tersedia saat mulai pensiun agar cukup menutup pengeluaran selama masa pensiun, dengan asumsi sisa dana masih diinvestasikan pada imbal hasil yang lebih konservatif.</p>
+  <code class="formula">Belanja bulanan saat pensiun = belanja sekarang &times; (1 + inflasi)^n
+Target dana = belanja tahunan saat pensiun &times; faktor anuitas (imbal hasil riil, masa pensiun)
+Setoran per bulan = (target &minus; nilai depan dana awal) &times; r / ((1 + r)^N &minus; 1)</code>
+  <p>Sebagai pembanding cepat, ditampilkan juga hasil <strong>aturan 4%</strong>: target dana kira-kira 25 kali pengeluaran tahunan pertama saat pensiun. Aturan ini populer di kalangan perencana keuangan sebagai patokan kasar tingkat penarikan yang aman.</p>
+
+  <h2>Contoh</h2>
+  <p>Usia 30, pensiun 56, hidup sampai 80, pengeluaran Rp7.000.000 per bulan, inflasi 4%, imbal hasil 8% sebelum dan 5% sesudah pensiun. Saat pensiun, pengeluaran menjadi sekitar Rp19,4 juta per bulan. Target dana sekitar Rp5 miliar, dan setoran yang dibutuhkan sekitar Rp4,8 juta per bulan.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Apakah dana pensiun ini termasuk dari BPJS Ketenagakerjaan?</h3>
+  <p>Belum. Jaminan Hari Tua dan Jaminan Pensiun BPJS Ketenagakerjaan bisa Anda kurangkan dari target: perkirakan nilainya saat pensiun lalu masukkan sebagai bagian dari "dana yang sudah ada" atau kurangi manual dari hasilnya.</p>
+  <h3>Kenapa imbal hasil saat pensiun dibuat lebih rendah?</h3>
+  <p>Setelah pensiun, portofolio biasanya digeser ke aset yang lebih stabil supaya tidak terguncang saat pasar turun, sehingga imbal hasilnya cenderung lebih rendah tetapi lebih aman.</p>
+  <h3>Angka targetnya terasa sangat besar, wajar?</h3>
+  <p>Wajar, karena inflasi selama puluhan tahun melipatgandakan kebutuhan, dan dana harus bertahan sepanjang masa pensiun. Kuncinya adalah mulai menabung sedini mungkin agar efek bunga majemuk bekerja maksimal.</p>
+</section>
+
+<script>
+function hitungPensiun(e) {
+  e.preventDefault();
+  var usia = num("pn-usia"), pensiun = num("pn-pensiun"), hidup = num("pn-hidup");
+  var belanja = num("pn-belanja");
+  var inflasi = num("pn-inflasi") / 100;
+  var r1 = num("pn-return1") / 100, r2 = num("pn-return2") / 100;
+  var awal = num("pn-awal");
+  var n = pensiun - usia;
+  var m = hidup - pensiun;
+  if (n <= 0 || m <= 0 || belanja <= 0) {
+    show("pn-hasil", "Periksa usia (pensiun harus di atas usia sekarang, dan usia hidup di atas usia pensiun) serta pengeluaran.");
+    return false;
+  }
+
+  var belanjaBulananPensiun = belanja * Math.pow(1 + inflasi, n);
+  var belanjaTahunanPensiun = belanjaBulananPensiun * 12;
+
+  // Imbal hasil riil selama masa pensiun (setelah inflasi).
+  var rr = (1 + r2) / (1 + inflasi) - 1;
+  var target = Math.abs(rr) < 1e-9
+    ? belanjaTahunanPensiun * m
+    : belanjaTahunanPensiun * (1 - Math.pow(1 + rr, -m)) / rr;
+
+  var target4persen = belanjaTahunanPensiun * 25;
+
+  // Setoran bulanan sebelum pensiun.
+  var rb = r1 / 12, N = n * 12;
+  var nilaiAwal = awal * Math.pow(1 + rb, N);
+  var butuh = Math.max(0, target - nilaiAwal);
+  var setoran = rb === 0 ? butuh / N : butuh * rb / (Math.pow(1 + rb, N) - 1);
+
+  var f = function (x) { return "Rp " + Math.round(x).toLocaleString("id-ID"); };
+  show("pn-hasil",
+    "<strong>Target dana pensiun: " + f(target) + "</strong><br>" +
+    "Setoran yang dibutuhkan: <strong>" + f(setoran) + " per bulan</strong> selama " + n + " tahun<br>" +
+    "Pengeluaran saat mulai pensiun: " + f(belanjaBulananPensiun) + " per bulan<br>" +
+    "Pembanding aturan 4% (25&times; pengeluaran tahunan): " + f(target4persen),
+    "Dana Pensiun — target " + f(target) + ", perlu nabung " + f(setoran) + "/bulan selama " + n + " tahun.");
+  return false;
+}
+</script>

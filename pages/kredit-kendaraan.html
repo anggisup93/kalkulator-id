@@ -31,6 +31,11 @@
 
 <div id="kr-hasil" class="result" hidden></div>
 
+<details class="amort" id="kr-amort" hidden>
+  <summary>Lihat tabel angsuran per bulan</summary>
+  <div class="amort-wrap"><table id="kr-amort-tabel"></table></div>
+</details>
+
 <section class="article">
   <h2>Cara kerja bunga flat</h2>
   <p>Pada bunga flat, bunga dihitung dari pokok pinjaman awal dan tidak berkurang meski utang menyusut, sehingga angsuran per bulan tetap sama. Inilah sebabnya bunga flat yang terlihat kecil sebenarnya setara bunga efektif sekitar 1,8&ndash;1,9 kali lipatnya.</p>
@@ -84,6 +89,19 @@ function hitungKredit(e) {
     ]),
     "Kalkulator Kredit Kendaraan — OTR " + rp(otr) + ", DP " + rp(dp) + ", " + tenor +
     " bulan: angsuran sekitar " + rp(angsuran) + "/bulan (total bunga " + rp(totalBunga) + ").");
+
+  // Jadwal flat: bunga & asuransi rata tiap bulan, pokok menurun linear.
+  var bungaBln = totalBunga / tenor, asrBln = totalAsuransi / tenor, pokokBln = pokok / tenor;
+  var sisa = pokok, body = "";
+  for (var m = 1; m <= tenor; m++) {
+    sisa = Math.max(0, sisa - pokokBln);
+    body += "<tr><td>" + m + "</td><td>" + rp(angsuran) + "</td><td>" + rp(bungaBln) +
+      "</td><td>" + rp(pokokBln) + "</td><td>" + rp(sisa) + "</td></tr>";
+  }
+  document.getElementById("kr-amort-tabel").innerHTML =
+    "<thead><tr><th>Bulan</th><th>Angsuran</th><th>Bunga</th><th>Pokok</th><th>Sisa pokok</th></tr></thead><tbody>" +
+    body + "</tbody>";
+  document.getElementById("kr-amort").hidden = false;
   return false;
 }
 </script>

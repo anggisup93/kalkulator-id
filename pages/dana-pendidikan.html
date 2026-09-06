@@ -1,0 +1,82 @@
+<h1>Kalkulator Dana Pendidikan Anak</h1>
+<p>Hitung perkiraan biaya kuliah anak saat waktunya tiba dan berapa yang perlu Anda sisihkan tiap bulan mulai sekarang.</p>
+
+<form class="calc" onsubmit="return hitungPendidikan(event)">
+  <label>Usia anak sekarang (tahun)
+    <input id="dp-usia" type="number" min="0" max="17" step="0.5" value="3" required>
+  </label>
+  <label>Usia saat mulai kuliah
+    <input id="dp-mulai" type="number" min="15" max="25" value="18" required>
+  </label>
+  <label>Perkiraan total biaya pendidikan &mdash; harga sekarang (Rp)
+    <input id="dp-biaya" type="text" inputmode="numeric" data-money value="200000000" required>
+  </label>
+  <label>Inflasi biaya pendidikan (%/th)
+    <input id="dp-inflasi" type="number" min="0" step="0.1" value="10">
+  </label>
+  <label>Imbal hasil investasi (%/th)
+    <input id="dp-return" type="number" min="0" step="0.1" value="8">
+  </label>
+  <label>Dana yang sudah terkumpul (Rp)
+    <input id="dp-awal" type="text" inputmode="numeric" data-money value="0">
+  </label>
+  <button type="submit">Hitung Dana Pendidikan</button>
+</form>
+
+<div id="dp-hasil" class="result" hidden></div>
+
+<section class="article">
+  <h2>Cara perhitungan</h2>
+  <p>Biaya pendidikan hari ini dinaikkan dengan inflasi pendidikan sampai tahun anak mulai kuliah. Dana yang sudah ada ikut dikembangkan dengan asumsi imbal hasil investasi. Selisih antara target dan proyeksi dana awal dibagi menjadi setoran bulanan.</p>
+  <code class="formula">Biaya saat kuliah = biaya sekarang &times; (1 + inflasi pendidikan)^n
+Setoran per bulan = (biaya saat kuliah &minus; nilai depan dana awal) &times; r / ((1 + r)^N &minus; 1)
+n = tahun menabung, r = imbal hasil bulanan, N = n &times; 12</code>
+  <p>Inflasi biaya pendidikan di Indonesia biasanya lebih tinggi dari inflasi umum, sering dikutip di kisaran 7&ndash;15% per tahun tergantung jenjang dan jenis sekolah. Semakin dini menabung, semakin ringan setoran bulanannya.</p>
+
+  <h2>Contoh</h2>
+  <p>Anak usia 3 tahun, mulai kuliah usia 18 (15 tahun menabung), perkiraan total biaya kuliah Rp200.000.000 dengan harga sekarang, inflasi pendidikan 10%, imbal hasil investasi 8%. Biaya saat anak kuliah menjadi sekitar Rp835 juta, dan setoran yang dibutuhkan sekitar Rp2,4 juta per bulan.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Biaya pendidikan yang dimasukkan sebaiknya untuk berapa tahun kuliah?</h3>
+  <p>Masukkan estimasi total selama menempuh pendidikan yang dituju, misalnya uang pangkal ditambah biaya semester selama empat tahun, plus biaya hidup jika kuliah di luar kota. Gunakan angka harga saat ini; kalkulator yang menaikkannya dengan inflasi.</p>
+  <h3>Instrumen apa yang cocok untuk dana pendidikan?</h3>
+  <p>Untuk jangka lebih dari 10 tahun, sebagian orang memakai reksa dana saham atau campuran. Mendekati waktu pakai (2&ndash;3 tahun sebelum), dana sebaiknya digeser ke instrumen yang lebih stabil agar tidak turun nilainya saat dibutuhkan.</p>
+  <h3>Bagaimana kalau saya belum sanggup menyetor sebesar hasilnya?</h3>
+  <p>Mulai dari yang mampu, lalu naikkan setorannya secara bertahap seiring penghasilan bertambah. Anda juga bisa menurunkan target, memperpanjang waktu menabung, atau mempertimbangkan beasiswa dan pinjaman pendidikan sebagai pelengkap.</p>
+</section>
+
+<script>
+function hitungPendidikan(e) {
+  e.preventDefault();
+  var usia = num("dp-usia"), mulai = num("dp-mulai");
+  var biaya = num("dp-biaya");
+  var inflasi = num("dp-inflasi") / 100;
+  var r = num("dp-return") / 100;
+  var awal = num("dp-awal");
+  var n = mulai - usia;
+  if (n <= 0 || biaya <= 0) {
+    show("dp-hasil", "Usia mulai kuliah harus lebih besar dari usia sekarang, dan biaya harus diisi.");
+    return false;
+  }
+  var biayaNanti = biaya * Math.pow(1 + inflasi, n);
+  var rb = r / 12, N = Math.round(n * 12);
+  var nilaiAwal = awal * Math.pow(1 + rb, N);
+  var butuh = Math.max(0, biayaNanti - nilaiAwal);
+  var setoran = rb === 0 ? butuh / N : butuh * rb / (Math.pow(1 + rb, N) - 1);
+  var totalSetor = setoran * N;
+
+  var f = function (x) { return "Rp " + Math.round(x).toLocaleString("id-ID"); };
+  show("dp-hasil",
+    "<strong>Perkiraan biaya saat anak kuliah: " + f(biayaNanti) + "</strong><br>" +
+    "Setoran yang dibutuhkan: <strong>" + f(setoran) + " per bulan</strong> selama " + n + " tahun<br>" +
+    "Total yang akan Anda setor: " + f(totalSetor) + "<br>" +
+    "Kontribusi imbal hasil: " + f(Math.max(0, biayaNanti - nilaiAwal - totalSetor)) +
+    bar([
+      { label: "Setoran Anda", nilai: totalSetor, warna: "#2f6bff" },
+      { label: "Imbal hasil", nilai: Math.max(0, butuh - totalSetor), warna: "#12b76a" },
+      { label: "Dana awal (nilai depan)", nilai: nilaiAwal, warna: "#f79009" }
+    ]),
+    "Dana Pendidikan — biaya saat kuliah " + f(biayaNanti) + ", perlu nabung " + f(setoran) + "/bulan selama " + n + " tahun.");
+  return false;
+}
+</script>
