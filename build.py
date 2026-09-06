@@ -615,6 +615,13 @@ def main():
     write(DIST / "robots.txt",
           f"User-agent: *\nAllow: /\n\nSitemap: {domain}/sitemap.xml\n")
 
+    # --- ads.txt (Google AdSense) ---
+    ads_client = cfg.get("adsense_client", "").strip()
+    if ads_client:
+        pub = ads_client.replace("ca-", "", 1)
+        write(DIST / "ads.txt",
+              f"google.com, {pub}, DIRECT, f08c47fec0942fa0\n")
+
     # --- PWA: manifest + service worker (bisa dipasang & jalan offline) ---
     manifest = {
         "name": cfg["site_name"] + " - " + cfg["tagline"],
