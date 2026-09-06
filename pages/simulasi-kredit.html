@@ -1,20 +1,36 @@
 <h1>Simulasi Kredit</h1>
-<p>Hitung angsuran, total bunga, dan total bayar untuk sebuah pinjaman dengan metode <strong>bunga flat</strong> maupun <strong>bunga efektif / anuitas</strong>, lalu bandingkan keduanya.</p>
+<p>Bandingkan angsuran, total bunga, dan total bayar sebuah pinjaman dengan metode <strong>bunga flat</strong> dan <strong>bunga efektif / anuitas</strong>, ditampilkan berdampingan.</p>
 
-<form class="calc" onsubmit="return hitungKredit(event)">
-  <label>Jumlah pinjaman (Rp)
-    <input id="sk-pokok" type="text" inputmode="numeric" data-money value="100000000" required>
-  </label>
-  <label>Suku bunga per tahun (%)
-    <input id="sk-bunga" type="number" min="0" step="0.01" value="10" required>
-  </label>
-  <label>Tenor (bulan)
-    <input id="sk-tenor" type="number" min="1" max="360" value="36" required>
-  </label>
-  <button type="submit">Hitung &amp; Bandingkan</button>
-</form>
+<div class="vs">
+  <div class="vs-common">
+    <h3>Data pinjaman</h3>
+    <form class="calc" onsubmit="return hitungKredit(event)">
+      <label>Jumlah pinjaman (Rp)
+        <input id="sk-pokok" type="text" inputmode="numeric" data-money value="100000000" required>
+      </label>
+      <label>Suku bunga per tahun (%)
+        <input id="sk-bunga" type="number" min="0" step="0.01" value="10" required>
+      </label>
+      <label>Tenor (bulan)
+        <input id="sk-tenor" type="number" min="1" max="360" value="36" required>
+      </label>
+      <button type="submit">Bandingkan</button>
+    </form>
+  </div>
 
-<div id="sk-hasil" class="result" hidden></div>
+  <div id="sk-verdict" class="vs-verdict" hidden></div>
+
+  <div class="vs-cols">
+    <div class="vs-out" id="sk-out-flat">
+      <h3>Bunga flat</h3>
+      <div class="vs-body" id="sk-body-flat">&mdash;</div>
+    </div>
+    <div class="vs-out" id="sk-out-ef">
+      <h3>Bunga efektif / anuitas</h3>
+      <div class="vs-body" id="sk-body-ef">&mdash;</div>
+    </div>
+  </div>
+</div>
 
 <section class="article">
   <h2>Beda flat dan efektif</h2>
@@ -22,7 +38,7 @@
   <p>Pada <strong>bunga efektif</strong> (metode anuitas), bunga dihitung dari sisa pokok yang terus berkurang. Angsuran tetap, tetapi komposisinya bergeser: bunga besar di awal, mengecil menjelang akhir. Dipakai KPR dan kredit produktif.</p>
   <code class="formula">Flat:    angsuran = pokok/n + pokok &times; bunga% / 12
 Efektif: angsuran = pokok &times; i / (1 &minus; (1 + i)^-n),  i = bunga% / 12</code>
-  <p>Untuk persentase yang sama, bunga flat menghasilkan total bunga jauh lebih besar. Kalkulator ini juga menghitung bunga efektif setara dari skema flat &mdash; biasanya sekitar 1,8&ndash;1,9 kali angka flatnya.</p>
+  <p>Untuk persentase yang sama, bunga flat menghasilkan total bunga jauh lebih besar &mdash; biasanya setara bunga efektif sekitar 1,8&ndash;1,9 kali angka flatnya.</p>
 
   <h2>Contoh</h2>
   <p>Pinjaman Rp100.000.000, bunga 10% per tahun, tenor 36 bulan. Metode flat: angsuran Rp3.611.111 dan total bunga Rp30.000.000. Metode efektif: angsuran Rp3.226.719 dan total bunga sekitar Rp16.162.000. Bunga flat 10% di sini setara bunga efektif sekitar 18%.</p>
@@ -48,40 +64,42 @@ function bungaEfektifSetara(pokok, angsuranFlat, n) {
   }
   return (lo + hi) / 2 * 12;
 }
+function baris(label, nilai) {
+  return '<div class="vs-row"><span>' + label + '</span><span>' + nilai + '</span></div>';
+}
 function hitungKredit(e) {
   e.preventDefault();
   var pokok = num("sk-pokok");
   var bunga = num("sk-bunga") / 100;
   var n = Math.round(num("sk-tenor"));
-  if (pokok <= 0 || n <= 0) { show("sk-hasil", "Periksa jumlah pinjaman dan tenor."); return false; }
+  var vd = document.getElementById("sk-verdict");
+  if (pokok <= 0 || n <= 0) { vd.hidden = false; vd.textContent = "Periksa jumlah pinjaman dan tenor."; return false; }
 
   var angsFlat = pokok / n + pokok * bunga / 12;
   var totalFlat = angsFlat * n;
-  var bungaFlat = totalFlat - pokok;
-
   var i = bunga / 12;
   var angsEf = anuitas(pokok, i, n);
   var totalEf = angsEf * n;
-  var bungaEf = totalEf - pokok;
-
   var efSetara = bungaEfektifSetara(pokok, angsFlat, n) * 100;
+  var selisih = totalFlat - totalEf;
 
-  show("sk-hasil",
-    "<strong>Metode flat</strong><br>" +
-    "Angsuran/bulan: " + rp(angsFlat) + " &middot; Total bunga: " + rp(bungaFlat) +
-    " &middot; Total bayar: " + rp(totalFlat) + "<br><br>" +
-    "<strong>Metode efektif / anuitas</strong><br>" +
-    "Angsuran/bulan: " + rp(angsEf) + " &middot; Total bunga: " + rp(bungaEf) +
-    " &middot; Total bayar: " + rp(totalEf) + "<br><br>" +
-    "Selisih total bunga: <strong>" + rp(bungaFlat - bungaEf) + "</strong> (flat lebih mahal)<br>" +
-    "Bunga flat " + num("sk-bunga") + "% setara bunga efektif <strong>" + efSetara.toFixed(1) + "%</strong> per tahun" +
-    bar([
-      { label: "Pokok", nilai: pokok, warna: "#2f6bff" },
-      { label: "Bunga efektif", nilai: bungaEf, warna: "#12b76a" },
-      { label: "Ekstra bunga flat", nilai: bungaFlat - bungaEf, warna: "#f04438" }
-    ]),
-    "Simulasi Kredit " + rp(pokok) + " @ " + num("sk-bunga") + "%, " + n + " bln: angsuran flat " +
-    rp(angsFlat) + " / efektif " + rp(angsEf) + ". Flat setara efektif ~" + efSetara.toFixed(1) + "%.");
+  document.getElementById("sk-body-flat").innerHTML =
+    '<span class="vs-big">' + rp(angsFlat) + ' / bln</span>' +
+    baris("Total bunga", rp(totalFlat - pokok)) +
+    baris("Total bayar", rp(totalFlat)) +
+    baris("Setara bunga efektif", "&plusmn; " + efSetara.toFixed(1) + "%/th");
+  document.getElementById("sk-body-ef").innerHTML =
+    '<span class="vs-big">' + rp(angsEf) + ' / bln</span>' +
+    baris("Total bunga", rp(totalEf - pokok)) +
+    baris("Total bayar", rp(totalEf)) +
+    baris("Bunga per tahun", num("sk-bunga") + "% efektif");
+
+  document.getElementById("sk-out-flat").classList.remove("win");
+  document.getElementById("sk-out-ef").classList.add("win");
+  vd.hidden = false;
+  vd.innerHTML = "Untuk bunga yang sama, <strong>metode efektif lebih hemat " + rp(selisih) +
+    "</strong> total bunga dibanding flat.";
   return false;
 }
+hitungKredit(new Event("submit"));
 </script>

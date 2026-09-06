@@ -313,6 +313,84 @@ h2 {
 h3 { font-size: 1.05rem; margin: 22px 0 6px; }
 .lead { color: var(--muted); font-size: 1.1rem; margin: 0 0 8px; }
 
+/* ---------- Perbandingan dua skenario (alat "vs") ---------- */
+.vs { margin: 24px 0; }
+.vs-cols {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+}
+@media (max-width: 620px) { .vs-cols { grid-template-columns: 1fr; } }
+
+.vs-common {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: 18px 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-sm);
+}
+.vs-common > h3,
+.vs-col > h3,
+.vs-out > h3 { margin: 0; border: 0; padding: 0; }
+.vs-common > h3 {
+  font-size: 12px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .05em; color: var(--muted); margin-bottom: 12px;
+}
+.vs-common .calc,
+.vs-col.calc,
+.vs-col .calc {
+  margin: 0; border: 0; box-shadow: none; padding: 0;
+  grid-template-columns: 1fr;
+}
+
+.vs-col, .vs-out {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.vs-col > h3, .vs-out > h3 {
+  padding: 12px 16px;
+  font-size: .98rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-2);
+}
+.vs-col.calc, .vs-col .calc { padding: 16px; }
+.vs-col.calc > h3 { margin: -16px -16px 8px; }
+.vs-col.calc button, .vs-col .calc button { grid-column: auto; }
+
+.vs-out .vs-body { padding: 14px 16px; }
+.vs-out .vs-big {
+  display: block;
+  font-size: 1.35rem; font-weight: 700; color: var(--fg);
+  margin-bottom: 8px;
+}
+.vs-out.win { border-color: var(--ok-line); box-shadow: 0 0 0 2px var(--ok-line); }
+.vs-out.win > h3 { background: var(--ok-bg); color: var(--ok-fg); }
+.vs-row {
+  display: flex; justify-content: space-between; gap: 12px;
+  padding: 6px 0; font-size: .9rem; color: var(--muted);
+  border-top: 1px dashed var(--line);
+}
+.vs-row:first-child { border-top: 0; }
+.vs-row > span:last-child { color: var(--fg); font-variant-numeric: tabular-nums; text-align: right; }
+
+.vs-verdict {
+  margin: 4px 0 16px;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-bg);
+  border: 1px solid rgba(47, 107, 255, .2);
+  font-size: 1.05rem;
+  text-align: center;
+  color: var(--fg);
+}
+.vs-verdict strong { color: var(--accent); }
+.vs-note { font-size: 13px; color: var(--muted); margin: 8px 0 0; }
+
 /* ---------- Form kalkulator ---------- */
 .calc {
   display: grid;

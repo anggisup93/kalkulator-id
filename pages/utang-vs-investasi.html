@@ -1,52 +1,67 @@
 <h1>Lunasi Utang Dulu atau Investasi Dulu?</h1>
-<p>Bandingkan kekayaan bersih Anda setelah beberapa tahun antara <strong>mempercepat pelunasan utang</strong> dan <strong>menginvestasikan uang ekstra yang sama</strong> sambil membayar utang minimum saja.</p>
+<p>Bandingkan kekayaan bersih Anda setelah beberapa tahun antara dua strategi memakai uang bulanan yang sama, ditampilkan berdampingan.</p>
 
-<form class="calc" onsubmit="return hitungUvI(event)">
-  <label>Sisa utang (Rp)
-    <input id="uv-utang" type="text" inputmode="numeric" data-money value="50000000" required>
-  </label>
-  <label>Bunga utang per tahun (%)
-    <input id="uv-bunga" type="number" min="0" step="0.01" value="18" required>
-  </label>
-  <label>Angsuran minimum per bulan (Rp)
-    <input id="uv-min" type="text" inputmode="numeric" data-money value="2000000" required>
-  </label>
-  <label>Uang ekstra per bulan (Rp)
-    <input id="uv-ekstra" type="text" inputmode="numeric" data-money value="2000000" required>
-  </label>
-  <label>Imbal hasil investasi per tahun (%)
-    <input id="uv-return" type="number" min="0" step="0.1" value="8" required>
-  </label>
-  <label>Jangka waktu perbandingan (tahun)
-    <input id="uv-horizon" type="number" min="1" max="30" value="5" required>
-  </label>
-  <button type="submit">Bandingkan</button>
-</form>
+<div class="vs">
+  <div class="vs-common">
+    <h3>Data (dipakai kedua strategi)</h3>
+    <form class="calc" onsubmit="return hitungUvI(event)">
+      <label>Sisa utang (Rp)
+        <input id="uv-utang" type="text" inputmode="numeric" data-money value="50000000" required>
+      </label>
+      <label>Bunga utang per tahun (%)
+        <input id="uv-bunga" type="number" min="0" step="0.01" value="18" required>
+      </label>
+      <label>Angsuran minimum per bulan (Rp)
+        <input id="uv-min" type="text" inputmode="numeric" data-money value="2000000" required>
+      </label>
+      <label>Uang ekstra per bulan (Rp)
+        <input id="uv-ekstra" type="text" inputmode="numeric" data-money value="2000000" required>
+      </label>
+      <label>Imbal hasil investasi per tahun (%)
+        <input id="uv-return" type="number" min="0" step="0.1" value="8" required>
+      </label>
+      <label>Jangka waktu (tahun)
+        <input id="uv-horizon" type="number" min="1" max="30" value="5" required>
+      </label>
+      <button type="submit">Bandingkan</button>
+    </form>
+  </div>
 
-<div id="uv-hasil" class="result" hidden></div>
+  <div id="uv-verdict" class="vs-verdict" hidden></div>
+
+  <div class="vs-cols">
+    <div class="vs-out" id="uv-out-a">
+      <h3>Strategi A &mdash; Lunasi utang dulu</h3>
+      <div class="vs-body" id="uv-body-a">&mdash;</div>
+    </div>
+    <div class="vs-out" id="uv-out-b">
+      <h3>Strategi B &mdash; Investasi dulu</h3>
+      <div class="vs-body" id="uv-body-b">&mdash;</div>
+    </div>
+  </div>
+  <p class="vs-note">Kedua strategi memakai total uang keluar per bulan yang sama (angsuran minimum + uang ekstra); yang berbeda hanya alokasinya. A: semua ke utang sampai lunas, lalu semua ke investasi. B: hanya angsuran minimum ke utang, ekstra ke investasi sejak awal.</p>
+</div>
 
 <section class="article">
-  <h2>Cara perbandingan</h2>
-  <p>Kalkulator mensimulasikan bulan per bulan. Kedua skenario memakai total uang keluar per bulan yang sama (angsuran minimum + uang ekstra), hanya beda alokasinya.</p>
-  <ul>
-    <li><strong>Lunasi dulu:</strong> seluruh (angsuran minimum + ekstra) dipakai membayar utang sampai lunas. Setelah lunas, jumlah yang sama diinvestasikan sampai akhir jangka waktu.</li>
-    <li><strong>Investasi dulu:</strong> hanya angsuran minimum yang dibayar ke utang, uang ekstra diinvestasikan sejak awal. Saat utang lunas dari angsuran minimum, angsuran itu juga ikut diinvestasikan.</li>
-  </ul>
-  <p>Yang dibandingkan adalah nilai investasi dikurangi sisa utang di akhir jangka waktu. Prinsip umumnya: jika <strong>bunga utang lebih tinggi dari imbal hasil investasi</strong>, melunasi utang lebih dulu hampir selalu menang &mdash; dan itu keuntungan yang pasti, bukan perkiraan.</p>
+  <h2>Prinsip umumnya</h2>
+  <p>Jika <strong>bunga utang lebih tinggi dari imbal hasil investasi</strong>, melunasi utang lebih dulu hampir selalu menang &mdash; dan itu keuntungan yang pasti, bukan perkiraan. Bunga utang yang hilang saat dilunasi bersifat pasti, sedangkan imbal hasil investasi tidak dijamin dan bisa negatif di tahun tertentu.</p>
 
   <h2>Contoh</h2>
-  <p>Sisa utang Rp50.000.000 bunga 18% per tahun, angsuran minimum Rp2.000.000, uang ekstra Rp2.000.000, imbal hasil investasi 8%, jangka 5 tahun. Karena bunga utang (18%) jauh di atas imbal hasil investasi (8%), skenario melunasi utang lebih dulu menghasilkan kekayaan bersih lebih besar.</p>
+  <p>Sisa utang Rp50.000.000 bunga 18% per tahun, angsuran minimum Rp2.000.000, uang ekstra Rp2.000.000, imbal hasil investasi 8%, jangka 5 tahun. Karena bunga utang (18%) jauh di atas imbal hasil investasi (8%), strategi melunasi utang lebih dulu menghasilkan kekayaan bersih lebih besar.</p>
 
   <h2>Pertanyaan umum</h2>
   <h3>Kalau bunga utang lebih rendah dari imbal hasil investasi?</h3>
-  <p>Secara angka, investasi dulu bisa unggul. Tetapi imbal hasil investasi tidak pasti dan bisa negatif di tahun tertentu, sedangkan bunga utang yang hilang saat dilunasi bersifat pasti. Banyak perencana tetap menyarankan melunasi utang berbunga tinggi (di atas 10&ndash;12%) lebih dulu.</p>
+  <p>Secara angka, investasi dulu bisa unggul. Tetapi imbal hasil investasi tidak pasti. Banyak perencana tetap menyarankan melunasi utang berbunga tinggi (di atas 10&ndash;12%) lebih dulu.</p>
   <h3>Apakah dana darurat lebih penting dari keduanya?</h3>
-  <p>Ya. Amankan dana darurat minimal beberapa bulan pengeluaran sebelum memilih antara melunasi utang cepat atau berinvestasi agresif, supaya tidak terpaksa berutang lagi saat ada kebutuhan mendadak.</p>
+  <p>Ya. Amankan dana darurat minimal beberapa bulan pengeluaran sebelum memilih strategi, supaya tidak terpaksa berutang lagi saat ada kebutuhan mendadak.</p>
   <h3>Kalkulator ini memperhitungkan pajak dan biaya?</h3>
   <p>Belum. Imbal hasil investasi diasumsikan bersih dan tetap. Sesuaikan angka returnnya bila instrumen Anda kena pajak atau biaya pengelolaan.</p>
 </section>
 
 <script>
+function barisUvI(label, nilai) {
+  return '<div class="vs-row"><span>' + label + '</span><span>' + nilai + '</span></div>';
+}
 function hitungUvI(e) {
   e.preventDefault();
   var utang0 = num("uv-utang");
@@ -55,7 +70,10 @@ function hitungUvI(e) {
   var ekstra = num("uv-ekstra");
   var rInv = num("uv-return") / 100 / 12;
   var bulan = Math.round(num("uv-horizon") * 12);
-  if (utang0 <= 0 || angsMin <= 0 || bulan <= 0) { show("uv-hasil", "Periksa isian utang, angsuran, dan jangka waktu."); return false; }
+  var vd = document.getElementById("uv-verdict");
+  if (utang0 <= 0 || angsMin <= 0 || bulan <= 0) {
+    vd.hidden = false; vd.textContent = "Periksa isian utang, angsuran, dan jangka waktu."; return false;
+  }
 
   function simulasi(keUtang, keInv) {
     var utang = utang0, inv = 0;
@@ -64,45 +82,37 @@ function hitungUvI(e) {
       var setorInv = keInv;
       if (utang > 0) {
         var bunga = utang * rUtang;
-        if (keUtang >= utang + bunga) {
-          setorInv += keUtang - (utang + bunga);   // sisa uang setelah utang lunas
-          utang = 0;
-        } else {
-          utang = utang + bunga - keUtang;
-        }
-      } else {
-        setorInv += keUtang;                        // jatah utang yang bebas ikut diinvestasikan
-      }
+        if (keUtang >= utang + bunga) { setorInv += keUtang - (utang + bunga); utang = 0; }
+        else { utang = utang + bunga - keUtang; }
+      } else { setorInv += keUtang; }
       inv += setorInv;
     }
-    return { inv: inv, utang: utang };
+    return { inv: inv, utang: utang, net: inv - utang };
   }
 
-  // Skenario A: lunasi dulu (semua ke utang, lalu semua ke investasi)
   var A = simulasi(angsMin + ekstra, 0);
-  // Skenario B: investasi dulu (min ke utang, ekstra ke investasi)
   var B = simulasi(angsMin, ekstra);
-
-  var netA = A.inv - A.utang;
-  var netB = B.inv - B.utang;
-  var menang = netA >= netB ? "Lunasi utang dulu" : "Investasi dulu";
-  var selisih = Math.abs(netA - netB);
-
   var f = function (x) { return "Rp " + Math.round(x).toLocaleString("id-ID"); };
-  show("uv-hasil",
-    "<strong>" + menang + " lebih unggul " + f(selisih) + "</strong> setelah " + num("uv-horizon") + " tahun" +
-    bar([
-      { label: "Lunasi dulu", nilai: Math.max(0, netA), warna: "#2f6bff" },
-      { label: "Investasi dulu", nilai: Math.max(0, netB), warna: "#12b76a" }
-    ]) +
-    "<div style=\"font-size:14px;color:var(--muted);margin-top:6px\">" +
-    "Lunasi dulu &mdash; kekayaan bersih: " + f(netA) + " (investasi " + f(A.inv) + ", sisa utang " + f(A.utang) + ")<br>" +
-    "Investasi dulu &mdash; kekayaan bersih: " + f(netB) + " (investasi " + f(B.inv) + ", sisa utang " + f(B.utang) + ")<br>" +
+
+  document.getElementById("uv-body-a").innerHTML =
+    '<span class="vs-big">' + f(A.net) + '</span>' +
+    barisUvI("Nilai investasi", f(A.inv)) +
+    barisUvI("Sisa utang", f(A.utang));
+  document.getElementById("uv-body-b").innerHTML =
+    '<span class="vs-big">' + f(B.net) + '</span>' +
+    barisUvI("Nilai investasi", f(B.inv)) +
+    barisUvI("Sisa utang", f(B.utang));
+
+  var aMenang = A.net >= B.net;
+  document.getElementById("uv-out-a").classList.toggle("win", aMenang);
+  document.getElementById("uv-out-b").classList.toggle("win", !aMenang);
+  vd.hidden = false;
+  vd.innerHTML = "Setelah " + num("uv-horizon") + " tahun, <strong>" +
+    (aMenang ? "lunasi utang dulu" : "investasi dulu") + " unggul " + f(Math.abs(A.net - B.net)) + "</strong>. " +
     (num("uv-bunga") > num("uv-return")
       ? "Bunga utang di atas imbal hasil investasi &rarr; melunasi utang memberi keuntungan yang pasti."
-      : "Imbal hasil investasi di atas bunga utang &rarr; investasi bisa unggul, tapi hasilnya tidak pasti.") +
-    "</div>",
-    "Lunasi Utang vs Investasi (" + num("uv-horizon") + " th): " + menang + " unggul " + f(selisih) + ".");
+      : "Imbal hasil investasi di atas bunga utang &rarr; investasi bisa unggul, tapi hasilnya tidak pasti.");
   return false;
 }
+hitungUvI(new Event("submit"));
 </script>

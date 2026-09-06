@@ -1,69 +1,95 @@
 <h1>Kalkulator Sewa vs Beli Rumah</h1>
-<p>Bandingkan kekayaan bersih Anda setelah beberapa tahun antara <strong>membeli rumah lewat KPR</strong> dan <strong>menyewa sambil menginvestasikan selisih uangnya</strong>.</p>
+<p>Bandingkan kekayaan bersih Anda setelah beberapa tahun antara <strong>membeli rumah lewat KPR</strong> dan <strong>menyewa sambil menginvestasikan selisih uangnya</strong>. Input dan hasil dipisah per skenario.</p>
 
-<form class="calc" onsubmit="return hitungSewaBeli(event)">
-  <label>Harga rumah (Rp)
-    <input id="sb-harga" type="text" inputmode="numeric" data-money value="800000000" required>
-  </label>
-  <label>Uang muka / DP (Rp)
-    <input id="sb-dp" type="text" inputmode="numeric" data-money value="160000000" required>
-  </label>
-  <label>Bunga KPR efektif (%/th)
-    <input id="sb-bunga" type="number" min="0" step="0.01" value="9" required>
-  </label>
-  <label>Tenor KPR (tahun)
-    <input id="sb-tenor" type="number" min="1" max="30" value="20" required>
-  </label>
-  <label>Biaya beli sekali (BPHTB, notaris, dll) &mdash; % harga
-    <input id="sb-biayabeli" type="number" min="0" step="0.1" value="5">
-  </label>
-  <label>Biaya kepemilikan per tahun (PBB, perawatan) &mdash; % harga
-    <input id="sb-biayamilik" type="number" min="0" step="0.1" value="1">
-  </label>
-  <label>Kenaikan harga properti (%/th)
-    <input id="sb-apresiasi" type="number" min="0" step="0.1" value="5">
-  </label>
-  <label>Sewa rumah setara per bulan (Rp)
-    <input id="sb-sewa" type="text" inputmode="numeric" data-money value="4000000" required>
-  </label>
-  <label>Kenaikan sewa (%/th)
-    <input id="sb-naiksewa" type="number" min="0" step="0.1" value="5">
-  </label>
-  <label>Imbal hasil investasi (%/th)
-    <input id="sb-investasi" type="number" min="0" step="0.1" value="8">
-  </label>
-  <label>Lama tinggal / horizon (tahun)
-    <input id="sb-horizon" type="number" min="1" max="30" value="10" required>
-  </label>
-  <button type="submit">Bandingkan</button>
-</form>
+<div class="vs">
+  <div class="vs-common">
+    <h3>Asumsi bersama</h3>
+    <form class="calc" onsubmit="return hitungSewaBeli(event)">
+      <label>Lama tinggal / horizon (tahun)
+        <input id="sb-horizon" type="number" min="1" max="30" value="10" required>
+      </label>
+      <label>Imbal hasil investasi (%/th)
+        <input id="sb-investasi" type="number" min="0" step="0.1" value="8" required>
+      </label>
+      <button type="submit">Bandingkan</button>
+    </form>
+  </div>
 
-<div id="sb-hasil" class="result" hidden></div>
+  <div class="vs-cols">
+    <form class="vs-col calc" onsubmit="return hitungSewaBeli(event)">
+      <h3>&#127968; Beli lewat KPR</h3>
+      <label>Harga rumah (Rp)
+        <input id="sb-harga" type="text" inputmode="numeric" data-money value="800000000" required>
+      </label>
+      <label>Uang muka / DP (Rp)
+        <input id="sb-dp" type="text" inputmode="numeric" data-money value="160000000" required>
+      </label>
+      <label>Bunga KPR efektif (%/th)
+        <input id="sb-bunga" type="number" min="0" step="0.01" value="9" required>
+      </label>
+      <label>Tenor KPR (tahun)
+        <input id="sb-tenor" type="number" min="1" max="30" value="20" required>
+      </label>
+      <label>Biaya beli sekali (BPHTB, notaris) &mdash; % harga
+        <input id="sb-biayabeli" type="number" min="0" step="0.1" value="5">
+      </label>
+      <label>Biaya kepemilikan per tahun (PBB, perawatan) &mdash; % harga
+        <input id="sb-biayamilik" type="number" min="0" step="0.1" value="1">
+      </label>
+      <label>Kenaikan harga properti (%/th)
+        <input id="sb-apresiasi" type="number" min="0" step="0.1" value="5">
+      </label>
+    </form>
+
+    <form class="vs-col calc" onsubmit="return hitungSewaBeli(event)">
+      <h3>&#128273; Sewa + investasi</h3>
+      <label>Sewa rumah setara per bulan (Rp)
+        <input id="sb-sewa" type="text" inputmode="numeric" data-money value="4000000" required>
+      </label>
+      <label>Kenaikan sewa (%/th)
+        <input id="sb-naiksewa" type="number" min="0" step="0.1" value="5">
+      </label>
+      <p class="vs-note">Uang muka + biaya beli yang tidak jadi dikeluarkan diinvestasikan sejak awal. Selisih pengeluaran bulanan antara kedua skenario juga diinvestasikan oleh pihak yang pengeluarannya lebih kecil, supaya adil.</p>
+    </form>
+  </div>
+
+  <div id="sb-verdict" class="vs-verdict" hidden></div>
+
+  <div class="vs-cols">
+    <div class="vs-out" id="sb-out-beli">
+      <h3>&#127968; Beli</h3>
+      <div class="vs-body" id="sb-body-beli">&mdash;</div>
+    </div>
+    <div class="vs-out" id="sb-out-sewa">
+      <h3>&#128273; Sewa</h3>
+      <div class="vs-body" id="sb-body-sewa">&mdash;</div>
+    </div>
+  </div>
+</div>
 
 <section class="article">
   <h2>Cara perbandingan</h2>
-  <p>Kalkulator mensimulasikan bulan per bulan selama horizon yang Anda tentukan. Kedua skenario diberi jumlah uang awal yang sama; perbedaannya hanya pada bagaimana uang itu dipakai.</p>
-  <ul>
-    <li><strong>Beli:</strong> DP dan biaya beli keluar di awal. Tiap bulan bayar cicilan KPR (anuitas) dan biaya kepemilikan. Di akhir horizon, kekayaan = nilai rumah setelah apresiasi &minus; sisa pokok KPR.</li>
-    <li><strong>Sewa:</strong> DP dan biaya beli diinvestasikan sejak awal. Tiap bulan bayar sewa. Selisih antara pengeluaran skenario beli dan sewa diinvestasikan oleh pihak yang pengeluarannya lebih kecil, supaya adil.</li>
-  </ul>
-  <p>Yang dibandingkan adalah kekayaan bersih di akhir horizon. Simulasi ini mengabaikan pajak, biaya menjual rumah, dan faktor non-finansial seperti kepastian tempat tinggal dan kebebasan memodifikasi rumah.</p>
+  <p>Kalkulator mensimulasikan bulan per bulan selama horizon yang Anda tentukan. Kedua skenario diberi jumlah uang awal yang sama; perbedaannya hanya pada bagaimana uang itu dipakai. Di akhir horizon, kekayaan skenario beli adalah nilai rumah setelah apresiasi dikurangi sisa pokok KPR (ditambah investasi surplus bila ada), sedangkan kekayaan skenario sewa adalah nilai portofolio investasi.</p>
+  <p>Simulasi ini mengabaikan pajak, biaya menjual rumah, dan faktor non-finansial seperti kepastian tempat tinggal dan kebebasan memodifikasi rumah.</p>
 
   <h2>Contoh</h2>
   <p>Rumah Rp800 juta, DP Rp160 juta, bunga KPR 9% selama 20 tahun, apresiasi properti 5%, sewa setara Rp4 juta per bulan naik 5% per tahun, imbal hasil investasi 8%, horizon 10 tahun. Pada asumsi ini skenario membeli sedikit unggul (kekayaan bersih sekitar Rp849 juta berbanding Rp758 juta), tetapi hasilnya sangat sensitif terhadap apresiasi properti dan imbal hasil investasi &mdash; menaikkan imbal hasil investasi ke 10% saja bisa membalik kesimpulan.</p>
 
   <h2>Pertanyaan umum</h2>
   <h3>Kenapa hasilnya bisa berubah drastis?</h3>
-  <p>Dua angka paling menentukan: kenaikan harga properti dan imbal hasil investasi. Selisih 1&ndash;2% pada salah satunya bisa membalik kesimpulan. Karena itu, coba beberapa skenario, bukan hanya satu.</p>
+  <p>Dua angka paling menentukan: kenaikan harga properti dan imbal hasil investasi. Selisih 1&ndash;2% pada salah satunya bisa membalik kesimpulan. Coba beberapa skenario, bukan hanya satu.</p>
   <h3>Apakah "sewa lebih untung" berarti tidak usah beli rumah?</h3>
   <p>Tidak. Kalkulator ini hanya membandingkan sisi finansial pada asumsi tertentu. Membeli rumah memberi kepastian biaya tempat tinggal jangka panjang, perlindungan dari kenaikan sewa, dan nilai bagi banyak keluarga yang tidak bisa diangkakan.</p>
   <h3>Sewa "setara" itu maksudnya apa?</h3>
-  <p>Biaya sewa untuk rumah yang kualitas dan lokasinya sebanding dengan rumah yang ingin Anda beli, bukan sewa kamar kos atau rumah yang jauh lebih kecil. Perbandingan baru adil bila kedua pilihan memberi tempat tinggal yang setara.</p>
+  <p>Biaya sewa untuk rumah yang kualitas dan lokasinya sebanding dengan rumah yang ingin Anda beli, bukan sewa kamar kos atau rumah yang jauh lebih kecil.</p>
 </section>
 
 <script>
+function barisSB(label, nilai) {
+  return '<div class="vs-row"><span>' + label + '</span><span>' + nilai + '</span></div>';
+}
 function hitungSewaBeli(e) {
-  e.preventDefault();
+  if (e) e.preventDefault();
   var harga = num("sb-harga"), dp = num("sb-dp");
   var bunga = num("sb-bunga") / 100, tenor = num("sb-tenor");
   var biayaBeli = harga * num("sb-biayabeli") / 100;
@@ -72,68 +98,62 @@ function hitungSewaBeli(e) {
   var sewa = num("sb-sewa"), naikSewa = num("sb-naiksewa") / 100;
   var rInvest = num("sb-investasi") / 100;
   var horizon = num("sb-horizon");
+  var vd = document.getElementById("sb-verdict");
   var pokok = harga - dp;
-  if (pokok <= 0) { show("sb-hasil", "Uang muka tidak boleh melebihi harga rumah."); return false; }
-  if (horizon <= 0) { show("sb-hasil", "Isi lama tinggal."); return false; }
+  if (pokok <= 0) { vd.hidden = false; vd.textContent = "Uang muka tidak boleh melebihi harga rumah."; return false; }
+  if (horizon <= 0) { vd.hidden = false; vd.textContent = "Isi lama tinggal."; return false; }
 
   var rKPR = bunga / 12, nKPR = Math.round(tenor * 12);
   var cicilan = rKPR === 0 ? pokok / nKPR : pokok * rKPR / (1 - Math.pow(1 + rKPR, -nKPR));
   var rInvBulan = rInvest / 12;
   var apresBulan = Math.pow(1 + apresiasi, 1 / 12) - 1;
-
   var bulanTotal = Math.round(horizon * 12);
-  var sisaPokok = pokok;
-  var nilaiRumah = harga;
-  var sewaBulan = sewa;
-  var portoSewa = dp + biayaBeli;   // penyewa investasikan uang muka sejak awal
-  var portoBeli = 0;                // pembeli investasikan surplus (jika ada)
-  var totalBunga = 0, totalCicilan = 0, totalSewaBayar = 0;
+
+  var sisaPokok = pokok, nilaiRumah = harga, sewaBulan = sewa;
+  var portoSewa = dp + biayaBeli, portoBeli = 0;
+  var totalBunga = 0, totalSewaBayar = 0;
 
   for (var m = 1; m <= bulanTotal; m++) {
     nilaiRumah *= (1 + apresBulan);
     var biayaMilik = nilaiRumah * biayaMilikPct / 12;
-
-    var bungaM = 0, pokokM = 0;
+    var bungaM = 0;
     if (m <= nKPR) {
       bungaM = sisaPokok * rKPR;
-      pokokM = cicilan - bungaM;
-      sisaPokok = Math.max(0, sisaPokok - pokokM);
+      sisaPokok = Math.max(0, sisaPokok - (cicilan - bungaM));
       totalBunga += bungaM;
-      totalCicilan += cicilan;
     }
     var outBeli = (m <= nKPR ? cicilan : 0) + biayaMilik;
     var outSewa = sewaBulan;
     totalSewaBayar += sewaBulan;
-
     portoSewa *= (1 + rInvBulan);
     portoBeli *= (1 + rInvBulan);
     var selisih = outBeli - outSewa;
-    if (selisih > 0) portoSewa += selisih;      // penyewa hemat -> investasikan
-    else portoBeli += -selisih;                 // pembeli hemat -> investasikan
-
+    if (selisih > 0) portoSewa += selisih; else portoBeli += -selisih;
     if (m % 12 === 0) sewaBulan *= (1 + naikSewa);
   }
 
   var kekayaanBeli = (nilaiRumah - sisaPokok) + portoBeli;
   var kekayaanSewa = portoSewa;
-  var selisihAkhir = kekayaanBeli - kekayaanSewa;
-  var menang = selisihAkhir > 0 ? "Membeli" : "Menyewa";
-
   var f = function (x) { return "Rp " + Math.round(x).toLocaleString("id-ID"); };
-  show("sb-hasil",
-    "<strong>Setelah " + horizon + " tahun, " + menang + " lebih unggul " + f(Math.abs(selisihAkhir)) + "</strong>" +
-    bar([
-      { label: "Beli", nilai: kekayaanBeli, warna: "#2f6bff" },
-      { label: "Sewa", nilai: kekayaanSewa, warna: "#12b76a" }
-    ]) +
-    "<div style=\"font-size:14px;color:var(--muted);margin-top:6px\">" +
-    "Beli &mdash; kekayaan bersih: " + f(kekayaanBeli) + " (nilai rumah " + f(nilaiRumah) +
-    ", sisa KPR " + f(sisaPokok) + ", investasi surplus " + f(portoBeli) + ")<br>" +
-    "Sewa &mdash; nilai investasi: " + f(kekayaanSewa) + "<br>" +
-    "Total bunga KPR dibayar: " + f(totalBunga) + " &middot; total sewa dibayar: " + f(totalSewaBayar) +
-    "</div>",
-    "Sewa vs Beli — setelah " + horizon + " tahun: Beli " + f(kekayaanBeli) + ", Sewa " + f(kekayaanSewa) +
-    ". " + menang + " unggul " + f(Math.abs(selisihAkhir)) + ".");
+
+  document.getElementById("sb-body-beli").innerHTML =
+    '<span class="vs-big">' + f(kekayaanBeli) + '</span>' +
+    barisSB("Nilai rumah", f(nilaiRumah)) +
+    barisSB("Sisa KPR", f(sisaPokok)) +
+    barisSB("Investasi surplus", f(portoBeli)) +
+    barisSB("Total bunga KPR dibayar", f(totalBunga));
+  document.getElementById("sb-body-sewa").innerHTML =
+    '<span class="vs-big">' + f(kekayaanSewa) + '</span>' +
+    barisSB("Nilai investasi", f(portoSewa)) +
+    barisSB("Total sewa dibayar", f(totalSewaBayar));
+
+  var beliMenang = kekayaanBeli >= kekayaanSewa;
+  document.getElementById("sb-out-beli").classList.toggle("win", beliMenang);
+  document.getElementById("sb-out-sewa").classList.toggle("win", !beliMenang);
+  vd.hidden = false;
+  vd.innerHTML = "Setelah " + horizon + " tahun, <strong>" + (beliMenang ? "membeli" : "menyewa") +
+    " unggul " + f(Math.abs(kekayaanBeli - kekayaanSewa)) + "</strong> kekayaan bersih.";
   return false;
 }
+hitungSewaBeli();
 </script>
