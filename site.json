@@ -2,7 +2,7 @@
   "site_name": "KalkulatorID",
   "tagline": "Kumpulan kalkulator online gratis berbahasa Indonesia",
   "domain": "https://kalkulatorid.com",
-  "adsense_client": "",
+  "adsense_client": "ca-pub-5652295903894976",
   "cf_analytics_token": "995ca47d66ef4c8c900115e967928641",
   "web3forms_key": "54cf5c1a-8ff5-45d1-98a0-34c74824da9a",
   "primary_nav": ["kpr", "gaji-bersih", "persentase", "bmi", "konversi-satuan"],
