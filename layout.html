@@ -23,15 +23,17 @@
 {{JSONLD}}
 {{ADSENSE_HEAD}}
 </head>
-<body>
+<body class="{{BODYCLASS}}">
 <header class="site-header">
   <a class="brand" href="/">{{SITE_NAME}}</a>
+  <nav class="site-nav" aria-label="Navigasi utama">
+    <a class="nav-link" href="/alat/">Semua Alat</a>
+    <a class="nav-link nav-link-2" href="/panduan/">Panduan</a>
+  </nav>
   <div class="header-actions">
     <button type="button" class="nav-search" id="open-search" aria-label="Cari alat">
       <span aria-hidden="true">&#128269;</span><span class="nav-search-t">Cari alat</span><kbd>/</kbd>
     </button>
-    <a class="nav-link" href="/alat/">Semua Alat</a>
-    <a class="nav-link nav-link-2" href="/panduan/">Panduan</a>
     <button type="button" class="icon-btn theme-toggle" id="theme-toggle" aria-label="Ganti tema terang / gelap" title="Ganti tema">&#9681;</button>
   </div>
 </header>

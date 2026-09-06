@@ -333,12 +333,16 @@ def adsense_head(cfg) -> str:
 
 
 def adsense_slot(cfg) -> str:
+    # Unit iklan manual hanya dipasang bila 'adsense_slot_id' diisi (setelah
+    # akun disetujui & unit iklan dibuat di AdSense). Selama peninjauan cukup
+    # skrip verifikasi di <head>; tanpa slot id jangan render kotak kosong.
     client = cfg.get("adsense_client", "").strip()
-    if not client:
+    slot = cfg.get("adsense_slot_id", "").strip()
+    if not client or not slot:
         return ""
     return (
         f'<ins class="adsbygoogle" style="display:block" data-ad-client="{client}" '
-        'data-ad-format="auto" data-full-width-responsive="true"></ins>'
+        f'data-ad-slot="{slot}" data-ad-format="auto" data-full-width-responsive="true"></ins>'
         '<script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>'
     )
 
@@ -463,6 +467,7 @@ def main():
         "BREADCRUMB": "",
         "RELATED": "",
         "FEEDBACK": "",
+        "BODYCLASS": "",
     }
     urls = [f"{domain}/", f"{domain}/alat/"]
 
@@ -516,6 +521,7 @@ def main():
         "CONTENT": index_inner,
         "JSONLD": jsonld_home(cfg, domain),
         "ADSENSE_SLOT": "",
+        "BODYCLASS": "page-wide",
     }))
 
     # --- /alat/ : indeks semua alat A-Z per kategori ---
@@ -538,6 +544,7 @@ def main():
         "CANONICAL": f"{domain}/alat/",
         "CONTENT": alat_inner,
         "ADSENSE_SLOT": "",
+        "BODYCLASS": "page-wide",
     }))
 
     # --- 404 ---
