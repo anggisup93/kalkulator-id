@@ -1,0 +1,87 @@
+<h1>Kalkulator Pajak Kendaraan (PKB)</h1>
+<p>Perkirakan Pajak Kendaraan Bermotor tahunan dari nilai jual kendaraan, tarif PKB, <strong>opsen pajak</strong> yang berlaku sejak 2025, dan iuran SWDKLLJ.</p>
+
+<form class="calc" onsubmit="return hitungPKB(event)">
+  <label>Nilai Jual Kendaraan Bermotor / NJKB (Rp)
+    <input id="pk-njkb" type="text" inputmode="numeric" data-money value="150000000" required>
+  </label>
+  <label>Tarif PKB (%)
+    <input id="pk-tarif" type="number" min="0" step="0.01" value="1.1" required>
+  </label>
+  <label>Kepemilikan kendaraan ke-
+    <select id="pk-urutan">
+      <option value="1" selected>1 (tarif normal)</option>
+      <option value="2">2 (progresif, contoh 2%)</option>
+      <option value="3">3 atau lebih (progresif, contoh 2,5%+)</option>
+    </select>
+  </label>
+  <label>Jenis kendaraan
+    <select id="pk-jenis">
+      <option value="143000" selected>Mobil penumpang &mdash; SWDKLLJ Rp143.000</option>
+      <option value="35000">Sepeda motor 50&ndash;250 cc &mdash; Rp35.000</option>
+      <option value="83000">Motor &gt; 250 cc &mdash; Rp83.000</option>
+    </select>
+  </label>
+  <label>Opsen pajak (66%)
+    <select id="pk-opsen">
+      <option value="ya" selected>Berlaku (mulai 2025)</option>
+      <option value="tidak">Tidak dihitung</option>
+    </select>
+  </label>
+  <button type="submit">Hitung Pajak Kendaraan</button>
+</form>
+
+<div id="pk-hasil" class="result" hidden></div>
+
+<section class="article">
+  <h2>Cara perhitungan</h2>
+  <p>Pokok PKB dihitung dari Nilai Jual Kendaraan Bermotor dikalikan tarif yang ditetapkan daerah. Sejak 1 Januari 2025 ada <strong>opsen pajak</strong>, yaitu pungutan tambahan oleh kabupaten atau kota sebesar 66% dari PKB terutang. Sebagai gantinya, tarif dasar PKB di banyak provinsi diturunkan sehingga total beban dirancang mendekati tarif lama.</p>
+  <code class="formula">PKB pokok = NJKB &times; tarif%
+Opsen PKB = 66% &times; PKB pokok
+Total     = PKB pokok + Opsen PKB + SWDKLLJ</code>
+  <p>SWDKLLJ adalah Sumbangan Wajib Dana Kecelakaan Lalu Lintas Jalan yang dibayar bersamaan, besarnya tetap sesuai jenis kendaraan. Untuk kepemilikan kendaraan kedua dan seterusnya atas nama atau alamat yang sama, berlaku tarif progresif yang lebih tinggi.</p>
+
+  <h2>Contoh</h2>
+  <p>Mobil dengan NJKB Rp150.000.000 dan tarif PKB 1,1% menghasilkan PKB pokok Rp1.650.000. Opsen 66% menambah Rp1.089.000. Ditambah SWDKLLJ Rp143.000, total yang dibayar sekitar Rp2.882.000 per tahun.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Dari mana saya tahu NJKB dan tarif kendaraan saya?</h3>
+  <p>NJKB dan besaran PKB tercantum di lembar STNK Anda, dan bisa dicek lewat aplikasi SIGNAL atau situs Bapenda provinsi masing-masing. Tarif PKB berbeda antar provinsi, umumnya 1&ndash;1,2% untuk kepemilikan pertama.</p>
+  <h3>Apakah opsen membuat pajak saya naik?</h3>
+  <p>Tidak seharusnya. Opsen menggantikan skema bagi hasil lama antara provinsi dan kabupaten/kota. Provinsi menurunkan tarif dasar PKB, lalu kabupaten/kota memungut opsen 66%, sehingga total yang Anda bayar dirancang setara dengan sebelum 2025. Cek STNK terbaru untuk angka pastinya.</p>
+  <h3>Kenapa hasil kalkulator beda dengan tagihan Samsat?</h3>
+  <p>Beberapa daerah memakai koefisien bobot untuk jenis kendaraan tertentu, ada pula denda keterlambatan, biaya pengesahan STNK, dan untuk balik nama ada BBNKB. Kalkulator ini hanya menghitung PKB tahunan pokok, opsen, dan SWDKLLJ.</p>
+</section>
+
+<script>
+function hitungPKB(e) {
+  e.preventDefault();
+  var njkb = num("pk-njkb");
+  var tarif = num("pk-tarif") / 100;
+  var urutan = document.getElementById("pk-urutan").value;
+  var swd = parseFloat(document.getElementById("pk-jenis").value);
+  var pakaiOpsen = document.getElementById("pk-opsen").value === "ya";
+  if (njkb <= 0 || tarif <= 0) { show("pk-hasil", "Periksa NJKB dan tarif PKB."); return false; }
+
+  var pkb = njkb * tarif;
+  var opsen = pakaiOpsen ? pkb * 0.66 : 0;
+  var total = pkb + opsen + swd;
+  var catatanProg = urutan !== "1"
+    ? "<br><span style=\"color:var(--muted)\">Kepemilikan ke-" + urutan + ": pastikan tarif progresif daerah Anda sudah dimasukkan di kolom tarif.</span>"
+    : "";
+
+  show("pk-hasil",
+    "<strong>Perkiraan total: " + rp(total) + " per tahun</strong><br>" +
+    "PKB pokok: " + rp(pkb) + "<br>" +
+    (opsen ? "Opsen pajak (66%): " + rp(opsen) + "<br>" : "") +
+    "SWDKLLJ: " + rp(swd) + catatanProg +
+    bar([
+      { label: "PKB", nilai: pkb, warna: "#2f6bff" },
+      { label: "Opsen", nilai: opsen, warna: "#f79009" },
+      { label: "SWDKLLJ", nilai: swd, warna: "#12b76a" }
+    ]),
+    "Pajak Kendaraan — NJKB " + rp(njkb) + ", tarif " + num("pk-tarif") + "%: PKB " + rp(pkb) +
+    (opsen ? " + opsen " + rp(opsen) : "") + " + SWDKLLJ " + rp(swd) + " = " + rp(total) + "/tahun.");
+  return false;
+}
+</script>

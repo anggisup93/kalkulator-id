@@ -1,0 +1,92 @@
+<h1>Kalkulator Pace Lari</h1>
+<p>Hitung pace per kilometer, kecepatan, dan estimasi waktu tempuh. Kalkulator juga memprediksi waktu 5K, 10K, half marathon, dan full marathon dari satu hasil lari Anda.</p>
+
+<form class="calc" onsubmit="return hitungPace(event)">
+  <label>Jarak (km)
+    <input id="pc-jarak" type="number" min="0.1" step="0.01" value="5" required>
+  </label>
+  <label>Preset jarak
+    <select id="pc-preset">
+      <option value="">&mdash; pilih cepat &mdash;</option>
+      <option value="5">5K</option>
+      <option value="10">10K</option>
+      <option value="21.0975">Half marathon</option>
+      <option value="42.195">Full marathon</option>
+    </select>
+  </label>
+  <label>Jam
+    <input id="pc-jam" type="number" min="0" step="1" value="0">
+  </label>
+  <label>Menit
+    <input id="pc-menit" type="number" min="0" max="59" step="1" value="30">
+  </label>
+  <label>Detik
+    <input id="pc-detik" type="number" min="0" max="59" step="1" value="0">
+  </label>
+  <button type="submit">Hitung Pace</button>
+</form>
+
+<div id="pc-hasil" class="result" hidden></div>
+
+<section class="article">
+  <h2>Cara perhitungan</h2>
+  <p>Pace adalah waktu yang dibutuhkan untuk menempuh satu kilometer, ditulis menit:detik per km. Kecepatan adalah kebalikannya dalam km/jam.</p>
+  <code class="formula">Pace (detik/km) = total detik / jarak km
+Kecepatan (km/jam) = jarak km / (total detik / 3600)</code>
+  <p>Prediksi waktu lomba memakai <strong>rumus Riegel</strong>: waktu pada jarak baru = waktu lama &times; (jarak baru / jarak lama) pangkat 1,06. Rumus ini cukup akurat untuk jarak 5K sampai maraton bila latihan Anda memadai, dan cenderung terlalu optimistis untuk lompatan jarak yang sangat jauh.</p>
+
+  <h2>Contoh</h2>
+  <p>Lari 5 km dalam 30 menit berarti pace 6:00 per km dan kecepatan 10 km/jam. Dari hasil ini, prediksi 10K sekitar 1 jam 3 menit, half marathon sekitar 2 jam 18 menit, dan full marathon sekitar 4 jam 48 menit.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Pace bagus untuk pelari pemula berapa?</h3>
+  <p>Sangat bervariasi. Banyak pemula berlari pada pace 7:00&ndash;9:00 per km dan itu wajar. Yang lebih penting adalah konsistensi dan peningkatan bertahap, bukan membandingkan dengan pelari lain.</p>
+  <h3>Kenapa prediksi maraton saya terasa terlalu cepat?</h3>
+  <p>Rumus Riegel mengasumsikan daya tahan yang terlatih untuk jarak jauh. Jika latihan jarak jauh Anda masih kurang, waktu maraton nyata biasanya lebih lambat 10&ndash;20% dari prediksi. Pakai angka ini sebagai target ambisius, bukan jaminan.</p>
+  <h3>Apa beda pace dan kecepatan?</h3>
+  <p>Keduanya mengukur hal yang sama dari sudut berbeda. Pace makin kecil berarti makin cepat (5:00/km lebih cepat dari 6:00/km), sedangkan kecepatan makin besar berarti makin cepat.</p>
+</section>
+
+<script>
+function mmss(detik) {
+  detik = Math.round(detik);
+  var m = Math.floor(detik / 60), s = detik % 60;
+  return m + ":" + (s < 10 ? "0" : "") + s;
+}
+function hms(detik) {
+  detik = Math.round(detik);
+  var h = Math.floor(detik / 3600), m = Math.floor((detik % 3600) / 60), s = detik % 60;
+  var out = [];
+  if (h) out.push(h + " jam");
+  if (m) out.push(m + " menit");
+  if (s || !out.length) out.push(s + " detik");
+  return out.join(" ");
+}
+(function () {
+  document.getElementById("pc-preset").addEventListener("change", function () {
+    if (this.value) { document.getElementById("pc-jarak").value = this.value; }
+  });
+})();
+function hitungPace(e) {
+  e.preventDefault();
+  var jarak = num("pc-jarak");
+  var total = num("pc-jam") * 3600 + num("pc-menit") * 60 + num("pc-detik");
+  if (jarak <= 0 || total <= 0) { show("pc-hasil", "Isi jarak dan waktu tempuh."); return false; }
+
+  var pace = total / jarak;
+  var speed = jarak / (total / 3600);
+  var target = [["5K", 5], ["10K", 10], ["Half marathon", 21.0975], ["Full marathon", 42.195]];
+  var prediksi = target.map(function (t) {
+    var wkt = total * Math.pow(t[1] / jarak, 1.06);
+    return "<li><b>" + t[0] + ":</b> " + hms(wkt) + " (pace " + mmss(wkt / t[1]) + "/km)</li>";
+  }).join("");
+
+  show("pc-hasil",
+    "<strong>Pace: " + mmss(pace) + " per km</strong><br>" +
+    "Kecepatan: " + speed.toFixed(2) + " km/jam<br>" +
+    "Waktu tempuh: " + hms(total) + " untuk " + jarak + " km" +
+    "<ul style=\"margin:10px 0 0;padding-left:18px\">" + prediksi + "</ul>",
+    "Pace Lari — " + jarak + " km dalam " + hms(total) + " = pace " + mmss(pace) + "/km, " + speed.toFixed(2) + " km/jam.");
+  return false;
+}
+</script>

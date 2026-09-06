@@ -37,17 +37,22 @@ def plain(s: str) -> str:
     return re.sub(r"\s+", " ", s).strip()
 
 
-def build_nav(cfg) -> str:
-    by_slug = {p["slug"]: p for p in cfg["pages"]}
-    slugs = cfg.get("primary_nav") or [
-        p["slug"] for p in cfg["pages"] if p.get("in_index")
-    ][:5]
-    links = [
-        f'<a href="/{s}/">{by_slug[s]["nav"] or by_slug[s]["title"]}</a>'
-        for s in slugs if s in by_slug
+def tools_json(cfg) -> str:
+    """Daftar alat untuk overlay pencarian (dipakai calc.js)."""
+    tools = [
+        {
+            "n": p["nav"] or p["title"],
+            "u": f'/{p["slug"]}/',
+            "c": p.get("category", "Lainnya"),
+            "i": p.get("icon", ""),
+            "t": " ".join(filter(None, [
+                p["slug"], p.get("nav", ""), p.get("category", ""),
+                p["title"], p["description"],
+            ])).lower(),
+        }
+        for p in cfg["pages"] if p.get("in_index")
     ]
-    links.append('<a class="nav-all" href="/alat/">Semua Alat</a>')
-    return "\n    ".join(links)
+    return json.dumps(tools, ensure_ascii=False, separators=(",", ":"))
 
 
 def category_sections(cfg) -> str:
@@ -73,9 +78,13 @@ def analytics_tag(cfg) -> str:
     tok = cfg.get("cf_analytics_token", "").strip()
     if not tok:
         return "<!-- Cloudflare Web Analytics belum aktif: isi 'cf_analytics_token' di site.json -->"
+    # Muat beacon hanya di produksi (https, bukan localhost) agar dev bersih.
     return (
-        '<script defer src="https://static.cloudflareinsights.com/beacon.min.js" '
-        'data-cf-beacon=\'{"token": "' + tok + '"}\'></script>'
+        "<script>if(location.protocol===\"https:\"&&!/^(localhost|127\\.|\\[?::1)/.test(location.hostname)){"
+        "var s=document.createElement(\"script\");s.defer=true;"
+        "s.src=\"https://static.cloudflareinsights.com/beacon.min.js\";"
+        "s.setAttribute(\"data-cf-beacon\",'{\"token\":\"" + tok + "\"}');"
+        "document.head.appendChild(s);}</script>"
     )
 
 
@@ -271,7 +280,6 @@ def main():
     cfg = load_config()
     layout = (ROOT / "layout.html").read_text(encoding="utf-8")
     domain = cfg["domain"].rstrip("/")
-    nav = build_nav(cfg)
     year = str(date.today().year)
     today = date.today().isoformat()
 
@@ -292,10 +300,10 @@ def main():
     shutil.copytree(ROOT / "assets", DIST / "assets")
 
     base_ctx = {
-        "NAV": nav,
         "YEAR": year,
         "SITE_NAME": cfg["site_name"],
         "ASSET_VER": asset_ver,
+        "TOOLS_JSON": tools_json(cfg),
         "ADSENSE_HEAD": adsense_head(cfg),
         "ADSENSE_SLOT": adsense_slot(cfg),
         "ANALYTICS": analytics_tag(cfg),

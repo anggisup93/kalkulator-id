@@ -104,7 +104,7 @@ function bar(potongan) {
   }
 })();
 
-// Toggle tema (terang/gelap) + menu navigasi di layar kecil.
+// Toggle tema terang/gelap.
 (function () {
   function curTheme() {
     return document.documentElement.getAttribute("data-theme") ||
@@ -112,21 +112,89 @@ function bar(potongan) {
   }
   function init() {
     var tt = document.getElementById("theme-toggle");
-    if (tt) {
-      tt.addEventListener("click", function () {
-        var next = curTheme() === "dark" ? "light" : "dark";
-        document.documentElement.setAttribute("data-theme", next);
-        try { localStorage.setItem("kid-theme", next); } catch (e) {}
-      });
+    if (!tt) return;
+    tt.addEventListener("click", function () {
+      var next = curTheme() === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      try { localStorage.setItem("kid-theme", next); } catch (e) {}
+    });
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+
+// Overlay pencarian alat (tombol header + tombol "/" + panah + Enter).
+(function () {
+  function init() {
+    var overlay = document.getElementById("search-overlay");
+    var input = document.getElementById("search-input");
+    var list = document.getElementById("search-results");
+    var openBtn = document.getElementById("open-search");
+    var tools = window.KID_TOOLS || [];
+    if (!overlay || !input || !list || !tools.length) return;
+    var active = -1, shown = [];
+
+    function render() {
+      var q = input.value.trim().toLowerCase();
+      shown = q
+        ? tools.filter(function (t) { return t.t.indexOf(q) > -1; }).slice(0, 12)
+        : tools.slice(0, 12);
+      active = shown.length ? 0 : -1;
+      list.innerHTML = shown.map(function (t, i) {
+        return '<li class="' + (i === active ? "active" : "") + '" data-u="' + t.u + '">' +
+          '<span class="sr-ic" aria-hidden="true">' + (t.i || "") + "</span>" +
+          '<span class="sr-n">' + t.n + '</span><span class="sr-c">' + t.c + "</span></li>";
+      }).join("") || '<li class="sr-empty">Tidak ada alat yang cocok</li>';
     }
-    var nt = document.getElementById("nav-toggle");
-    var header = document.getElementById("site-header");
-    if (nt && header) {
-      nt.addEventListener("click", function () {
-        var open = header.classList.toggle("nav-open");
-        nt.setAttribute("aria-expanded", open ? "true" : "false");
+    function move(d) {
+      if (!shown.length) return;
+      active = (active + d + shown.length) % shown.length;
+      [].forEach.call(list.children, function (li, i) {
+        li.classList.toggle("active", i === active);
       });
+      if (list.children[active]) list.children[active].scrollIntoView({ block: "nearest" });
     }
+    function go() {
+      if (active > -1 && shown[active]) location.href = shown[active].u;
+    }
+    function open() {
+      overlay.hidden = false;
+      document.body.style.overflow = "hidden";
+      input.value = "";
+      render();
+      setTimeout(function () { input.focus(); }, 0);
+    }
+    function close() {
+      overlay.hidden = true;
+      document.body.style.overflow = "";
+    }
+
+    if (openBtn) openBtn.addEventListener("click", open);
+    document.addEventListener("keydown", function (e) {
+      var tag = (e.target.tagName || "").toLowerCase();
+      var typing = tag === "input" || tag === "textarea" || tag === "select";
+      if (e.key === "/" && overlay.hidden && !typing) {
+        e.preventDefault(); open();
+      } else if (e.key === "Escape" && !overlay.hidden) {
+        close();
+      }
+    });
+    input.addEventListener("input", render);
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowDown") { e.preventDefault(); move(1); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); move(-1); }
+      else if (e.key === "Enter") { e.preventDefault(); go(); }
+    });
+    list.addEventListener("click", function (e) {
+      var li = e.target.closest("li[data-u]");
+      if (li) location.href = li.getAttribute("data-u");
+    });
+    overlay.addEventListener("click", function (e) {
+      if (e.target === overlay) close();
+    });
   }
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);

@@ -187,6 +187,69 @@
       "description": "Hitung zakat maal, zakat penghasilan, dan zakat fitrah sesuai nisab dan kadar 2,5 persen."
     },
     {
+      "slug": "pinjol",
+      "nav": "Bunga Pinjol",
+      "in_index": true,
+      "category": "Keuangan",
+      "icon": "📱",
+      "title": "Kalkulator Bunga Pinjol & Paylater - Total Bayar & Bunga Efektif",
+      "description": "Hitung total yang harus dibayar dari pinjaman online atau paylater, cicilan per bulan, dan bunga efektif tahunannya."
+    },
+    {
+      "slug": "dana-darurat",
+      "nav": "Dana Darurat",
+      "in_index": true,
+      "category": "Keuangan",
+      "icon": "🛟",
+      "title": "Kalkulator Dana Darurat - Berapa Idealnya dan Kapan Tercapai",
+      "description": "Hitung target dana darurat dari pengeluaran bulanan dan status keluarga, plus lama menabung untuk mencapainya."
+    },
+    {
+      "slug": "sbn-ritel",
+      "nav": "SBN Ritel",
+      "in_index": true,
+      "category": "Keuangan",
+      "icon": "📜",
+      "title": "Kalkulator SBN Ritel - Kupon ORI, SR, ST, SBR Setelah Pajak",
+      "description": "Hitung kupon bulanan dan total imbal hasil obligasi negara ritel setelah pajak 10 persen, dari nominal dan tenor."
+    },
+    {
+      "slug": "pajak-kendaraan",
+      "nav": "Pajak Kendaraan",
+      "in_index": true,
+      "category": "Keuangan",
+      "icon": "🚙",
+      "title": "Kalkulator Pajak Kendaraan (PKB) - Termasuk Opsen Pajak 2025",
+      "description": "Perkirakan pajak kendaraan bermotor tahunan dari nilai jual, tarif PKB, opsen pajak, dan SWDKLLJ."
+    },
+    {
+      "slug": "tabungan-haji",
+      "nav": "Tabungan Haji",
+      "in_index": true,
+      "category": "Keuangan",
+      "icon": "🕋",
+      "title": "Kalkulator Tabungan Haji & Umroh - Lama Menabung sampai Berangkat",
+      "description": "Hitung berapa lama atau berapa setoran bulanan yang dibutuhkan untuk mencapai biaya haji atau umroh."
+    },
+    {
+      "slug": "pace-lari",
+      "nav": "Pace Lari",
+      "in_index": true,
+      "category": "Kesehatan",
+      "icon": "🏃",
+      "title": "Kalkulator Pace Lari - Hitung Pace, Waktu, dan Prediksi Lomba",
+      "description": "Hitung pace per kilometer, estimasi waktu tempuh, kecepatan, dan prediksi waktu 5K, 10K, half, dan full marathon."
+    },
+    {
+      "slug": "harga-jual",
+      "nav": "Harga Jual Produk",
+      "in_index": true,
+      "category": "Bisnis",
+      "icon": "🏪",
+      "title": "Kalkulator Harga Jual Produk - HPP, Margin, dan Biaya Marketplace",
+      "description": "Tentukan harga jual dari modal (HPP), target margin atau markup, biaya admin marketplace, dan ongkos lain."
+    },
+    {
       "slug": "tentang",
       "nav": "",
       "in_index": false,

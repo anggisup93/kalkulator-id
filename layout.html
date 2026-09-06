@@ -23,12 +23,24 @@
 {{ADSENSE_HEAD}}
 </head>
 <body>
-<header class="site-header" id="site-header">
+<header class="site-header">
   <a class="brand" href="/">{{SITE_NAME}}</a>
-  <button type="button" class="icon-btn nav-toggle" id="nav-toggle" aria-label="Buka menu" aria-expanded="false" aria-controls="site-nav">&#9776;</button>
-  <button type="button" class="icon-btn theme-toggle" id="theme-toggle" aria-label="Ganti tema terang / gelap" title="Ganti tema">&#9681;</button>
-  <nav class="site-nav" id="site-nav">{{NAV}}</nav>
+  <div class="header-actions">
+    <button type="button" class="nav-search" id="open-search" aria-label="Cari alat">
+      <span aria-hidden="true">&#128269;</span><span class="nav-search-t">Cari alat</span><kbd>/</kbd>
+    </button>
+    <a class="nav-link" href="/alat/">Semua Alat</a>
+    <button type="button" class="icon-btn theme-toggle" id="theme-toggle" aria-label="Ganti tema terang / gelap" title="Ganti tema">&#9681;</button>
+  </div>
 </header>
+
+<div class="search-overlay" id="search-overlay" hidden>
+  <div class="search-panel" role="dialog" aria-modal="true" aria-label="Cari alat">
+    <input type="search" id="search-input" autocomplete="off" placeholder="Ketik nama alat… (mis. KPR, zakat, umur)">
+    <ul class="search-results" id="search-results"></ul>
+    <p class="search-hint"><kbd>&uarr;</kbd><kbd>&darr;</kbd> pilih &middot; <kbd>Enter</kbd> buka &middot; <kbd>Esc</kbd> tutup</p>
+  </div>
+</div>
 
 <main class="container">
 {{BREADCRUMB}}
@@ -48,6 +60,7 @@
   <p>&copy; {{YEAR}} {{SITE_NAME}}. Semua hasil perhitungan bersifat estimasi.</p>
 </footer>
 {{ANALYTICS}}
+<script>window.KID_TOOLS={{TOOLS_JSON}};</script>
 <script>
 if ("serviceWorker" in navigator) {
   addEventListener("load", function () {

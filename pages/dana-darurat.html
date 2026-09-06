@@ -1,0 +1,82 @@
+<h1>Kalkulator Dana Darurat</h1>
+<p>Hitung berapa dana darurat ideal untuk kondisi Anda, dan berapa lama menabung untuk mencapainya.</p>
+
+<form class="calc" onsubmit="return hitungDarurat(event)">
+  <label>Pengeluaran wajib per bulan (Rp)
+    <input id="dd-pengeluaran" type="text" inputmode="numeric" data-money value="5000000" required>
+  </label>
+  <label>Kondisi
+    <select id="dd-kondisi">
+      <option value="6" selected>Lajang &mdash; 6&times; pengeluaran</option>
+      <option value="9">Menikah tanpa anak &mdash; 9&times;</option>
+      <option value="12">Menikah dengan anak &mdash; 12&times;</option>
+      <option value="12b">Penghasilan tidak tetap / freelance &mdash; 12&times;</option>
+    </select>
+  </label>
+  <label>Dana darurat yang sudah ada (Rp)
+    <input id="dd-sekarang" type="text" inputmode="numeric" data-money value="0">
+  </label>
+  <label>Kemampuan menabung per bulan (Rp)
+    <input id="dd-nabung" type="text" inputmode="numeric" data-money value="1000000">
+  </label>
+  <button type="submit">Hitung Dana Darurat</button>
+</form>
+
+<div id="dd-hasil" class="result" hidden></div>
+
+<section class="article">
+  <h2>Berapa dana darurat yang ideal</h2>
+  <p>Dana darurat adalah tabungan khusus untuk menutup pengeluaran saat kehilangan penghasilan atau ada kebutuhan mendesak, terpisah dari tabungan tujuan lain. Ukurannya dihitung dari <strong>pengeluaran wajib</strong> per bulan, bukan dari penghasilan.</p>
+  <code class="formula">Target = pengeluaran bulanan &times; pengali kondisi
+Lama menabung = (target &minus; dana sekarang) / tabungan per bulan</code>
+  <p>Patokan umum: lajang 3&ndash;6 kali pengeluaran, sudah menikah 6&ndash;9 kali, punya anak atau tanggungan 9&ndash;12 kali, dan pekerja lepas dengan penghasilan tidak tetap sebaiknya 12 kali. Simpan di instrumen yang mudah dicairkan seperti tabungan atau deposito jangka pendek.</p>
+
+  <h2>Contoh</h2>
+  <p>Pengeluaran wajib Rp5.000.000 per bulan untuk seorang lajang berarti target dana darurat Rp30.000.000. Jika belum punya tabungan darurat dan menyisihkan Rp1.000.000 per bulan, target tercapai dalam 30 bulan atau 2,5 tahun.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Pengeluaran wajib itu apa saja?</h3>
+  <p>Yang benar-benar harus dikeluarkan tiap bulan: makan, sewa atau cicilan rumah, listrik dan air, transportasi kerja, cicilan utang, biaya sekolah anak, dan premi asuransi. Belanja hiburan dan gaya hidup tidak dihitung.</p>
+  <h3>Haruskah dana darurat penuh dulu sebelum berinvestasi?</h3>
+  <p>Idealnya kumpulkan minimal 3 kali pengeluaran lebih dulu sebagai fondasi, lalu boleh menabung darurat dan berinvestasi secara paralel sampai targetnya penuh.</p>
+  <h3>Di mana sebaiknya menyimpan dana darurat?</h3>
+  <p>Di tempat yang aman, likuid, dan terpisah dari rekening harian: tabungan bank berbeda, deposito bertenor 1 bulan yang diperpanjang otomatis, atau reksa dana pasar uang. Hindari saham atau aset yang nilainya berfluktuasi.</p>
+</section>
+
+<script>
+function hitungDarurat(e) {
+  e.preventDefault();
+  var pengeluaran = num("dd-pengeluaran");
+  var pengali = parseInt(document.getElementById("dd-kondisi").value, 10);
+  var sekarang = num("dd-sekarang");
+  var nabung = num("dd-nabung");
+  if (pengeluaran <= 0) { show("dd-hasil", "Isi pengeluaran wajib per bulan."); return false; }
+
+  var target = pengeluaran * pengali;
+  var kurang = Math.max(0, target - sekarang);
+  var persen = Math.min(100, sekarang / target * 100);
+
+  var pesanLama;
+  if (kurang === 0) {
+    pesanLama = "Target sudah tercapai. 🎉";
+  } else if (nabung <= 0) {
+    pesanLama = "Isi kemampuan menabung untuk melihat estimasi waktu.";
+  } else {
+    var bulan = Math.ceil(kurang / nabung);
+    var thn = Math.floor(bulan / 12), sisa = bulan % 12;
+    pesanLama = "Perlu <strong>" + bulan + " bulan</strong>" +
+      (thn ? " (" + thn + " tahun" + (sisa ? " " + sisa + " bulan" : "") + ")" : "") + " menabung.";
+  }
+
+  show("dd-hasil",
+    "<strong>Target dana darurat: " + rp(target) + "</strong> (" + pengali + "&times; pengeluaran)<br>" +
+    "Sudah terkumpul: " + rp(sekarang) + " (" + persen.toFixed(0) + "%)<br>" +
+    "Kekurangan: " + rp(kurang) + "<br>" + pesanLama +
+    bar([
+      { label: "Terkumpul", nilai: sekarang, warna: "#12b76a" },
+      { label: "Kurang", nilai: kurang, warna: "#f79009" }
+    ]),
+    "Dana Darurat — target " + rp(target) + ", terkumpul " + persen.toFixed(0) + "%, kurang " + rp(kurang) + ".");
+  return false;
+}
+</script>

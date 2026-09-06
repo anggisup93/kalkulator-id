@@ -1,0 +1,94 @@
+<h1>Kalkulator Tabungan Haji &amp; Umroh</h1>
+<p>Hitung berapa lama menabung sampai bisa berangkat, atau berapa setoran bulanan yang dibutuhkan bila ingin berangkat pada waktu tertentu.</p>
+
+<form class="calc" onsubmit="return hitungHaji(event)">
+  <label>Target biaya (Rp)
+    <input id="th-target" type="text" inputmode="numeric" data-money value="35000000" required>
+  </label>
+  <label>Tabungan awal (Rp)
+    <input id="th-awal" type="text" inputmode="numeric" data-money value="0">
+  </label>
+  <label>Setoran per bulan (Rp)
+    <input id="th-setoran" type="text" inputmode="numeric" data-money value="1500000">
+  </label>
+  <label>Imbal hasil per tahun (%)
+    <input id="th-return" type="number" min="0" step="0.1" value="3">
+  </label>
+  <label>Atau, ingin berangkat dalam (bulan)
+    <input id="th-jangka" type="number" min="0" step="1" value="0" placeholder="0 = abaikan">
+  </label>
+  <button type="submit">Hitung</button>
+</form>
+
+<div id="th-hasil" class="result" hidden></div>
+
+<section class="article">
+  <h2>Cara perhitungan</h2>
+  <p>Kalkulator memproyeksikan tabungan awal ditambah setoran rutin bulanan, dengan asumsi imbal hasil tetap (misalnya bagi hasil tabungan haji atau deposito syariah). Ada dua arah perhitungan: mencari lama menabung dari setoran yang Anda pilih, atau mencari setoran yang dibutuhkan agar target tercapai dalam jangka waktu tertentu.</p>
+  <code class="formula">Nilai bulan ke-n = Awal &times; (1+r)^n + Setoran &times; ((1+r)^n &minus; 1) / r
+r = imbal hasil tahunan / 12</code>
+  <p>Jika kolom "ingin berangkat dalam (bulan)" diisi lebih dari nol, kalkulator menghitung setoran bulanan yang diperlukan. Jika dibiarkan nol, kalkulator menghitung berapa bulan setoran Anda sekarang akan mencapai target.</p>
+
+  <h2>Contoh</h2>
+  <p>Target Rp35.000.000 tanpa tabungan awal, setoran Rp1.500.000 per bulan, imbal hasil 3% per tahun: target tercapai dalam sekitar 23 bulan. Jika ingin berangkat dalam 12 bulan, setoran yang dibutuhkan sekitar Rp2.877.000 per bulan.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Berapa biaya haji dan umroh sebenarnya?</h3>
+  <p>Biaya berubah tiap tahun. Untuk haji reguler ada setoran awal pendaftaran porsi sekitar Rp25 juta, lalu pelunasan biaya perjalanan yang diumumkan Kementerian Agama tiap musim. Umroh berkisar puluhan juta tergantung maskapai, hotel, dan musim. Sesuaikan angka target dengan penawaran terbaru.</p>
+  <h3>Apakah haji reguler bisa langsung berangkat setelah tabungan cukup?</h3>
+  <p>Tidak. Setelah membayar setoran awal Anda mendapat nomor porsi dan masuk daftar tunggu yang di banyak provinsi mencapai belasan hingga puluhan tahun. Kalkulator ini hanya membantu menyiapkan dananya, bukan mempercepat antrean.</p>
+  <h3>Imbal hasil berapa yang realistis dipakai?</h3>
+  <p>Untuk tabungan haji di bank syariah, bagi hasilnya kecil, sekitar 1&ndash;3% per tahun. Jika Anda menabung lewat instrumen lain seperti emas atau reksa dana, sesuaikan asumsinya dan ingat bahwa nilainya bisa berfluktuasi.</p>
+</section>
+
+<script>
+function fmtLama(bulan) {
+  var thn = Math.floor(bulan / 12), sisa = bulan % 12;
+  var s = bulan + " bulan";
+  if (thn) s += " (" + thn + " tahun" + (sisa ? " " + sisa + " bulan" : "") + ")";
+  return s;
+}
+function hitungHaji(e) {
+  e.preventDefault();
+  var target = num("th-target");
+  var awal = num("th-awal");
+  var setoran = num("th-setoran");
+  var r = num("th-return") / 100 / 12;
+  var jangka = num("th-jangka");
+  if (target <= 0) { show("th-hasil", "Isi target biaya."); return false; }
+
+  if (jangka > 0) {
+    var g = Math.pow(1 + r, jangka);
+    var perlu;
+    if (r === 0) perlu = (target - awal) / jangka;
+    else perlu = (target - awal * g) * r / (g - 1);
+    perlu = Math.max(0, perlu);
+    show("th-hasil",
+      "<strong>Setoran dibutuhkan: " + rp(perlu) + " per bulan</strong><br>" +
+      "agar mencapai " + rp(target) + " dalam " + fmtLama(jangka) +
+      (awal > 0 ? "<br>dengan tabungan awal " + rp(awal) : ""),
+      "Tabungan Haji — untuk " + rp(target) + " dalam " + jangka + " bulan, perlu setoran " + rp(perlu) + "/bulan.");
+    return false;
+  }
+
+  if (awal >= target) {
+    show("th-hasil", "Tabungan awal sudah melebihi target. 🎉");
+    return false;
+  }
+  if (setoran <= 0) { show("th-hasil", "Isi setoran per bulan, atau isi jangka waktu."); return false; }
+
+  var n;
+  if (r === 0) {
+    n = Math.ceil((target - awal) / setoran);
+  } else {
+    n = Math.ceil(Math.log((target + setoran / r) / (awal + setoran / r)) / Math.log(1 + r));
+  }
+  var totalSetor = awal + setoran * n;
+  show("th-hasil",
+    "<strong>Perkiraan tercapai dalam " + fmtLama(n) + "</strong><br>" +
+    "Total uang yang Anda setor: " + rp(totalSetor) + "<br>" +
+    "Sisanya dari imbal hasil: " + rp(Math.max(0, target - totalSetor)),
+    "Tabungan Haji — setoran " + rp(setoran) + "/bulan mencapai " + rp(target) + " dalam " + fmtLama(n) + ".");
+  return false;
+}
+</script>

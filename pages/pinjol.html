@@ -1,0 +1,90 @@
+<h1>Kalkulator Bunga Pinjol &amp; Paylater</h1>
+<p>Hitung total yang harus Anda bayar dari pinjaman online atau paylater, cicilan per bulan, dan perkiraan bunga efektif per tahun. Berguna untuk memeriksa apakah bunga yang ditawarkan masih wajar.</p>
+
+<form class="calc" onsubmit="return hitungPinjol(event)">
+  <label>Jumlah pinjaman (Rp)
+    <input id="pj-pokok" type="text" inputmode="numeric" data-money value="2000000" required>
+  </label>
+  <label>Tenor
+    <input id="pj-tenor" type="number" min="1" step="1" value="3" required>
+  </label>
+  <label>Satuan tenor
+    <select id="pj-tenor-unit">
+      <option value="bulan" selected>bulan</option>
+      <option value="hari">hari</option>
+    </select>
+  </label>
+  <label>Bunga / biaya
+    <input id="pj-bunga" type="number" min="0" step="0.01" value="4" required>
+  </label>
+  <label>Satuan bunga
+    <select id="pj-bunga-unit">
+      <option value="bulan" selected>% per bulan (flat)</option>
+      <option value="hari">% per hari</option>
+      <option value="tahun">% per tahun</option>
+    </select>
+  </label>
+  <label>Biaya layanan dipotong di muka (%)
+    <input id="pj-admin" type="number" min="0" step="0.1" value="0">
+  </label>
+  <button type="submit">Hitung Total Bayar</button>
+</form>
+
+<div id="pj-hasil" class="result" hidden></div>
+
+<section class="article">
+  <h2>Cara perhitungan</h2>
+  <p>Sebagian besar pinjaman online memakai bunga <strong>flat</strong>: bunga dihitung dari pokok awal dan tidak berkurang meski utang menyusut. Biaya layanan biasanya dipotong langsung dari dana yang cair, sehingga uang yang Anda terima lebih kecil dari nominal pinjaman.</p>
+  <code class="formula">Bunga total   = pokok &times; bunga harian &times; jumlah hari
+Dana diterima = pokok &minus; biaya layanan
+Total bayar   = pokok + bunga total</code>
+  <p>Bunga efektif per tahun dihitung dari total biaya (bunga + biaya layanan) dibagi dana yang benar-benar Anda terima, disetahunkan. Angka ini sering jauh lebih besar dari bunga flat yang tertera.</p>
+
+  <h2>Contoh</h2>
+  <p>Pinjaman Rp2.000.000, tenor 3 bulan, bunga flat 4% per bulan: bunga total Rp240.000, total bayar Rp2.240.000, cicilan sekitar Rp746.700 per bulan. Bunga efektif per tahunnya hampir 49%.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Berapa batas bunga pinjol yang diperbolehkan?</h3>
+  <p>OJK menetapkan batas maksimum bunga dan biaya harian untuk pinjaman daring, dan batas itu diturunkan secara bertahap. Untuk pinjaman konsumtif jangka pendek, batasnya berkisar 0,3% per hari pada 2024 dan terus turun. Jika tawaran melebihi batas yang berlaku, itu tanda pemberi pinjaman tidak berizin.</p>
+  <h3>Kenapa bunga efektif jauh lebih besar dari bunga yang tertera?</h3>
+  <p>Bunga flat tampak kecil karena dihitung dari pokok awal untuk tenor pendek. Saat disetahunkan dan dibandingkan dengan dana bersih yang diterima, angkanya berlipat. Selalu bandingkan memakai bunga efektif per tahun.</p>
+  <h3>Apa yang terjadi jika telat bayar?</h3>
+  <p>Ada denda keterlambatan harian yang juga dibatasi OJK, tetapi bisa menumpuk cepat. Kalkulator ini belum menghitung denda; anggap hasilnya sebagai kondisi bila semua cicilan lancar.</p>
+</section>
+
+<script>
+function hitungPinjol(e) {
+  e.preventDefault();
+  var pokok = num("pj-pokok");
+  var tenor = num("pj-tenor");
+  var tenorHari = document.getElementById("pj-tenor-unit").value === "hari" ? tenor : tenor * 30;
+  var bunga = num("pj-bunga") / 100;
+  var unit = document.getElementById("pj-bunga-unit").value;
+  var rHari = unit === "hari" ? bunga : unit === "bulan" ? bunga / 30 : bunga / 365;
+  var adminPct = num("pj-admin") / 100;
+  if (pokok <= 0 || tenorHari <= 0) { show("pj-hasil", "Periksa jumlah pinjaman dan tenor."); return false; }
+
+  var bungaTotal = pokok * rHari * tenorHari;
+  var biayaMuka = pokok * adminPct;
+  var totalBayar = pokok + bungaTotal;
+  var diterima = pokok - biayaMuka;
+  var bulan = tenorHari / 30;
+  var cicilan = totalBayar / bulan;
+  var apr = diterima > 0 ? (bungaTotal + biayaMuka) / diterima / (tenorHari / 365) * 100 : 0;
+
+  show("pj-hasil",
+    "<strong>Total harus dibayar: " + rp(totalBayar) + "</strong><br>" +
+    "Dana yang Anda terima: " + rp(diterima) +
+    (biayaMuka > 0 ? " (setelah potong biaya " + rp(biayaMuka) + ")" : "") + "<br>" +
+    "Cicilan per bulan: " + rp(cicilan) + " selama " + (bulan % 1 === 0 ? bulan : bulan.toFixed(1)) + " bulan<br>" +
+    "Total bunga + biaya: " + rp(bungaTotal + biayaMuka) + "<br>" +
+    "Perkiraan bunga efektif: <strong>" + apr.toFixed(0) + "% per tahun</strong>" +
+    bar([
+      { label: "Pokok", nilai: pokok, warna: "#2f6bff" },
+      { label: "Bunga + biaya", nilai: bungaTotal + biayaMuka, warna: "#f04438" }
+    ]),
+    "Pinjol " + rp(pokok) + ", " + (bulan % 1 === 0 ? bulan : bulan.toFixed(1)) + " bln: total bayar " +
+    rp(totalBayar) + ", cicilan " + rp(cicilan) + "/bln, bunga efektif ~" + apr.toFixed(0) + "%/th.");
+  return false;
+}
+</script>

@@ -1,0 +1,91 @@
+<h1>Kalkulator Harga Jual Produk</h1>
+<p>Tentukan harga jual dari modal (HPP), target margin atau markup, biaya admin marketplace, dan ongkos lain per produk. Cocok untuk toko online dan UMKM.</p>
+
+<form class="calc" onsubmit="return hitungHargaJual(event)">
+  <label>Modal / HPP per produk (Rp)
+    <input id="hj-hpp" type="text" inputmode="numeric" data-money value="30000" required>
+  </label>
+  <label>Biaya lain per produk (Rp)
+    <input id="hj-lain" type="text" inputmode="numeric" data-money value="2000">
+  </label>
+  <label>Target keuntungan
+    <select id="hj-mode">
+      <option value="markup" selected>Markup &mdash; % dari modal</option>
+      <option value="margin">Margin &mdash; % dari harga jual</option>
+    </select>
+  </label>
+  <label>Persentase (%)
+    <input id="hj-persen" type="number" min="0" step="0.1" value="40" required>
+  </label>
+  <label>Biaya admin marketplace (%)
+    <input id="hj-fee" type="number" min="0" step="0.1" value="8">
+  </label>
+  <label>Pembulatan harga
+    <select id="hj-bulat">
+      <option value="1">Tanpa pembulatan</option>
+      <option value="500">Ratusan (500)</option>
+      <option value="1000" selected>Ribuan (1.000)</option>
+    </select>
+  </label>
+  <button type="submit">Hitung Harga Jual</button>
+</form>
+
+<div id="hj-hasil" class="result" hidden></div>
+
+<section class="article">
+  <h2>Markup atau margin</h2>
+  <p><strong>Markup</strong> menghitung keuntungan sebagai persentase dari modal: modal Rp30.000 dengan markup 40% berarti laba Rp12.000. <strong>Margin</strong> menghitung keuntungan sebagai persentase dari harga jual: margin 40% berarti 40% dari harga jual adalah laba. Untuk angka persen yang sama, margin menghasilkan harga jual lebih tinggi daripada markup.</p>
+  <code class="formula">cost = HPP + biaya lain
+Markup: harga = cost &times; (1 + markup%) / (1 &minus; fee%)
+Margin: harga = cost / (1 &minus; margin% &minus; fee%)</code>
+  <p>Biaya admin marketplace dipotong dari harga jual, jadi harus ikut diperhitungkan agar laba yang Anda incar benar-benar tercapai setelah potongan.</p>
+
+  <h2>Contoh</h2>
+  <p>Modal Rp30.000 plus biaya kemasan Rp2.000 (total Rp32.000), target markup 40%, biaya admin marketplace 8%. Harga jual disarankan sekitar Rp49.000 setelah dibulatkan ke ribuan. Setelah dipotong admin Rp3.920, Anda menerima Rp45.080, dan labanya sekitar Rp13.080 per produk.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Pakai markup atau margin?</h3>
+  <p>Pedagang eceran dan UMKM umumnya berpikir dengan markup karena lebih mudah: tinggal tambah sekian persen dari modal. Margin lebih dipakai untuk analisis keuangan karena langsung menunjukkan porsi laba terhadap omzet.</p>
+  <h3>Apakah ongkos kirim termasuk?</h3>
+  <p>Tidak, kecuali Anda menanggungnya. Jika ongkir dibebankan ke pembeli, biarkan kolom biaya lain hanya untuk kemasan, label, dan biaya penanganan yang benar-benar Anda keluarkan.</p>
+  <h3>Bagaimana dengan PPN?</h3>
+  <p>Jika usaha Anda sudah Pengusaha Kena Pajak, PPN dikenakan di atas harga jual dan dibayar pembeli. Hitung dulu harga jual di sini, lalu tambahkan PPN sesuai tarif yang berlaku.</p>
+</section>
+
+<script>
+function hitungHargaJual(e) {
+  e.preventDefault();
+  var cost = num("hj-hpp") + num("hj-lain");
+  var mode = document.getElementById("hj-mode").value;
+  var p = num("hj-persen") / 100;
+  var fee = num("hj-fee") / 100;
+  var bulat = parseFloat(document.getElementById("hj-bulat").value) || 1;
+  if (cost <= 0) { show("hj-hasil", "Isi modal / HPP produk."); return false; }
+  if (fee >= 1 || (mode === "margin" && p + fee >= 1)) {
+    show("hj-hasil", "Persentase terlalu besar &mdash; margin + biaya admin harus di bawah 100%.");
+    return false;
+  }
+
+  var harga = mode === "markup" ? cost * (1 + p) / (1 - fee) : cost / (1 - p - fee);
+  harga = Math.ceil(harga / bulat) * bulat;
+  var potonganFee = harga * fee;
+  var diterima = harga - potonganFee;
+  var laba = diterima - cost;
+  var marginRiil = harga > 0 ? laba / harga * 100 : 0;
+  var markupRiil = cost > 0 ? laba / cost * 100 : 0;
+
+  show("hj-hasil",
+    "<strong>Harga jual disarankan: " + rp(harga) + "</strong><br>" +
+    "Modal + biaya: " + rp(cost) + "<br>" +
+    "Potongan admin (" + num("hj-fee") + "%): " + rp(potonganFee) + "<br>" +
+    "Uang diterima: " + rp(diterima) + "<br>" +
+    "Laba per produk: <strong>" + rp(laba) + "</strong> (margin " + marginRiil.toFixed(1) + "%, markup " + markupRiil.toFixed(1) + "%)" +
+    bar([
+      { label: "Modal", nilai: cost, warna: "#2f6bff" },
+      { label: "Laba", nilai: laba, warna: "#12b76a" },
+      { label: "Admin", nilai: potonganFee, warna: "#f79009" }
+    ]),
+    "Harga Jual — modal " + rp(cost) + ", harga jual " + rp(harga) + ", laba " + rp(laba) + "/produk.");
+  return false;
+}
+</script>

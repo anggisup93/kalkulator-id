@@ -1,0 +1,70 @@
+<h1>Kalkulator SBN Ritel</h1>
+<p>Hitung kupon (imbal hasil) bulanan dan total pendapatan dari Surat Berharga Negara ritel seperti ORI, SR, ST, dan SBR, setelah dipotong pajak kupon 10%.</p>
+
+<form class="calc" onsubmit="return hitungSBN(event)">
+  <label>Nominal pembelian (Rp)
+    <input id="sb-nominal" type="text" inputmode="numeric" data-money value="10000000" required>
+  </label>
+  <label>Kupon per tahun (%)
+    <input id="sb-kupon" type="number" min="0" step="0.01" value="6.4" required>
+  </label>
+  <label>Tenor
+    <select id="sb-tenor">
+      <option value="24" selected>2 tahun (24 bulan)</option>
+      <option value="36">3 tahun (36 bulan)</option>
+      <option value="48">4 tahun (48 bulan)</option>
+      <option value="72">6 tahun (72 bulan)</option>
+    </select>
+  </label>
+</form>
+<div id="sb-hasil" class="result"></div>
+
+<section class="article">
+  <h2>Cara perhitungan</h2>
+  <p>SBN ritel membayar kupon setiap bulan berdasarkan nominal yang Anda beli. Kupon dikenai Pajak Penghasilan final sebesar 10%, lebih rendah dari pajak bunga deposito. Pada saat jatuh tempo, pokok dikembalikan penuh 100%.</p>
+  <code class="formula">Kupon bruto per bulan = nominal &times; kupon% / 12
+Kupon bersih per bulan = kupon bruto &times; 90%
+Total diterima = (kupon bersih &times; tenor) + nominal</code>
+  <p>Untuk seri dengan kupon mengambang seperti ST dan SBR, besaran kupon bisa berubah tiap tiga bulan mengikuti suku bunga acuan, tetapi ada batas bawah (kupon minimal). Kalkulator ini memakai kupon tetap sesuai angka yang Anda masukkan.</p>
+
+  <h2>Contoh</h2>
+  <p>Membeli Rp10.000.000 dengan kupon 6,4% per tahun dan tenor 2 tahun menghasilkan kupon bruto Rp53.333 per bulan, atau Rp48.000 setelah pajak 10%. Selama 24 bulan Anda menerima total kupon bersih Rp1.152.000, dan pokok Rp10.000.000 kembali saat jatuh tempo.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Apakah SBN ritel bisa dijual sebelum jatuh tempo?</h3>
+  <p>ORI dan SR bisa diperdagangkan di pasar sekunder setelah masa tertentu, sehingga harganya bisa di atas atau di bawah 100%. ST dan SBR tidak bisa diperjualbelikan, tetapi ada fasilitas pelunasan sebagian lebih awal (early redemption) pada jadwal tertentu.</p>
+  <h3>Kenapa pajak kuponnya 10%?</h3>
+  <p>Sejak 2021 tarif PPh final atas bunga atau kupon obligasi, termasuk SBN, ditetapkan 10%. Sebelumnya 15%. Tarif ini otomatis dipotong oleh mitra distribusi sebelum kupon masuk ke rekening Anda.</p>
+  <h3>Apakah pembelian harus kelipatan tertentu?</h3>
+  <p>Ya. Pemesanan SBN ritel umumnya minimal Rp1.000.000 dan kelipatannya, dengan batas maksimum per seri yang diumumkan saat penerbitan.</p>
+</section>
+
+<script>
+function hitungSBN(e) {
+  if (e) e.preventDefault();
+  var nominal = num("sb-nominal");
+  var kupon = num("sb-kupon") / 100;
+  var tenor = parseInt(document.getElementById("sb-tenor").value, 10);
+  if (nominal <= 0 || kupon < 0) { show("sb-hasil", "Periksa nominal dan kupon."); return false; }
+
+  var bruto = nominal * kupon / 12;
+  var bersih = bruto * 0.9;
+  var totalKupon = bersih * tenor;
+  var totalTerima = totalKupon + nominal;
+  var yieldBersih = nominal > 0 ? totalKupon / nominal / (tenor / 12) * 100 : 0;
+
+  show("sb-hasil",
+    "<strong>Kupon bersih: " + rp(bersih) + " per bulan</strong><br>" +
+    "Kupon bruto: " + rp(bruto) + " &minus; pajak 10% " + rp(bruto - bersih) + "<br>" +
+    "Total kupon bersih selama " + tenor + " bulan: " + rp(totalKupon) + "<br>" +
+    "Total diterima saat jatuh tempo: " + rp(totalTerima) + " (termasuk pokok)<br>" +
+    "Imbal hasil bersih: " + yieldBersih.toFixed(2) + "% per tahun",
+    "SBN Ritel " + rp(nominal) + " @ " + num("sb-kupon") + "%, " + tenor +
+    " bln: kupon bersih " + rp(bersih) + "/bln, total kupon " + rp(totalKupon) + ".");
+  return false;
+}
+["sb-nominal", "sb-kupon", "sb-tenor"].forEach(function (id) {
+  document.getElementById(id).addEventListener("change", function () { hitungSBN(); });
+});
+hitungSBN();
+</script>
