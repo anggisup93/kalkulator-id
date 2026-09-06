@@ -1,0 +1,132 @@
+<h1>Kalkulator Iuran BPJS</h1>
+<p>Hitung iuran BPJS Kesehatan (mandiri atau lewat perusahaan) dan potongan BPJS Ketenagakerjaan dari gaji.</p>
+<p data-policy></p>
+
+<h2 style="border:0;padding:0;margin:8px 0 0">BPJS Kesehatan</h2>
+<form class="calc" onsubmit="return hitungKes(event)">
+  <label>Jenis kepesertaan
+    <select id="bk-jenis">
+      <option value="mandiri" selected>Mandiri (PBPU / bayar sendiri)</option>
+      <option value="pekerja">Pekerja penerima upah (lewat perusahaan)</option>
+    </select>
+  </label>
+  <label>Kelas (untuk peserta mandiri)
+    <select id="bk-kelas">
+      <option value="Kelas 1">Kelas 1</option>
+      <option value="Kelas 2">Kelas 2</option>
+      <option value="Kelas 3" selected>Kelas 3</option>
+    </select>
+  </label>
+  <label>Jumlah anggota keluarga (mandiri)
+    <input id="bk-jiwa" type="number" min="1" step="1" value="3">
+  </label>
+  <label>Gaji per bulan (untuk pekerja) (Rp)
+    <input id="bk-gaji" type="text" inputmode="numeric" data-money value="6000000">
+  </label>
+  <button type="submit">Hitung Iuran Kesehatan</button>
+</form>
+<div id="bk-hasil" class="result" hidden></div>
+
+<h2 style="margin-top:32px">BPJS Ketenagakerjaan (pekerja)</h2>
+<form class="calc" onsubmit="return hitungTK(event)">
+  <label>Gaji per bulan (Rp)
+    <input id="bt-gaji" type="text" inputmode="numeric" data-money value="6000000" required>
+  </label>
+  <label>Tingkat risiko pekerjaan (JKK)
+    <select id="bt-risiko">
+      <option value="sangat rendah">Sangat rendah (mis. kantor)</option>
+      <option value="rendah" selected>Rendah</option>
+      <option value="sedang">Sedang</option>
+      <option value="tinggi">Tinggi</option>
+      <option value="sangat tinggi">Sangat tinggi (mis. konstruksi)</option>
+    </select>
+  </label>
+  <button type="submit">Hitung Iuran Ketenagakerjaan</button>
+</form>
+<div id="bt-hasil" class="result" hidden></div>
+
+<section class="article">
+  <h2>Dasar perhitungan</h2>
+  <p><strong>BPJS Kesehatan mandiri</strong> memakai iuran tetap per jiwa sesuai kelas. <strong>BPJS Kesehatan lewat perusahaan</strong> sebesar 5% dari gaji (batas atas Rp12 juta), dengan 4% ditanggung perusahaan dan 1% dipotong dari gaji karyawan.</p>
+  <p><strong>BPJS Ketenagakerjaan</strong> untuk pekerja penerima upah terdiri dari empat program:</p>
+  <ul>
+    <li><strong>JHT</strong> 5,7% (3,7% perusahaan + 2% karyawan)</li>
+    <li><strong>JKK</strong> 0,24%&ndash;1,74% sesuai tingkat risiko, ditanggung perusahaan</li>
+    <li><strong>JKM</strong> 0,3%, ditanggung perusahaan</li>
+    <li><strong>JP</strong> 3% (2% perusahaan + 1% karyawan), dengan batas upah tertentu</li>
+  </ul>
+
+  <h2>Contoh</h2>
+  <p>Gaji Rp6.000.000, risiko rendah. Potongan dari gaji karyawan: JHT 2% Rp120.000, JP 1% Rp60.000, BPJS Kesehatan 1% Rp60.000 &mdash; total potongan Rp240.000. Beban perusahaan jauh lebih besar karena menanggung sisanya plus JKK dan JKM.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Apakah iuran kelas BPJS Kesehatan akan diganti KRIS?</h3>
+  <p>Pemerintah sedang menerapkan Kelas Rawat Inap Standar (KRIS) secara bertahap untuk menggantikan sistem kelas. Besaran iuran KRIS belum ditetapkan final, jadi kalkulator ini masih memakai tarif kelas yang berlaku.</p>
+  <h3>Kenapa potongan JP saya berhenti bertambah walau gaji naik?</h3>
+  <p>JP punya batas atas upah. Di atas batas itu, iuran JP dihitung dari nilai batas, bukan gaji penuh, sehingga potongannya tidak lagi bertambah.</p>
+  <h3>Apakah iuran ini bisa dijadikan pengurang PPh 21?</h3>
+  <p>Hanya iuran JHT dan JP yang dibayar karyawan yang menjadi pengurang penghasilan bruto untuk PPh 21. Iuran BPJS Kesehatan tetap dipotong tetapi tidak mengurangi dasar pajak.</p>
+</section>
+
+<script>
+var B = (window.KID_DATA && window.KID_DATA.bpjs) || {};
+
+function hitungKes(e) {
+  e.preventDefault();
+  var jenis = document.getElementById("bk-jenis").value;
+  if (jenis === "mandiri") {
+    var kelas = document.getElementById("bk-kelas").value;
+    var jiwa = num("bk-jiwa") || 1;
+    var perJiwa = (B.kesehatan_mandiri && B.kesehatan_mandiri[kelas]) ||
+      ({ "Kelas 1": 150000, "Kelas 2": 100000, "Kelas 3": 35000 }[kelas]);
+    show("bk-hasil",
+      "<strong>Iuran BPJS Kesehatan " + kelas + ": " + rp(perJiwa * jiwa) + " per bulan</strong><br>" +
+      rp(perJiwa) + " per jiwa &times; " + jiwa + " anggota<br>" +
+      "<span style=\"color:var(--muted);font-size:14px\">Kelas 3 sudah termasuk subsidi pemerintah Rp7.000.</span>",
+      "BPJS Kesehatan mandiri " + kelas + ", " + jiwa + " jiwa = " + rp(perJiwa * jiwa) + "/bulan.");
+  } else {
+    var gaji = Math.min(num("bk-gaji"), B.kesehatan_batas_upah || 12000000);
+    var kar = gaji * (B.kesehatan_karyawan || 0.01);
+    var persh = gaji * (B.kesehatan_perusahaan || 0.04);
+    show("bk-hasil",
+      "<strong>Potongan dari gaji Anda: " + rp(kar) + " per bulan</strong> (1%)<br>" +
+      "Ditanggung perusahaan: " + rp(persh) + " (4%)<br>" +
+      "Total iuran: " + rp(kar + persh) + " (5% dari dasar " + rp(gaji) + ")",
+      "BPJS Kesehatan pekerja: potongan gaji " + rp(kar) + "/bulan, total iuran " + rp(kar + persh) + ".");
+  }
+  return false;
+}
+
+function hitungTK(e) {
+  e.preventDefault();
+  var gaji = num("bt-gaji");
+  if (gaji <= 0) { show("bt-hasil", "Isi gaji per bulan."); return false; }
+  var risiko = document.getElementById("bt-risiko").value;
+  var jkkRate = (B.jkk_perusahaan && B.jkk_perusahaan[risiko]) || 0.0054;
+  var jpBase = Math.min(gaji, B.jp_batas_upah || 10547400);
+
+  var jhtKar = gaji * (B.jht_karyawan || 0.02);
+  var jhtPersh = gaji * (B.jht_perusahaan || 0.037);
+  var jpKar = jpBase * (B.jp_karyawan || 0.01);
+  var jpPersh = jpBase * (B.jp_perusahaan || 0.02);
+  var jkk = gaji * jkkRate;
+  var jkm = gaji * (B.jkm_perusahaan || 0.003);
+
+  var potonganKar = jhtKar + jpKar;
+  var bebanPersh = jhtPersh + jpPersh + jkk + jkm;
+
+  show("bt-hasil",
+    "<strong>Potongan dari gaji Anda: " + rp(potonganKar) + " per bulan</strong><br>" +
+    "&nbsp;&nbsp;JHT (2%): " + rp(jhtKar) + " &middot; JP (1%): " + rp(jpKar) + "<br>" +
+    "Ditanggung perusahaan: " + rp(bebanPersh) + " per bulan<br>" +
+    "&nbsp;&nbsp;JHT " + rp(jhtPersh) + " &middot; JP " + rp(jpPersh) + " &middot; JKK " + rp(jkk) + " &middot; JKM " + rp(jkm) + "<br>" +
+    "Total iuran Ketenagakerjaan: " + rp(potonganKar + bebanPersh) +
+    bar([
+      { label: "Potongan Anda", nilai: potonganKar, warna: "#2f6bff" },
+      { label: "Ditanggung perusahaan", nilai: bebanPersh, warna: "#12b76a" }
+    ]),
+    "BPJS Ketenagakerjaan (gaji " + rp(gaji) + ", risiko " + risiko + "): potongan gaji " + rp(potonganKar) +
+    "/bulan, beban perusahaan " + rp(bebanPersh) + "/bulan.");
+  return false;
+}
+</script>

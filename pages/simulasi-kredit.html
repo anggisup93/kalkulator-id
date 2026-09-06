@@ -1,0 +1,87 @@
+<h1>Simulasi Kredit</h1>
+<p>Hitung angsuran, total bunga, dan total bayar untuk sebuah pinjaman dengan metode <strong>bunga flat</strong> maupun <strong>bunga efektif / anuitas</strong>, lalu bandingkan keduanya.</p>
+
+<form class="calc" onsubmit="return hitungKredit(event)">
+  <label>Jumlah pinjaman (Rp)
+    <input id="sk-pokok" type="text" inputmode="numeric" data-money value="100000000" required>
+  </label>
+  <label>Suku bunga per tahun (%)
+    <input id="sk-bunga" type="number" min="0" step="0.01" value="10" required>
+  </label>
+  <label>Tenor (bulan)
+    <input id="sk-tenor" type="number" min="1" max="360" value="36" required>
+  </label>
+  <button type="submit">Hitung &amp; Bandingkan</button>
+</form>
+
+<div id="sk-hasil" class="result" hidden></div>
+
+<section class="article">
+  <h2>Beda flat dan efektif</h2>
+  <p>Pada <strong>bunga flat</strong>, bunga dihitung dari pokok awal dan tetap sepanjang tenor, sehingga angsuran per bulan sama dan mudah dihitung. Dipakai kredit kendaraan, KTA, dan pinjol.</p>
+  <p>Pada <strong>bunga efektif</strong> (metode anuitas), bunga dihitung dari sisa pokok yang terus berkurang. Angsuran tetap, tetapi komposisinya bergeser: bunga besar di awal, mengecil menjelang akhir. Dipakai KPR dan kredit produktif.</p>
+  <code class="formula">Flat:    angsuran = pokok/n + pokok &times; bunga% / 12
+Efektif: angsuran = pokok &times; i / (1 &minus; (1 + i)^-n),  i = bunga% / 12</code>
+  <p>Untuk persentase yang sama, bunga flat menghasilkan total bunga jauh lebih besar. Kalkulator ini juga menghitung bunga efektif setara dari skema flat &mdash; biasanya sekitar 1,8&ndash;1,9 kali angka flatnya.</p>
+
+  <h2>Contoh</h2>
+  <p>Pinjaman Rp100.000.000, bunga 10% per tahun, tenor 36 bulan. Metode flat: angsuran Rp3.611.111 dan total bunga Rp30.000.000. Metode efektif: angsuran Rp3.226.719 dan total bunga sekitar Rp16.162.000. Bunga flat 10% di sini setara bunga efektif sekitar 18%.</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Kalau bank menyebut angka flat, bagaimana membandingkannya dengan KPR?</h3>
+  <p>Konversikan dulu ke bunga efektif. Aturan kasar: bunga flat &times; 1,8. Kalkulator ini menampilkan angka setara efektifnya secara otomatis.</p>
+  <h3>Metode mana yang lebih menguntungkan bila ingin melunasi lebih cepat?</h3>
+  <p>Bunga efektif, karena sisa bunga yang belum jatuh tempo otomatis hilang saat pokok dilunasi. Pada bunga flat, sebagian bunga sudah "dikunci" di depan sehingga penghematannya lebih kecil.</p>
+  <h3>Apakah biaya provisi dan admin sudah dihitung?</h3>
+  <p>Belum. Kalkulator hanya menghitung pokok dan bunga. Tambahkan sendiri biaya provisi, administrasi, dan asuransi sesuai penawaran kredit Anda.</p>
+</section>
+
+<script>
+function anuitas(pokok, i, n) {
+  return i === 0 ? pokok / n : pokok * i / (1 - Math.pow(1 + i, -n));
+}
+function bungaEfektifSetara(pokok, angsuranFlat, n) {
+  var lo = 0, hi = 1;
+  for (var k = 0; k < 60; k++) {
+    var mid = (lo + hi) / 2;
+    if (anuitas(pokok, mid, n) > angsuranFlat) hi = mid; else lo = mid;
+  }
+  return (lo + hi) / 2 * 12;
+}
+function hitungKredit(e) {
+  e.preventDefault();
+  var pokok = num("sk-pokok");
+  var bunga = num("sk-bunga") / 100;
+  var n = Math.round(num("sk-tenor"));
+  if (pokok <= 0 || n <= 0) { show("sk-hasil", "Periksa jumlah pinjaman dan tenor."); return false; }
+
+  var angsFlat = pokok / n + pokok * bunga / 12;
+  var totalFlat = angsFlat * n;
+  var bungaFlat = totalFlat - pokok;
+
+  var i = bunga / 12;
+  var angsEf = anuitas(pokok, i, n);
+  var totalEf = angsEf * n;
+  var bungaEf = totalEf - pokok;
+
+  var efSetara = bungaEfektifSetara(pokok, angsFlat, n) * 100;
+
+  show("sk-hasil",
+    "<strong>Metode flat</strong><br>" +
+    "Angsuran/bulan: " + rp(angsFlat) + " &middot; Total bunga: " + rp(bungaFlat) +
+    " &middot; Total bayar: " + rp(totalFlat) + "<br><br>" +
+    "<strong>Metode efektif / anuitas</strong><br>" +
+    "Angsuran/bulan: " + rp(angsEf) + " &middot; Total bunga: " + rp(bungaEf) +
+    " &middot; Total bayar: " + rp(totalEf) + "<br><br>" +
+    "Selisih total bunga: <strong>" + rp(bungaFlat - bungaEf) + "</strong> (flat lebih mahal)<br>" +
+    "Bunga flat " + num("sk-bunga") + "% setara bunga efektif <strong>" + efSetara.toFixed(1) + "%</strong> per tahun" +
+    bar([
+      { label: "Pokok", nilai: pokok, warna: "#2f6bff" },
+      { label: "Bunga efektif", nilai: bungaEf, warna: "#12b76a" },
+      { label: "Ekstra bunga flat", nilai: bungaFlat - bungaEf, warna: "#f04438" }
+    ]),
+    "Simulasi Kredit " + rp(pokok) + " @ " + num("sk-bunga") + "%, " + n + " bln: angsuran flat " +
+    rp(angsFlat) + " / efektif " + rp(angsEf) + ". Flat setara efektif ~" + efSetara.toFixed(1) + "%.");
+  return false;
+}
+</script>

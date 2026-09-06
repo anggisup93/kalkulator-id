@@ -1,0 +1,71 @@
+<h1>Kalkulator Kebutuhan Air Minum Harian</h1>
+<p>Perkirakan berapa liter air yang perlu Anda minum per hari berdasarkan berat badan, usia, aktivitas fisik, dan cuaca. Hasil diperbarui otomatis.</p>
+
+<form class="calc" onsubmit="return false">
+  <label>Berat badan (kg)
+    <input id="am-berat" type="number" min="20" max="250" step="0.1" value="60" autocomplete="off">
+  </label>
+  <label>Usia (tahun)
+    <input id="am-usia" type="number" min="10" max="100" value="30" autocomplete="off">
+  </label>
+  <label>Olahraga per hari (menit)
+    <input id="am-olahraga" type="number" min="0" step="5" value="30" autocomplete="off">
+  </label>
+  <label>Cuaca / lingkungan
+    <select id="am-cuaca">
+      <option value="normal" selected>Normal</option>
+      <option value="panas">Panas atau lembap</option>
+    </select>
+  </label>
+</form>
+<div id="am-hasil" class="result"></div>
+
+<section class="article">
+  <h2>Cara perhitungan</h2>
+  <p>Perkiraan dimulai dari kebutuhan dasar per kilogram berat badan, yang menurun seiring usia, lalu ditambah untuk aktivitas fisik dan cuaca panas.</p>
+  <code class="formula">Dasar   = berat &times; (usia &lt; 30 ? 40 : usia &le; 55 ? 35 : 30) ml
+Olahraga = (menit / 30) &times; 400 ml
+Cuaca panas = + 500 ml
+Total   = dasar + olahraga + tambahan cuaca</code>
+  <p>Angka ini mencakup air dari minuman. Sekitar 20% cairan harian biasanya sudah didapat dari makanan (sup, buah, sayur), sehingga kebutuhan dari minum bisa sedikit lebih rendah. Warna urine yang kuning muda adalah penanda praktis bahwa asupan cairan cukup.</p>
+
+  <h2>Contoh</h2>
+  <p>Berat 60 kg, usia 30 tahun, olahraga 30 menit, cuaca normal: kebutuhan dasar 2.100 ml, tambahan olahraga 400 ml, total sekitar 2,5 liter atau kira-kira 10 gelas (240 ml).</p>
+
+  <h2>Pertanyaan umum</h2>
+  <h3>Apakah kopi dan teh dihitung?</h3>
+  <p>Cairan dari kopi dan teh tetap berkontribusi pada asupan harian meski bersifat sedikit diuretik. Air putih tetap pilihan terbaik karena tanpa gula dan kalori.</p>
+  <h3>Bisakah minum terlalu banyak air?</h3>
+  <p>Bisa, meski jarang. Minum air dalam jumlah sangat besar dalam waktu singkat dapat menurunkan kadar natrium darah (hiponatremia). Sebarkan asupan sepanjang hari, jangan sekaligus.</p>
+  <h3>Ibu hamil atau menyusui butuh lebih banyak?</h3>
+  <p>Ya, kebutuhannya lebih tinggi. Kalkulator ini untuk orang dewasa sehat pada umumnya; ibu hamil, menyusui, atau yang punya kondisi ginjal dan jantung sebaiknya mengikuti anjuran dokter.</p>
+</section>
+
+<script>
+function hitungAM() {
+  var berat = num("am-berat"), usia = num("am-usia"), olahraga = num("am-olahraga");
+  var panas = document.getElementById("am-cuaca").value === "panas";
+  if (berat <= 0) { show("am-hasil", "Masukkan berat badan."); return; }
+
+  var perKg = usia < 30 ? 40 : usia <= 55 ? 35 : 30;
+  var dasar = berat * perKg;
+  var tambahanOlahraga = (olahraga / 30) * 400;
+  var tambahanCuaca = panas ? 500 : 0;
+  var totalMl = dasar + tambahanOlahraga + tambahanCuaca;
+  var liter = totalMl / 1000;
+  var gelas = Math.round(totalMl / 240);
+
+  show("am-hasil",
+    "<strong>Kebutuhan air: " + liter.toFixed(1) + " liter per hari</strong><br>" +
+    "Sekitar " + gelas + " gelas (240 ml)<br>" +
+    "<span style=\"color:var(--muted);font-size:14px\">Dasar " + Math.round(dasar) + " ml" +
+    (tambahanOlahraga ? " + olahraga " + Math.round(tambahanOlahraga) + " ml" : "") +
+    (tambahanCuaca ? " + cuaca panas 500 ml" : "") + "</span>",
+    "Kebutuhan air minum: " + liter.toFixed(1) + " liter/hari (~" + gelas + " gelas) untuk berat " + berat + " kg.");
+}
+["am-berat", "am-usia", "am-olahraga", "am-cuaca"].forEach(function (id) {
+  document.getElementById(id).addEventListener("input", hitungAM);
+  document.getElementById(id).addEventListener("change", hitungAM);
+});
+hitungAM();
+</script>

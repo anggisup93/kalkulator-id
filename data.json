@@ -19,10 +19,16 @@
   },
   "bpjs": {
     "jht_karyawan": 0.02,
+    "jht_perusahaan": 0.037,
     "jp_karyawan": 0.01,
+    "jp_perusahaan": 0.02,
     "jp_batas_upah": 10547400,
+    "jkm_perusahaan": 0.003,
+    "jkk_perusahaan": { "sangat rendah": 0.0024, "rendah": 0.0054, "sedang": 0.0089, "tinggi": 0.0127, "sangat tinggi": 0.0174 },
     "kesehatan_karyawan": 0.01,
-    "kesehatan_batas_upah": 12000000
+    "kesehatan_perusahaan": 0.04,
+    "kesehatan_batas_upah": 12000000,
+    "kesehatan_mandiri": { "Kelas 1": 150000, "Kelas 2": 100000, "Kelas 3": 35000 }
   },
   "kendaraan": {
     "opsen": 0.66,

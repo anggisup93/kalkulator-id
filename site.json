@@ -7,11 +7,11 @@
   "web3forms_key": "54cf5c1a-8ff5-45d1-98a0-34c74824da9a",
   "primary_nav": ["kpr", "gaji-bersih", "persentase", "bmi", "konversi-satuan"],
   "coming_soon": [
-    { "icon": "📊", "name": "Simulasi Kredit", "note": "Bandingkan bunga flat, efektif, dan anuitas" },
     { "icon": "🗓️", "name": "Weton & Kalender Jawa", "note": "Konversi tanggal ke weton dan pasaran" },
     { "icon": "🎁", "name": "Kalkulator THR", "note": "Hitung THR sesuai masa kerja" },
     { "icon": "⚡", "name": "Token Listrik PLN", "note": "Konversi rupiah ke kWh dan sebaliknya" },
-    { "icon": "📆", "name": "Hari Libur Nasional", "note": "Daftar libur & cuti bersama per tahun" }
+    { "icon": "📆", "name": "Hari Libur Nasional", "note": "Daftar libur & cuti bersama per tahun" },
+    { "icon": "🧮", "name": "Kalkulator Ilmiah", "note": "Trigonometri, logaritma, akar, pangkat" }
   ],
   "pages": [
     {
@@ -256,6 +256,51 @@
       "icon": "🏪",
       "title": "Kalkulator Harga Jual Produk - HPP, Margin, dan Biaya Marketplace",
       "description": "Tentukan harga jual dari modal (HPP), target margin atau markup, biaya admin marketplace, dan ongkos lain."
+    },
+    {
+      "slug": "simulasi-kredit",
+      "nav": "Simulasi Kredit",
+      "in_index": true,
+      "category": "Keuangan",
+      "icon": "📊",
+      "title": "Simulasi Kredit - Bandingkan Bunga Flat, Efektif, dan Anuitas",
+      "description": "Hitung angsuran, total bunga, dan total bayar untuk pinjaman dengan metode bunga flat maupun efektif/anuitas, lalu bandingkan keduanya."
+    },
+    {
+      "slug": "bpjs",
+      "nav": "Iuran BPJS",
+      "in_index": true,
+      "category": "Keuangan",
+      "icon": "🏥",
+      "title": "Kalkulator Iuran BPJS Kesehatan & Ketenagakerjaan",
+      "description": "Hitung iuran BPJS Kesehatan per kelas (mandiri atau pekerja) dan potongan BPJS Ketenagakerjaan (JHT, JKK, JKM, JP) dari gaji."
+    },
+    {
+      "slug": "berat-ideal",
+      "nav": "Berat Badan Ideal",
+      "in_index": true,
+      "category": "Kesehatan",
+      "icon": "📏",
+      "title": "Kalkulator Berat Badan Ideal - Rumus Broca, Devine, dan BMI",
+      "description": "Hitung berat badan ideal dari tinggi badan dengan rumus Broca dan Devine, plus rentang berat sehat menurut BMI."
+    },
+    {
+      "slug": "air-minum",
+      "nav": "Kebutuhan Air Minum",
+      "in_index": true,
+      "category": "Kesehatan",
+      "icon": "💧",
+      "title": "Kalkulator Kebutuhan Air Minum Harian",
+      "description": "Hitung berapa liter air yang perlu Anda minum per hari berdasarkan berat badan, usia, dan tingkat aktivitas."
+    },
+    {
+      "slug": "utang-vs-investasi",
+      "nav": "Lunasi Utang vs Investasi",
+      "in_index": true,
+      "category": "Keuangan",
+      "icon": "⚖️",
+      "title": "Lunasi Utang Dulu atau Investasi Dulu? - Kalkulator Perbandingan",
+      "description": "Bandingkan hasil akhir antara mempercepat pelunasan utang berbunga tinggi dan menginvestasikan uang yang sama."
     },
     {
       "slug": "pph21-ter",
