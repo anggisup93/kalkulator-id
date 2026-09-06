@@ -238,9 +238,25 @@ def related_slugs_html(cfg, slugs) -> str:
             f'<div class="grid">\n{cards}\n</div></aside>')
 
 
-def jsonld_article(a, inner, domain, site_name) -> str:
+def publisher_node(cfg, domain):
+    """Entitas pengelola situs untuk JSON-LD (author/publisher)."""
+    pub = cfg.get("publisher") or {}
+    node = {
+        "@type": pub.get("type", "Organization"),
+        "name": pub.get("name") or cfg["site_name"],
+        "url": f"{domain}/tentang/",
+    }
+    if pub.get("email"):
+        node["email"] = pub["email"]
+    if pub.get("area"):
+        node["areaServed"] = pub["area"]
+    return node
+
+
+def jsonld_article(a, inner, domain, site_name, cfg=None) -> str:
     url = f'{domain}/panduan/{a["slug"]}/'
-    org = {"@type": "Organization", "name": site_name}
+    org = (publisher_node(cfg, domain) if cfg
+           else {"@type": "Organization", "name": site_name})
     blocks = [
         {"@context": "https://schema.org", "@type": "BreadcrumbList",
          "itemListElement": [
@@ -301,19 +317,38 @@ def jsonld_page(cfg, p, inner, domain) -> str:
     return "\n".join(jsonld_tag(b) for b in blocks)
 
 
+def jsonld_about(cfg, domain) -> str:
+    pub = publisher_node(cfg, domain)
+    about = {
+        "@context": "https://schema.org",
+        "@type": "AboutPage",
+        "url": f"{domain}/tentang/",
+        "name": f'Tentang {cfg["site_name"]}',
+        "publisher": pub,
+        "mainEntity": pub,
+    }
+    pub_block = dict(pub)
+    pub_block["@context"] = "https://schema.org"
+    return jsonld_tag(about) + "\n" + jsonld_tag(pub_block)
+
+
 def jsonld_home(cfg, domain) -> str:
+    pub = publisher_node(cfg, domain)
     site = {
         "@context": "https://schema.org",
         "@type": "WebSite",
         "name": cfg["site_name"],
         "url": f"{domain}/",
         "description": cfg["tagline"],
+        "publisher": pub,
         "potentialAction": {
             "@type": "SearchAction",
             "target": f"{domain}/?q={{search_term_string}}",
             "query-input": "required name=search_term_string",
         },
     }
+    pub_block = dict(pub)
+    pub_block["@context"] = "https://schema.org"
     items = {
         "@context": "https://schema.org",
         "@type": "ItemList",
@@ -323,7 +358,7 @@ def jsonld_home(cfg, domain) -> str:
             for i, p in enumerate(x for x in cfg["pages"] if x.get("in_index"))
         ],
     }
-    return jsonld_tag(site) + "\n" + jsonld_tag(items)
+    return "\n".join(jsonld_tag(b) for b in (site, pub_block, items))
 
 
 def adsense_head(cfg) -> str:
@@ -495,7 +530,10 @@ def main():
             "DESCRIPTION": p["description"],
             "CANONICAL": f"{domain}/{slug}/",
             "CONTENT": inner,
-            "JSONLD": jsonld_page(cfg, p, inner, domain) if is_calc else "",
+            "JSONLD": (
+                jsonld_page(cfg, p, inner, domain) if is_calc
+                else jsonld_about(cfg, domain) if slug == "tentang"
+                else ""),
             "BREADCRUMB": breadcrumb_html(p) if is_calc else "",
             "RELATED": related_html(cfg, p) if is_calc else "",
             "FEEDBACK": feedback if is_calc else "",
@@ -582,7 +620,7 @@ def main():
             "DESCRIPTION": a["description"],
             "CANONICAL": f'{domain}/panduan/{a["slug"]}/',
             "CONTENT": art_inner,
-            "JSONLD": jsonld_article(a, body, domain, cfg["site_name"]),
+            "JSONLD": jsonld_article(a, body, domain, cfg["site_name"], cfg),
             "FEEDBACK": feedback,
             "ADSENSE_SLOT": "",
         }))
