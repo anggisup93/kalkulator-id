@@ -117,20 +117,50 @@ def tools_json(cfg) -> str:
     return json.dumps(tools, ensure_ascii=False, separators=(",", ":"))
 
 
-def category_sections(cfg) -> str:
-    """Kartu semua alat, dikelompokkan per kategori (dipakai beranda + /alat/)."""
+def cat_slug(name: str) -> str:
+    """Nama kategori -> slug anchor, mis. 'Teks & Web' -> 'teks-dan-web'."""
+    s = (name or "lainnya").lower().replace("&", " dan ")
+    s = re.sub(r"[^a-z0-9]+", "-", s).strip("-")
+    return s or "lainnya"
+
+
+def category_order(cfg):
+    """Daftar (nama, slug, jumlah) kategori sesuai urutan kemunculan."""
     index_pages = [p for p in cfg["pages"] if p.get("in_index")]
     cats = []
     for p in index_pages:
         c = p.get("category") or "Lainnya"
         if c not in cats:
             cats.append(c)
+    return [(c, cat_slug(c),
+             sum(1 for p in index_pages if (p.get("category") or "Lainnya") == c))
+            for c in cats]
+
+
+def catnav_html(cfg) -> str:
+    """Menu 'Kategori' di header: dropdown CSS, fallback ke /alat/ saat disentuh."""
+    links = "\n".join(
+        f'<a role="menuitem" href="/alat/#{slug}">{name}'
+        f'<span class="submenu-n">{n}</span></a>'
+        for name, slug, n in category_order(cfg)
+    )
+    return (
+        '<div class="nav-item has-menu">'
+        '<a class="nav-link" href="/alat/" aria-haspopup="true">Kategori</a>'
+        f'<div class="submenu" role="menu">\n{links}\n</div>'
+        '</div>'
+    )
+
+
+def category_sections(cfg) -> str:
+    """Kartu semua alat, dikelompokkan per kategori (dipakai beranda + /alat/)."""
+    index_pages = [p for p in cfg["pages"] if p.get("in_index")]
     out = []
-    for c in cats:
+    for c, slug, _ in category_order(cfg):
         group = [p for p in index_pages if (p.get("category") or "Lainnya") == c]
         cards = "\n".join(card_html(p) for p in group)
         out.append(
-            f'<section class="cat"><h2>{c}</h2>'
+            f'<section class="cat" id="{slug}"><h2>{c}</h2>'
             f'<div class="grid">\n{cards}\n</div></section>'
         )
     return "\n".join(out)
@@ -502,6 +532,7 @@ def main():
         "ADSENSE_HEAD": adsense_head(cfg),
         "ADSENSE_SLOT": adsense_slot(cfg),
         "ANALYTICS": analytics_tag(cfg),
+        "CATNAV": catnav_html(cfg),
         "JSONLD": "",
         "BREADCRUMB": "",
         "RELATED": "",
