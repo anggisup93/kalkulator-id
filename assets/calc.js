@@ -24,7 +24,10 @@ function show(id, html, shareText) {
   if (shareText) html += actions(shareText);
   el.innerHTML = html;
   el.hidden = false;
-  el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  // Tunda scroll ke frame berikutnya agar tidak menahan cat interaksi (INP).
+  requestAnimationFrame(function () {
+    el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  });
 }
 
 // Tombol aksi hasil: salin, cetak/simpan PDF, bagikan ke WhatsApp (+ link halaman).
@@ -35,7 +38,7 @@ function actions(shareText) {
   return (
     '<div class="result-actions" data-noprint>' +
     '<button type="button" class="btn-sec" data-copy="' + esc + '" onclick="salinHasil(this)">Salin</button>' +
-    '<button type="button" class="btn-sec" onclick="window.print()">Cetak / PDF</button>' +
+    '<button type="button" class="btn-sec" onclick="setTimeout(function(){print()},0)">Cetak / PDF</button>' +
     '<a class="btn-sec" target="_blank" rel="noopener" href="' + wa + '">Bagikan ke WhatsApp</a>' +
     "</div>"
   );

@@ -94,24 +94,26 @@ function hitungUvI(e) {
   var B = simulasi(angsMin, ekstra);
   var f = function (x) { return "Rp " + Math.round(x).toLocaleString("id-ID"); };
 
-  document.getElementById("uv-body-a").innerHTML =
-    '<span class="vs-big">' + f(A.net) + '</span>' +
-    barisUvI("Nilai investasi", f(A.inv)) +
-    barisUvI("Sisa utang", f(A.utang));
-  document.getElementById("uv-body-b").innerHTML =
-    '<span class="vs-big">' + f(B.net) + '</span>' +
-    barisUvI("Nilai investasi", f(B.inv)) +
-    barisUvI("Sisa utang", f(B.utang));
-
   var aMenang = A.net >= B.net;
-  document.getElementById("uv-out-a").classList.toggle("win", aMenang);
-  document.getElementById("uv-out-b").classList.toggle("win", !aMenang);
-  vd.hidden = false;
-  vd.innerHTML = "Setelah " + num("uv-horizon") + " tahun, <strong>" +
-    (aMenang ? "lunasi utang dulu" : "investasi dulu") + " unggul " + f(Math.abs(A.net - B.net)) + "</strong>. " +
-    (num("uv-bunga") > num("uv-return")
-      ? "Bunga utang di atas imbal hasil investasi &rarr; melunasi utang memberi keuntungan yang pasti."
-      : "Imbal hasil investasi di atas bunga utang &rarr; investasi bisa unggul, tapi hasilnya tidak pasti.");
+  // Tunda render agar klik "Bandingkan" tidak menahan cat (INP).
+  requestAnimationFrame(function () {
+    document.getElementById("uv-body-a").innerHTML =
+      '<span class="vs-big">' + f(A.net) + '</span>' +
+      barisUvI("Nilai investasi", f(A.inv)) +
+      barisUvI("Sisa utang", f(A.utang));
+    document.getElementById("uv-body-b").innerHTML =
+      '<span class="vs-big">' + f(B.net) + '</span>' +
+      barisUvI("Nilai investasi", f(B.inv)) +
+      barisUvI("Sisa utang", f(B.utang));
+    document.getElementById("uv-out-a").classList.toggle("win", aMenang);
+    document.getElementById("uv-out-b").classList.toggle("win", !aMenang);
+    vd.hidden = false;
+    vd.innerHTML = "Setelah " + num("uv-horizon") + " tahun, <strong>" +
+      (aMenang ? "lunasi utang dulu" : "investasi dulu") + " unggul " + f(Math.abs(A.net - B.net)) + "</strong>. " +
+      (num("uv-bunga") > num("uv-return")
+        ? "Bunga utang di atas imbal hasil investasi &rarr; melunasi utang memberi keuntungan yang pasti."
+        : "Imbal hasil investasi di atas bunga utang &rarr; investasi bisa unggul, tapi hasilnya tidak pasti.");
+  });
   return false;
 }
 hitungUvI(new Event("submit"));

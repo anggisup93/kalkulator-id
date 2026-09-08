@@ -83,22 +83,24 @@ function hitungKredit(e) {
   var efSetara = bungaEfektifSetara(pokok, angsFlat, n) * 100;
   var selisih = totalFlat - totalEf;
 
-  document.getElementById("sk-body-flat").innerHTML =
-    '<span class="vs-big">' + rp(angsFlat) + ' / bln</span>' +
-    baris("Total bunga", rp(totalFlat - pokok)) +
-    baris("Total bayar", rp(totalFlat)) +
-    baris("Setara bunga efektif", "&plusmn; " + efSetara.toFixed(1) + "%/th");
-  document.getElementById("sk-body-ef").innerHTML =
-    '<span class="vs-big">' + rp(angsEf) + ' / bln</span>' +
-    baris("Total bunga", rp(totalEf - pokok)) +
-    baris("Total bayar", rp(totalEf)) +
-    baris("Bunga per tahun", num("sk-bunga") + "% efektif");
-
-  document.getElementById("sk-out-flat").classList.remove("win");
-  document.getElementById("sk-out-ef").classList.add("win");
-  vd.hidden = false;
-  vd.innerHTML = "Untuk bunga yang sama, <strong>metode efektif lebih hemat " + rp(selisih) +
-    "</strong> total bunga dibanding flat.";
+  // Tunda render agar klik "Bandingkan" tidak menahan cat (INP).
+  requestAnimationFrame(function () {
+    document.getElementById("sk-body-flat").innerHTML =
+      '<span class="vs-big">' + rp(angsFlat) + ' / bln</span>' +
+      baris("Total bunga", rp(totalFlat - pokok)) +
+      baris("Total bayar", rp(totalFlat)) +
+      baris("Setara bunga efektif", "&plusmn; " + efSetara.toFixed(1) + "%/th");
+    document.getElementById("sk-body-ef").innerHTML =
+      '<span class="vs-big">' + rp(angsEf) + ' / bln</span>' +
+      baris("Total bunga", rp(totalEf - pokok)) +
+      baris("Total bayar", rp(totalEf)) +
+      baris("Bunga per tahun", num("sk-bunga") + "% efektif");
+    document.getElementById("sk-out-flat").classList.remove("win");
+    document.getElementById("sk-out-ef").classList.add("win");
+    vd.hidden = false;
+    vd.innerHTML = "Untuk bunga yang sama, <strong>metode efektif lebih hemat " + rp(selisih) +
+      "</strong> total bunga dibanding flat.";
+  });
   return false;
 }
 hitungKredit(new Event("submit"));

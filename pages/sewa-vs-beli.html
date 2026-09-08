@@ -136,23 +136,25 @@ function hitungSewaBeli(e) {
   var kekayaanSewa = portoSewa;
   var f = function (x) { return "Rp " + Math.round(x).toLocaleString("id-ID"); };
 
-  document.getElementById("sb-body-beli").innerHTML =
-    '<span class="vs-big">' + f(kekayaanBeli) + '</span>' +
-    barisSB("Nilai rumah", f(nilaiRumah)) +
-    barisSB("Sisa KPR", f(sisaPokok)) +
-    barisSB("Investasi surplus", f(portoBeli)) +
-    barisSB("Total bunga KPR dibayar", f(totalBunga));
-  document.getElementById("sb-body-sewa").innerHTML =
-    '<span class="vs-big">' + f(kekayaanSewa) + '</span>' +
-    barisSB("Nilai investasi", f(portoSewa)) +
-    barisSB("Total sewa dibayar", f(totalSewaBayar));
-
   var beliMenang = kekayaanBeli >= kekayaanSewa;
-  document.getElementById("sb-out-beli").classList.toggle("win", beliMenang);
-  document.getElementById("sb-out-sewa").classList.toggle("win", !beliMenang);
-  vd.hidden = false;
-  vd.innerHTML = "Setelah " + horizon + " tahun, <strong>" + (beliMenang ? "membeli" : "menyewa") +
-    " unggul " + f(Math.abs(kekayaanBeli - kekayaanSewa)) + "</strong> kekayaan bersih.";
+  // Tunda render agar klik "Bandingkan" tidak menahan cat (INP).
+  requestAnimationFrame(function () {
+    document.getElementById("sb-body-beli").innerHTML =
+      '<span class="vs-big">' + f(kekayaanBeli) + '</span>' +
+      barisSB("Nilai rumah", f(nilaiRumah)) +
+      barisSB("Sisa KPR", f(sisaPokok)) +
+      barisSB("Investasi surplus", f(portoBeli)) +
+      barisSB("Total bunga KPR dibayar", f(totalBunga));
+    document.getElementById("sb-body-sewa").innerHTML =
+      '<span class="vs-big">' + f(kekayaanSewa) + '</span>' +
+      barisSB("Nilai investasi", f(portoSewa)) +
+      barisSB("Total sewa dibayar", f(totalSewaBayar));
+    document.getElementById("sb-out-beli").classList.toggle("win", beliMenang);
+    document.getElementById("sb-out-sewa").classList.toggle("win", !beliMenang);
+    vd.hidden = false;
+    vd.innerHTML = "Setelah " + horizon + " tahun, <strong>" + (beliMenang ? "membeli" : "menyewa") +
+      " unggul " + f(Math.abs(kekayaanBeli - kekayaanSewa)) + "</strong> kekayaan bersih.";
+  });
   return false;
 }
 hitungSewaBeli();
