@@ -637,13 +637,19 @@ h3 { font-size: 1.05rem; margin: 22px 0 6px; }
 /* ---------- Iklan ---------- */
 .ad-slot {
   margin: 40px 0 0;
-  min-height: 1px;
-}
-.ad-slot:not(:empty) {
-  padding: 12px;
-  border: 1px dashed var(--line);
-  border-radius: var(--radius-sm);
   text-align: center;
+}
+.ad-slot:empty { margin: 0; }
+/* Pesan ruang sebelum iklan dimuat agar tidak menggeser konten (CLS). */
+.ad-slot ins.adsbygoogle {
+  display: block;
+  min-height: 280px;
+  contain: layout style;
+}
+/* Jika slot tidak terisi, jangan sisakan kotak kosong. */
+.ad-slot ins.adsbygoogle[data-ad-status="unfilled"] { display: none !important; }
+@media (max-width: 600px) {
+  .ad-slot ins.adsbygoogle { min-height: 250px; }
 }
 
 /* ---------- Footer ---------- */
