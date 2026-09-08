@@ -10,7 +10,7 @@ import html
 import json
 import re
 import shutil
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 
 ROOT = Path(__file__).parent
@@ -283,10 +283,60 @@ def publisher_node(cfg, domain):
     return node
 
 
+# Kategori alat -> applicationCategory schema.org
+APP_CATEGORY = {
+    "Keuangan": "FinanceApplication",
+    "Bisnis": "FinanceApplication",
+    "Kesehatan": "HealthApplication",
+    "Pendidikan": "EducationApplication",
+}
+
+
+def org_node(cfg, domain):
+    """Situs sebagai Organization + logo (dipakai publisher Article)."""
+    return {
+        "@type": "Organization",
+        "name": cfg["site_name"],
+        "url": f"{domain}/",
+        "logo": {"@type": "ImageObject", "url": f"{domain}/assets/logo.png"},
+    }
+
+
+def jsonld_itemlist(cfg, domain):
+    return {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": i + 1,
+             "url": f'{domain}/{p["slug"]}/', "name": p["nav"] or p["title"]}
+            for i, p in enumerate(x for x in cfg["pages"] if x.get("in_index"))
+        ],
+    }
+
+
+def jsonld_webapp(cfg, p, domain):
+    """WebApplication: menandai halaman sebagai alat online gratis."""
+    return {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": p["title"],
+        "url": f'{domain}/{p["slug"]}/',
+        "description": p["description"],
+        "applicationCategory": APP_CATEGORY.get(p.get("category"), "UtilitiesApplication"),
+        "operatingSystem": "Web",
+        "browserRequirements": "Requires JavaScript",
+        "inLanguage": "id-ID",
+        "isAccessibleForFree": True,
+        "offers": {"@type": "Offer", "price": "0", "priceCurrency": "IDR"},
+        "publisher": org_node(cfg, domain),
+    }
+
+
 def jsonld_article(a, inner, domain, site_name, cfg=None) -> str:
     url = f'{domain}/panduan/{a["slug"]}/'
-    org = (publisher_node(cfg, domain) if cfg
-           else {"@type": "Organization", "name": site_name})
+    author = (publisher_node(cfg, domain) if cfg
+              else {"@type": "Organization", "name": site_name})
+    publisher = org_node(cfg, domain) if cfg else {"@type": "Organization", "name": site_name}
     blocks = [
         {"@context": "https://schema.org", "@type": "BreadcrumbList",
          "itemListElement": [
@@ -298,7 +348,8 @@ def jsonld_article(a, inner, domain, site_name, cfg=None) -> str:
          "headline": a["title"], "description": a["description"],
          "datePublished": a.get("date"),
          "dateModified": a.get("updated") or a.get("date"),
-         "author": org, "publisher": org, "mainEntityOfPage": url},
+         "inLanguage": "id-ID", "articleSection": "Panduan",
+         "author": author, "publisher": publisher, "mainEntityOfPage": url},
     ]
     faqs = [(plain(q), plain(ans)) for q, ans in FAQ_PAIR.findall(inner)]
     faqs = [(q, ans) for q, ans in faqs if q and ans]
@@ -322,7 +373,7 @@ def jsonld_tag(data) -> str:
 
 def jsonld_page(cfg, p, inner, domain) -> str:
     url = f'{domain}/{p["slug"]}/'
-    blocks = [{
+    blocks = [jsonld_webapp(cfg, p, domain), {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
         "itemListElement": [
@@ -377,18 +428,11 @@ def jsonld_home(cfg, domain) -> str:
             "query-input": "required name=search_term_string",
         },
     }
+    site["inLanguage"] = "id-ID"
     pub_block = dict(pub)
     pub_block["@context"] = "https://schema.org"
-    items = {
-        "@context": "https://schema.org",
-        "@type": "ItemList",
-        "itemListElement": [
-            {"@type": "ListItem", "position": i + 1,
-             "url": f'{domain}/{p["slug"]}/', "name": p["nav"] or p["title"]}
-            for i, p in enumerate(x for x in cfg["pages"] if x.get("in_index"))
-        ],
-    }
-    return "\n".join(jsonld_tag(b) for b in (site, pub_block, items))
+    return "\n".join(jsonld_tag(b) for b in
+                     (site, pub_block, jsonld_itemlist(cfg, domain)))
 
 
 def adsense_head(cfg) -> str:
@@ -488,6 +532,43 @@ def write(path: Path, text: str):
     path.write_text(text, encoding="utf-8")
 
 
+def rss_feed(cfg, domain, articles, build_day) -> str:
+    """Feed RSS untuk /panduan/ (membantu penemuan & pengindeksan artikel)."""
+    def rfc822(d):
+        try:
+            return datetime.strptime(d, "%Y-%m-%d").strftime(
+                "%a, %d %b %Y 00:00:00 +0000")
+        except (ValueError, TypeError):
+            return ""
+    esc = html.escape
+    items = []
+    for a in sorted(articles,
+                    key=lambda x: x.get("updated") or x.get("date", ""),
+                    reverse=True)[:20]:
+        url = f'{domain}/panduan/{a["slug"]}/'
+        pub = rfc822(a.get("updated") or a.get("date"))
+        items.append(
+            "<item>"
+            f"<title>{esc(a['title'])}</title>"
+            f"<link>{url}</link>"
+            f'<guid isPermaLink="true">{url}</guid>'
+            + (f"<pubDate>{pub}</pubDate>" if pub else "")
+            + f"<description>{esc(a['description'])}</description>"
+            "</item>"
+        )
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<rss version="2.0"><channel>'
+        f'<title>{esc(cfg["site_name"])} - Panduan</title>'
+        f'<link>{domain}/panduan/</link>'
+        f'<description>{esc(cfg["tagline"])}</description>'
+        "<language>id-ID</language>"
+        f"<lastBuildDate>{rfc822(build_day)}</lastBuildDate>"
+        + "".join(items) +
+        "</channel></rss>"
+    )
+
+
 def main():
     cfg = load_config()
     layout = (ROOT / "layout.html").read_text(encoding="utf-8")
@@ -538,8 +619,14 @@ def main():
         "RELATED": "",
         "FEEDBACK": "",
         "BODYCLASS": "",
+        "OG_TYPE": "website",
+        "OG_IMAGE": f"{domain}/assets/og.png",
+        "META_ROBOTS": "index, follow, max-image-preview:large, "
+                       "max-snippet:-1, max-video-preview:-1",
+        "HEAD_EXTRA": "",
     }
     urls = [f"{domain}/", f"{domain}/alat/"]
+    url_lastmod = {}
 
     # --- Halaman per slug ---
     zk = data.get("zakat", {})
@@ -616,6 +703,7 @@ def main():
         "DESCRIPTION": f'Daftar lengkap {len(index_pages)} kalkulator dan alat di {cfg["site_name"]}.',
         "CANONICAL": f"{domain}/alat/",
         "CONTENT": alat_inner,
+        "JSONLD": jsonld_tag(jsonld_itemlist(cfg, domain)),
         "ADSENSE_SLOT": "",
         "BODYCLASS": "page-wide",
     }))
@@ -626,6 +714,7 @@ def main():
         "TITLE": f'Halaman tidak ditemukan - {cfg["site_name"]}',
         "DESCRIPTION": "Halaman yang kamu cari tidak ada.",
         "CANONICAL": f"{domain}/404",
+        "META_ROBOTS": "noindex, follow",
         "CONTENT": (
             '<h1>Halaman tidak ditemukan</h1>'
             '<p class="lead">Alamat yang kamu buka tidak ada atau sudah dipindah.</p>'
@@ -645,17 +734,29 @@ def main():
             + f'<div class="article">{body}</div>'
             + related_slugs_html(cfg, a.get("related", []))
         )
+        a_url = f'{domain}/panduan/{a["slug"]}/'
+        pub_dt = a.get("date") or ""
+        mod_dt = a.get("updated") or a.get("date") or ""
+        head_extra = (
+            f'<meta property="article:published_time" content="{pub_dt}">'
+            f'<meta property="article:modified_time" content="{mod_dt}">'
+            '<meta property="article:section" content="Panduan">'
+            f'<meta name="author" content="{cfg.get("publisher", {}).get("name", cfg["site_name"])}">'
+        )
         write(DIST / "panduan" / a["slug"] / "index.html", render(layout, {
             **base_ctx,
             "TITLE": f'{a["title"]} - {cfg["site_name"]}',
             "DESCRIPTION": a["description"],
-            "CANONICAL": f'{domain}/panduan/{a["slug"]}/',
+            "CANONICAL": a_url,
             "CONTENT": art_inner,
             "JSONLD": jsonld_article(a, body, domain, cfg["site_name"], cfg),
             "FEEDBACK": feedback,
             "ADSENSE_SLOT": "",
+            "OG_TYPE": "article",
+            "HEAD_EXTRA": head_extra,
         }))
-        urls.append(f'{domain}/panduan/{a["slug"]}/')
+        urls.append(a_url)
+        url_lastmod[a_url] = mod_dt or today
 
     if articles:
         cards = "\n".join(
@@ -679,14 +780,17 @@ def main():
         }))
         urls.append(f"{domain}/panduan/")
 
-    # --- sitemap.xml + robots.txt ---
+    # --- sitemap.xml + robots.txt + feed.xml ---
     sm = ['<?xml version="1.0" encoding="UTF-8"?>',
           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
-    sm += [f"  <url><loc>{u}</loc><lastmod>{today}</lastmod></url>" for u in urls]
+    sm += [f"  <url><loc>{u}</loc><lastmod>{url_lastmod.get(u, today)}</lastmod></url>"
+           for u in urls]
     sm.append("</urlset>")
     write(DIST / "sitemap.xml", "\n".join(sm))
     write(DIST / "robots.txt",
           f"User-agent: *\nAllow: /\n\nSitemap: {domain}/sitemap.xml\n")
+    if articles:
+        write(DIST / "feed.xml", rss_feed(cfg, domain, articles, today))
 
     # --- ads.txt (Google AdSense) ---
     ads_client = cfg.get("adsense_client", "").strip()

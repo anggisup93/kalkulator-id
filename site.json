@@ -231,7 +231,7 @@
       "in_index": true,
       "category": "Keuangan",
       "icon": "🚙",
-      "title": "Kalkulator Pajak Kendaraan (PKB) - Termasuk Opsen Pajak 2025",
+      "title": "Kalkulator Pajak Kendaraan (PKB) & Opsen Pajak Tahunan",
       "description": "Perkirakan pajak kendaraan bermotor tahunan dari nilai jual, tarif PKB, opsen pajak, dan SWDKLLJ."
     },
     {
@@ -357,7 +357,7 @@
       "in_index": true,
       "category": "Keuangan",
       "icon": "🧾",
-      "title": "Kalkulator PPh 21 TER Bulanan - Potongan Pajak Gaji 2024",
+      "title": "Kalkulator PPh 21 TER Bulanan - Hitung Potongan Pajak Gaji",
       "description": "Hitung potongan PPh 21 bulanan dengan Tarif Efektif Rata-rata (TER) sesuai PMK 168/2023, berdasarkan penghasilan bruto dan status PTKP."
     },
     {
