@@ -634,34 +634,6 @@ h3 { font-size: 1.05rem; margin: 22px 0 6px; }
 }
 .cat-soon > h2 { color: var(--muted); }
 
-/* ---------- Kotak mitra (afiliasi) ---------- */
-.partner {
-  margin: 28px 0 0;
-  padding: 18px 20px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface-2);
-}
-.partner h2 {
-  margin: 0 0 6px;
-  padding: 0;
-  border: 0;
-  font-size: 1rem;
-  font-weight: 700;
-}
-.partner p { margin: 0 0 12px; color: var(--muted); font-size: .95rem; }
-.partner-btn {
-  display: inline-block;
-  padding: 10px 18px;
-  border-radius: 999px;
-  background: var(--accent);
-  color: #fff;
-  font-weight: 600;
-  font-size: .9rem;
-}
-.partner-btn:hover { text-decoration: none; opacity: .92; }
-.partner-dis { margin: 12px 0 0 !important; font-size: 12px; }
-
 /* ---------- Iklan ---------- */
 .ad-slot {
   margin: 40px 0 0;

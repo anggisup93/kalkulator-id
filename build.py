@@ -30,34 +30,6 @@ def load_data():
     return json.loads(f.read_text(encoding="utf-8")) if f.exists() else {}
 
 
-def load_partners():
-    f = ROOT / "partners.json"
-    return json.loads(f.read_text(encoding="utf-8")) if f.exists() else {}
-
-
-def partner_cta_html(slug, partners) -> str:
-    """Kotak 'Langkah berikutnya' dari mitra afiliasi untuk halaman tertentu.
-    Entri tanpa 'url' (belum ada tautan pelacakan) tidak dirender."""
-    dis = (partners.get("disclosure") or "").strip()
-    blocks = []
-    for c in partners.get("cta", []):
-        if slug not in c.get("pages", []):
-            continue
-        url = (c.get("url") or "").strip()
-        if not url:
-            continue
-        blocks.append(
-            '<aside class="partner" data-noprint>'
-            f'<h2>{c.get("heading", "Langkah berikutnya")}</h2>'
-            f'<p>{c.get("text", "")}</p>'
-            f'<a class="partner-btn" href="{url}" target="_blank" '
-            f'rel="sponsored nofollow noopener">{c.get("button", "Pelajari lebih lanjut")}</a>'
-            + (f'<p class="partner-dis">{dis}</p>' if dis else "")
-            + "</aside>"
-        )
-    return "\n".join(blocks)
-
-
 def feedback_html(cfg) -> str:
     key = (cfg.get("web3forms_key") or "").strip()
     form = ""
@@ -606,7 +578,6 @@ def main():
     articles = load_articles()
     ART = ROOT / "articles"
     data = load_data()
-    partners = load_partners()
     feedback = feedback_html(cfg)
 
     # Versi build: hash dari semua sumber (aset, layout, halaman, konfigurasi).
@@ -622,8 +593,6 @@ def main():
         src.append((ROOT / "articles.json").read_bytes())
     if (ROOT / "data.json").exists():
         src.append((ROOT / "data.json").read_bytes())
-    if (ROOT / "partners.json").exists():
-        src.append((ROOT / "partners.json").read_bytes())
     if ART.exists():
         src += [f.read_bytes() for f in sorted(ART.glob("*.html"))]
     asset_ver = hashlib.sha1(b"".join(src)).hexdigest()[:8]
@@ -650,7 +619,6 @@ def main():
         "RELATED": "",
         "FEEDBACK": "",
         "BODYCLASS": "",
-        "PARTNER": "",
         "OG_TYPE": "website",
         "OG_IMAGE": f"{domain}/assets/og.png",
         "META_ROBOTS": "index, follow, max-image-preview:large, "
@@ -687,7 +655,6 @@ def main():
             "BREADCRUMB": breadcrumb_html(p) if is_calc else "",
             "RELATED": related_html(cfg, p) if is_calc else "",
             "FEEDBACK": feedback if is_calc else "",
-            "PARTNER": partner_cta_html(slug, partners) if is_calc else "",
         }
         write(DIST / slug / "index.html", render(layout, ctx))
         urls.append(f"{domain}/{slug}/")
