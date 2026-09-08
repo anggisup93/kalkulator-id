@@ -1,6 +1,9 @@
 name = "kalkulator-id"
 compatibility_date = "2025-09-01"
 
+# Matikan subdomain bawaan *.workers.dev; situs hanya lewat kalkulatorid.com.
+workers_dev = false
+
 # Situs statis: sajikan hasil build dari folder dist/ apa adanya.
 [assets]
 directory = "./dist"
