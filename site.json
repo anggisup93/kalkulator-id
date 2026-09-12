@@ -11,11 +11,29 @@
     "email": "anggisup93@gmail.com",
     "area": "Indonesia"
   },
-  "primary_nav": ["kpr", "gaji-bersih", "persentase", "bmi", "konversi-satuan"],
+  "primary_nav": [
+    "kpr",
+    "gaji-bersih",
+    "persentase",
+    "bmi",
+    "konversi-satuan"
+  ],
   "coming_soon": [
-    { "icon": "⚡", "name": "Token Listrik PLN", "note": "Konversi rupiah ke kWh dan sebaliknya" },
-    { "icon": "📆", "name": "Hari Libur Nasional", "note": "Daftar libur & cuti bersama per tahun" },
-    { "icon": "🧮", "name": "Kalkulator Ilmiah", "note": "Trigonometri, logaritma, akar, pangkat" }
+    {
+      "icon": "bolt",
+      "name": "Token Listrik PLN",
+      "note": "Konversi rupiah ke kWh dan sebaliknya"
+    },
+    {
+      "icon": "calendar",
+      "name": "Hari Libur Nasional",
+      "note": "Daftar libur & cuti bersama per tahun"
+    },
+    {
+      "icon": "calculator",
+      "name": "Kalkulator Ilmiah",
+      "note": "Trigonometri, logaritma, akar, pangkat"
+    }
   ],
   "pages": [
     {
@@ -23,7 +41,7 @@
       "nav": "KPR",
       "in_index": true,
       "category": "Keuangan",
-      "icon": "🏠",
+      "icon": "home",
       "title": "Kalkulator KPR - Hitung Cicilan Rumah per Bulan",
       "description": "Hitung estimasi cicilan KPR per bulan dari harga rumah, uang muka, suku bunga, dan tenor. Gratis, cepat, tanpa daftar."
     },
@@ -32,7 +50,7 @@
       "nav": "Bunga Majemuk",
       "in_index": true,
       "category": "Keuangan",
-      "icon": "📈",
+      "icon": "trend-up",
       "title": "Kalkulator Bunga Majemuk - Proyeksi Investasi dan Tabungan",
       "description": "Hitung pertumbuhan investasi atau tabungan dengan bunga majemuk plus setoran rutin bulanan."
     },
@@ -41,7 +59,7 @@
       "nav": "Diskon",
       "in_index": true,
       "category": "Keuangan",
-      "icon": "🏷️",
+      "icon": "tag",
       "title": "Kalkulator Diskon - Hitung Harga Setelah Potongan Persen",
       "description": "Hitung harga akhir setelah diskon, jumlah rupiah yang dihemat, dan diskon bertingkat sekaligus."
     },
@@ -50,7 +68,7 @@
       "nav": "Gaji Bersih",
       "in_index": true,
       "category": "Keuangan",
-      "icon": "💰",
+      "icon": "wallet",
       "title": "Kalkulator Gaji Bersih - Take Home Pay Setelah Pajak & BPJS",
       "description": "Hitung gaji bersih bulanan setelah potongan PPh 21, BPJS Kesehatan, dan BPJS Ketenagakerjaan berdasarkan status PTKP."
     },
@@ -59,7 +77,7 @@
       "nav": "Kredit Kendaraan",
       "in_index": true,
       "category": "Keuangan",
-      "icon": "🚗",
+      "icon": "car",
       "title": "Kalkulator Kredit Kendaraan - Cicilan Mobil & Motor per Bulan",
       "description": "Hitung angsuran kredit mobil atau motor per bulan dari harga OTR, uang muka, bunga, tenor, dan asuransi dengan metode bunga flat."
     },
@@ -68,7 +86,7 @@
       "nav": "BMI",
       "in_index": true,
       "category": "Kesehatan",
-      "icon": "⚖️",
+      "icon": "scale",
       "title": "Kalkulator BMI - Cek Berat Badan Ideal (Indeks Massa Tubuh)",
       "description": "Hitung Indeks Massa Tubuh (BMI) dari tinggi dan berat badan, lengkap dengan kategori dan rentang berat ideal."
     },
@@ -77,7 +95,7 @@
       "nav": "Kalori Harian",
       "in_index": true,
       "category": "Kesehatan",
-      "icon": "🔥",
+      "icon": "flame",
       "title": "Kalkulator Kalori Harian - Kebutuhan Kalori (BMR & TDEE)",
       "description": "Hitung kebutuhan kalori harian dari BMR dan tingkat aktivitas, plus target kalori untuk turun atau naik berat badan."
     },
@@ -86,7 +104,7 @@
       "nav": "Umur",
       "in_index": true,
       "category": "Tanggal",
-      "icon": "🎂",
+      "icon": "cake",
       "title": "Kalkulator Umur - Hitung Usia dari Tanggal Lahir",
       "description": "Hitung umur lengkap dalam tahun, bulan, dan hari dari tanggal lahir, plus total hari hidup dan hitung mundur ulang tahun berikutnya."
     },
@@ -95,7 +113,7 @@
       "nav": "Countdown",
       "in_index": true,
       "category": "Tanggal",
-      "icon": "⏳",
+      "icon": "hourglass",
       "title": "Penghitung Mundur (Countdown) ke Tanggal Acara",
       "description": "Hitung mundur hari, jam, menit, dan detik menuju tanggal penting seperti pernikahan, wisuda, atau tahun baru."
     },
@@ -104,7 +122,7 @@
       "nav": "Roda Putar",
       "in_index": true,
       "category": "Pengacak",
-      "icon": "🎡",
+      "icon": "dial",
       "title": "Roda Putar - Pengacak Nama Online (Spin Wheel)",
       "description": "Masukkan daftar nama lalu putar roda untuk memilih pemenang secara acak. Cocok untuk giveaway, arisan, dan doorprize."
     },
@@ -113,7 +131,7 @@
       "nav": "Terbilang",
       "in_index": true,
       "category": "Konversi",
-      "icon": "🔤",
+      "icon": "type",
       "title": "Terbilang - Ubah Angka Menjadi Teks Bahasa Indonesia",
       "description": "Ubah angka menjadi tulisan terbilang otomatis, dengan atau tanpa kata 'rupiah', untuk kwitansi dan dokumen resmi."
     },
@@ -122,7 +140,7 @@
       "nav": "Konversi Satuan",
       "in_index": true,
       "category": "Konversi",
-      "icon": "📐",
+      "icon": "ruler",
       "title": "Konversi Satuan - Panjang, Berat, Suhu, Luas, dan Lainnya",
       "description": "Konversi satuan panjang, berat, suhu, luas, volume, kecepatan, dan data secara instan dalam satu alat."
     },
@@ -131,7 +149,7 @@
       "nav": "Hitung Kata",
       "in_index": true,
       "category": "Teks & Web",
-      "icon": "📝",
+      "icon": "list",
       "title": "Hitung Kata & Karakter - Word Counter Bahasa Indonesia",
       "description": "Hitung jumlah kata, karakter, kalimat, paragraf, dan perkiraan waktu baca dari teks secara langsung."
     },
@@ -140,7 +158,7 @@
       "nav": "Link WhatsApp",
       "in_index": true,
       "category": "Teks & Web",
-      "icon": "💬",
+      "icon": "chat",
       "title": "Generator Link WhatsApp - Buat Tautan wa.me dengan Pesan",
       "description": "Buat tautan WhatsApp (wa.me) dari nomor HP lengkap dengan pesan otomatis, siap dibagikan ke pelanggan."
     },
@@ -149,7 +167,7 @@
       "nav": "Persentase",
       "in_index": true,
       "category": "Matematika",
-      "icon": "%",
+      "icon": "percent",
       "title": "Kalkulator Persentase - Hitung Persen dengan Cepat",
       "description": "Hitung berapa persen dari suatu angka, sebuah angka itu berapa persen dari angka lain, dan persentase kenaikan atau penurunan."
     },
@@ -158,7 +176,7 @@
       "nav": "PPN",
       "in_index": true,
       "category": "Keuangan",
-      "icon": "🧾",
+      "icon": "receipt",
       "title": "Kalkulator PPN 11% & 12% - Tambah atau Pisahkan Pajak",
       "description": "Hitung PPN dari harga sebelum pajak, atau pisahkan PPN dari harga yang sudah termasuk pajak, dengan tarif 11% atau 12%."
     },
@@ -167,7 +185,7 @@
       "nav": "Selisih Tanggal",
       "in_index": true,
       "category": "Tanggal",
-      "icon": "📅",
+      "icon": "calendar",
       "title": "Kalkulator Selisih Tanggal - Hitung Jarak & Tambah Hari",
       "description": "Hitung selisih antara dua tanggal dalam hari, minggu, bulan, dan tahun, atau tambah dan kurangi sejumlah hari dari sebuah tanggal."
     },
@@ -176,7 +194,7 @@
       "nav": "Deposito",
       "in_index": true,
       "category": "Keuangan",
-      "icon": "🏦",
+      "icon": "bank",
       "title": "Kalkulator Bunga Deposito - Hitung Imbal Hasil Setelah Pajak",
       "description": "Hitung bunga deposito per bulan dan saat jatuh tempo, sudah dipotong pajak bunga 20%, dari nominal, suku bunga, dan tenor."
     },
@@ -185,7 +203,7 @@
       "nav": "Angka Romawi",
       "in_index": true,
       "category": "Konversi",
-      "icon": "Ⅻ",
+      "icon": "type",
       "title": "Konversi Angka Romawi - Angka ke Romawi dan Sebaliknya",
       "description": "Ubah angka biasa menjadi angka Romawi atau sebaliknya, lengkap dengan aturan penulisannya."
     },
@@ -194,7 +212,7 @@
       "nav": "Zakat",
       "in_index": true,
       "category": "Keuangan",
-      "icon": "🕌",
+      "icon": "heart",
       "title": "Kalkulator Zakat - Zakat Maal, Penghasilan, dan Fitrah",
       "description": "Hitung zakat maal, zakat penghasilan, dan zakat fitrah sesuai nisab dan kadar 2,5 persen."
     },
@@ -203,7 +221,7 @@
       "nav": "Bunga Pinjol",
       "in_index": true,
       "category": "Keuangan",
-      "icon": "📱",
+      "icon": "phone",
       "title": "Kalkulator Bunga Pinjol & Paylater - Total Bayar & Bunga Efektif",
       "description": "Hitung total yang harus dibayar dari pinjaman online atau paylater, cicilan per bulan, dan bunga efektif tahunannya."
     },
@@ -212,7 +230,7 @@
       "nav": "Dana Darurat",
       "in_index": true,
       "category": "Keuangan",
-      "icon": "🛟",
+      "icon": "shield",
       "title": "Kalkulator Dana Darurat - Berapa Idealnya dan Kapan Tercapai",
       "description": "Hitung target dana darurat dari pengeluaran bulanan dan status keluarga, plus lama menabung untuk mencapainya."
     },
@@ -221,7 +239,7 @@
       "nav": "SBN Ritel",
       "in_index": true,
       "category": "Keuangan",
-      "icon": "📜",
+      "icon": "receipt",
       "title": "Kalkulator SBN Ritel - Kupon ORI, SR, ST, SBR Setelah Pajak",
       "description": "Hitung kupon bulanan dan total imbal hasil obligasi negara ritel setelah pajak 10 persen, dari nominal dan tenor."
     },
@@ -230,7 +248,7 @@
       "nav": "Pajak Kendaraan",
       "in_index": true,
       "category": "Keuangan",
-      "icon": "🚙",
+      "icon": "car",
       "title": "Kalkulator Pajak Kendaraan (PKB) & Opsen Pajak Tahunan",
       "description": "Perkirakan pajak kendaraan bermotor tahunan dari nilai jual, tarif PKB, opsen pajak, dan SWDKLLJ."
     },
@@ -239,7 +257,7 @@
       "nav": "Tabungan Haji",
       "in_index": true,
       "category": "Keuangan",
-      "icon": "🕋",
+      "icon": "dome",
       "title": "Kalkulator Tabungan Haji & Umroh - Lama Menabung sampai Berangkat",
       "description": "Hitung berapa lama atau berapa setoran bulanan yang dibutuhkan untuk mencapai biaya haji atau umroh."
     },
@@ -248,7 +266,7 @@
       "nav": "Pace Lari",
       "in_index": true,
       "category": "Kesehatan",
-      "icon": "🏃",
+      "icon": "run",
       "title": "Kalkulator Pace Lari - Hitung Pace, Waktu, dan Prediksi Lomba",
       "description": "Hitung pace per kilometer, estimasi waktu tempuh, kecepatan, dan prediksi waktu 5K, 10K, half, dan full marathon."
     },
@@ -257,7 +275,7 @@
       "nav": "Harga Jual Produk",
       "in_index": true,
       "category": "Bisnis",
-      "icon": "🏪",
+      "icon": "store",
       "title": "Kalkulator Harga Jual Produk - HPP, Margin, dan Biaya Marketplace",
       "description": "Tentukan harga jual dari modal (HPP), target margin atau markup, biaya admin marketplace, dan ongkos lain."
     },
@@ -266,7 +284,7 @@
       "nav": "Upah Lembur",
       "in_index": true,
       "category": "Keuangan",
-      "icon": "⏱️",
+      "icon": "clock",
       "title": "Kalkulator Upah Lembur - Hitung Uang Lembur per Jam",
       "description": "Hitung upah lembur sesuai Kepmenaker 102/2004 untuk hari kerja biasa maupun hari libur, dari upah sebulan dan jumlah jam lembur."
     },
@@ -275,7 +293,7 @@
       "nav": "Pesangon PHK",
       "in_index": true,
       "category": "Keuangan",
-      "icon": "📄",
+      "icon": "file-check",
       "title": "Kalkulator Pesangon PHK - Uang Pesangon, UPMK, dan UPH",
       "description": "Hitung uang pesangon, uang penghargaan masa kerja, dan uang penggantian hak sesuai PP 35/2021 berdasarkan masa kerja dan alasan PHK."
     },
@@ -284,7 +302,7 @@
       "nav": "THR",
       "in_index": true,
       "category": "Keuangan",
-      "icon": "🎁",
+      "icon": "gift",
       "title": "Kalkulator THR - Hitung Tunjangan Hari Raya (Termasuk Prorata)",
       "description": "Hitung THR sesuai Permenaker 6/2016: satu bulan upah untuk masa kerja 12 bulan atau lebih, dan prorata untuk masa kerja 1 sampai 12 bulan."
     },
@@ -293,7 +311,7 @@
       "nav": "Masa Kerja & Pensiun",
       "in_index": true,
       "category": "Tanggal",
-      "icon": "🗓️",
+      "icon": "calendar",
       "title": "Kalkulator Masa Kerja dan Usia Pensiun",
       "description": "Hitung masa kerja dalam tahun, bulan, dan hari dari tanggal mulai kerja, serta tanggal pensiun dan sisa waktu menuju pensiun."
     },
@@ -302,7 +320,7 @@
       "nav": "Weton",
       "in_index": true,
       "category": "Tanggal",
-      "icon": "🌙",
+      "icon": "moon",
       "title": "Kalkulator Weton Jawa - Hari, Pasaran, dan Neptu dari Tanggal Lahir",
       "description": "Cari weton, hari pasaran, dan neptu dari tanggal lahir Masehi. Konversi tanggal ke kalender pasaran Jawa lima harian."
     },
@@ -311,7 +329,7 @@
       "nav": "Simulasi Kredit",
       "in_index": true,
       "category": "Keuangan",
-      "icon": "📊",
+      "icon": "bar-chart",
       "title": "Simulasi Kredit - Bandingkan Bunga Flat, Efektif, dan Anuitas",
       "description": "Hitung angsuran, total bunga, dan total bayar untuk pinjaman dengan metode bunga flat maupun efektif/anuitas, lalu bandingkan keduanya."
     },
@@ -320,7 +338,7 @@
       "nav": "Iuran BPJS",
       "in_index": true,
       "category": "Keuangan",
-      "icon": "🏥",
+      "icon": "cross",
       "title": "Kalkulator Iuran BPJS Kesehatan & Ketenagakerjaan",
       "description": "Hitung iuran BPJS Kesehatan per kelas (mandiri atau pekerja) dan potongan BPJS Ketenagakerjaan (JHT, JKK, JKM, JP) dari gaji."
     },
@@ -329,7 +347,7 @@
       "nav": "Berat Badan Ideal",
       "in_index": true,
       "category": "Kesehatan",
-      "icon": "📏",
+      "icon": "ruler",
       "title": "Kalkulator Berat Badan Ideal - Rumus Broca, Devine, dan BMI",
       "description": "Hitung berat badan ideal dari tinggi badan dengan rumus Broca dan Devine, plus rentang berat sehat menurut BMI."
     },
@@ -338,7 +356,7 @@
       "nav": "Kebutuhan Air Minum",
       "in_index": true,
       "category": "Kesehatan",
-      "icon": "💧",
+      "icon": "droplet",
       "title": "Kalkulator Kebutuhan Air Minum Harian",
       "description": "Hitung berapa liter air yang perlu Anda minum per hari berdasarkan berat badan, usia, dan tingkat aktivitas."
     },
@@ -347,7 +365,7 @@
       "nav": "Lunasi Utang vs Investasi",
       "in_index": true,
       "category": "Keuangan",
-      "icon": "⚖️",
+      "icon": "scale",
       "title": "Lunasi Utang Dulu atau Investasi Dulu? - Kalkulator Perbandingan",
       "description": "Bandingkan hasil akhir antara mempercepat pelunasan utang berbunga tinggi dan menginvestasikan uang yang sama."
     },
@@ -356,7 +374,7 @@
       "nav": "PPh 21 TER",
       "in_index": true,
       "category": "Keuangan",
-      "icon": "🧾",
+      "icon": "receipt",
       "title": "Kalkulator PPh 21 TER Bulanan - Hitung Potongan Pajak Gaji",
       "description": "Hitung potongan PPh 21 bulanan dengan Tarif Efektif Rata-rata (TER) sesuai PMK 168/2023, berdasarkan penghasilan bruto dan status PTKP."
     },
@@ -365,7 +383,7 @@
       "nav": "Dana Pensiun",
       "in_index": true,
       "category": "Keuangan",
-      "icon": "🌴",
+      "icon": "palm",
       "title": "Kalkulator Dana Pensiun - Berapa yang Harus Ditabung untuk Pensiun",
       "description": "Hitung target dana pensiun dari pengeluaran bulanan, inflasi, dan usia pensiun, plus setoran bulanan yang dibutuhkan dan cek aturan 4%."
     },
@@ -374,7 +392,7 @@
       "nav": "Dana Pendidikan Anak",
       "in_index": true,
       "category": "Keuangan",
-      "icon": "🎒",
+      "icon": "backpack",
       "title": "Kalkulator Dana Pendidikan Anak - Tabungan Biaya Kuliah",
       "description": "Hitung perkiraan biaya kuliah anak saat waktunya tiba dengan inflasi pendidikan, dan setoran bulanan yang perlu disisihkan sejak sekarang."
     },
@@ -383,7 +401,7 @@
       "nav": "Sewa vs Beli Rumah",
       "in_index": true,
       "category": "Keuangan",
-      "icon": "🏘️",
+      "icon": "home",
       "title": "Kalkulator Sewa vs Beli Rumah - Mana yang Lebih Menguntungkan",
       "description": "Bandingkan kekayaan bersih setelah beberapa tahun antara membeli rumah lewat KPR dan menyewa sambil menginvestasikan selisihnya."
     },
@@ -392,7 +410,7 @@
       "nav": "Kurs Mata Uang",
       "in_index": true,
       "category": "Konversi",
-      "icon": "💱",
+      "icon": "exchange",
       "title": "Konversi Mata Uang - Kurs Dollar, Euro, dan Lainnya ke Rupiah",
       "description": "Konversi antar mata uang memakai kurs terbaru yang diambil otomatis, lengkap dengan cadangan kurs saat offline."
     },
@@ -401,7 +419,7 @@
       "nav": "Kehamilan",
       "in_index": true,
       "category": "Kesehatan",
-      "icon": "🤰",
+      "icon": "baby",
       "title": "Kalkulator Kehamilan - Usia Kehamilan, HPL, dan Masa Subur",
       "description": "Hitung usia kehamilan, hari perkiraan lahir (HPL) dari HPHT, jadwal trimester, serta perkiraan masa subur dari siklus haid."
     },
@@ -410,7 +428,7 @@
       "nav": "IPK",
       "in_index": true,
       "category": "Pendidikan",
-      "icon": "🎓",
+      "icon": "grad-cap",
       "title": "Kalkulator IPK & Konversi Nilai - Hitung IP Semester dan IPK Kumulatif",
       "description": "Hitung Indeks Prestasi semester dari SKS dan nilai tiap mata kuliah, gabungkan dengan IPK lama, dan konversi nilai huruf ke bobot."
     },

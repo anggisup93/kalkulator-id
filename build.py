@@ -173,7 +173,7 @@ def coming_soon_section(cfg) -> str:
         return ""
     cards = "\n".join(
         f'<div class="card card-soon" aria-disabled="true">'
-        f'<span class="card-ic" aria-hidden="true">{it.get("icon", "")}</span>'
+        f'<span class="card-ic" aria-hidden="true">{icon_html(it.get("icon", ""))}</span>'
         f'<span class="card-tx"><h3>{it["name"]} '
         f'<span class="badge-soon">Segera</span></h3>'
         f'<p>{it.get("note", "")}</p></span></div>'
@@ -199,13 +199,25 @@ def analytics_tag(cfg) -> str:
     )
 
 
+def icon_html(icon_id: str, size: int = 20) -> str:
+    """Ikon SVG dari sprite ICON_SPRITE (lihat definisi di bawah)."""
+    if not icon_id:
+        return ""
+    return (
+        f'<svg class="ic" width="{size}" height="{size}" viewBox="0 0 24 24" '
+        'fill="none" stroke="currentColor" stroke-width="1.8" '
+        'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+        f'<use href="#ic-{icon_id}"/></svg>'
+    )
+
+
 def card_html(p) -> str:
     terms = " ".join(filter(None, [
         p["slug"], p.get("nav", ""), p.get("category", ""), p["title"],
         p["description"],
     ])).lower()
-    icon = p.get("icon", "")
-    ic = f'<span class="card-ic" aria-hidden="true">{icon}</span>' if icon else ""
+    ic = (f'<span class="card-ic" aria-hidden="true">{icon_html(p.get("icon", ""))}</span>'
+          if p.get("icon") else "")
     return (
         f'<a class="card" href="/{p["slug"]}/" data-terms="{html.escape(terms, quote=True)}">'
         f'{ic}<span class="card-tx"><h3>{p["nav"] or p["title"]}</h3>'
@@ -460,6 +472,52 @@ def adsense_slot(cfg) -> str:
     )
 
 
+# Sprite ikon garis (Feather-style, viewBox 0 0 24 24) dipakai lewat <use href="#ic-...">
+# di kartu alat, kartu "Segera Hadir", dan hasil pencarian. Warna & ketebalan
+# garis diatur di elemen <svg> pemanggil (lihat icon_html()), bukan di sini.
+ICON_SPRITE = """<svg style="display:none" aria-hidden="true">
+<symbol id="ic-home" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-9"/><path d="M10 20v-5h4v5"/></symbol>
+<symbol id="ic-trend-up" viewBox="0 0 24 24"><polyline points="4 16 10 10 14 13 20 6"/><polyline points="14 6 20 6 20 12"/></symbol>
+<symbol id="ic-tag" viewBox="0 0 24 24"><path d="M3 12 12 3h7a2 2 0 0 1 2 2v7l-9 9a2 2 0 0 1-3 0l-6-6a2 2 0 0 1 0-3z"/><circle cx="16.5" cy="7.5" r="1.3"/></symbol>
+<symbol id="ic-wallet" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h13a1 1 0 0 1 1 1v3"/><rect x="3" y="7" width="18" height="12" rx="2"/><circle cx="16" cy="13" r="1.4"/></symbol>
+<symbol id="ic-car" viewBox="0 0 24 24"><path d="M4 16v-4l2-5h12l2 5v4"/><path d="M4 16h16"/><circle cx="7.5" cy="16.5" r="1.6"/><circle cx="16.5" cy="16.5" r="1.6"/></symbol>
+<symbol id="ic-scale" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M7 21h10"/><path d="M4 7h6M14 7h6"/><path d="M4 7l-2.5 5a2.5 2.5 0 0 0 5 0z"/><path d="M20 7l-2.5 5a2.5 2.5 0 0 0 5 0z"/></symbol>
+<symbol id="ic-flame" viewBox="0 0 24 24"><path d="M12 2c1 4-4 5-4 9a4 4 0 0 0 8 0c0-2-1-3-1-3s2 1 2 4a6 6 0 0 1-12 0C5 7 9 6 12 2z"/></symbol>
+<symbol id="ic-cake" viewBox="0 0 24 24"><path d="M4 21h16v-6a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3z"/><path d="M4 17h16"/><path d="M9 12V9M12 12V9M15 12V9"/><path d="M9 6c0-1 .8-1.6.5-3M12 6c0-1 .8-1.6.5-3M15 6c0-1 .8-1.6.5-3"/></symbol>
+<symbol id="ic-hourglass" viewBox="0 0 24 24"><path d="M6 2h12M6 22h12"/><path d="M7 2v4a5 5 0 0 0 5 5 5 5 0 0 0 5-5V2"/><path d="M7 22v-4a5 5 0 0 1 5-5 5 5 0 0 1 5 5v4"/></symbol>
+<symbol id="ic-dial" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 12V4"/><path d="M12 12l6 3"/><circle cx="12" cy="12" r="1.4"/></symbol>
+<symbol id="ic-type" viewBox="0 0 24 24"><path d="M6 5h12"/><path d="M12 5v14"/><path d="M9 19h6"/></symbol>
+<symbol id="ic-ruler" viewBox="0 0 24 24"><path d="M3 16 16 3l5 5-13 13z"/><path d="M13.5 5.5l2 2M9.5 9.5l2 2M5.5 13.5l2 2"/></symbol>
+<symbol id="ic-list" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></symbol>
+<symbol id="ic-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-4 4v-4H4z"/></symbol>
+<symbol id="ic-percent" viewBox="0 0 24 24"><circle cx="7" cy="7" r="2.3"/><circle cx="17" cy="17" r="2.3"/><path d="M18 6 6 18"/></symbol>
+<symbol id="ic-receipt" viewBox="0 0 24 24"><path d="M6 3h12v18l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5-2 1.5z"/><path d="M9 8h6M9 12h6M9 16h4"/></symbol>
+<symbol id="ic-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18"/><path d="M8 3v4M16 3v4"/></symbol>
+<symbol id="ic-bank" viewBox="0 0 24 24"><path d="M3 10 12 4l9 6"/><path d="M4 10h16v9H4z"/><path d="M4 19h16"/><path d="M7 13v4M12 13v4M17 13v4"/></symbol>
+<symbol id="ic-heart" viewBox="0 0 24 24"><path d="M12 21c-4-2.4-9-6-9-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 5-5 8.6-9 11z"/></symbol>
+<symbol id="ic-phone" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></symbol>
+<symbol id="ic-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/></symbol>
+<symbol id="ic-dome" viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M6 20v-6a6 6 0 0 1 12 0v6"/><path d="M12 8V4"/><path d="M10 4h4"/></symbol>
+<symbol id="ic-run" viewBox="0 0 24 24"><circle cx="14" cy="4.5" r="1.7"/><path d="M9 20l3-5 2 2 3 3"/><path d="M6 13l4-3 2 2 4-1"/></symbol>
+<symbol id="ic-store" viewBox="0 0 24 24"><path d="M4 9 5 4h14l1 5"/><path d="M4 9h16v11H4z"/><path d="M10 20v-5h4v5"/></symbol>
+<symbol id="ic-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/></symbol>
+<symbol id="ic-file-check" viewBox="0 0 24 24"><path d="M7 2h7l4 4v16H7z"/><path d="M14 2v4h4"/><path d="M9.5 14l2 2 4-4"/></symbol>
+<symbol id="ic-gift" viewBox="0 0 24 24"><rect x="3" y="9" width="18" height="12" rx="1"/><path d="M3 13h18"/><path d="M12 9v12"/><path d="M12 9C9 9 8 7 8 6a2 2 0 0 1 4 0 2 2 0 0 1 4 0c0 1-1 3-4 3z"/></symbol>
+<symbol id="ic-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></symbol>
+<symbol id="ic-bar-chart" viewBox="0 0 24 24"><path d="M4 20V10M11 20V4M18 20v-7"/><path d="M2 20h20"/></symbol>
+<symbol id="ic-cross" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8v8M8 12h8"/></symbol>
+<symbol id="ic-droplet" viewBox="0 0 24 24"><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/></symbol>
+<symbol id="ic-palm" viewBox="0 0 24 24"><path d="M12 22V10"/><path d="M12 10C9 8 6 8 4 6c2-2 6-2 8 2"/><path d="M12 10c3-2 6-2 8-4-2-2-6-2-8 2"/></symbol>
+<symbol id="ic-backpack" viewBox="0 0 24 24"><path d="M8 4h8v3H8z"/><path d="M6 8h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1z"/><path d="M9 12h6M9 16h6"/></symbol>
+<symbol id="ic-exchange" viewBox="0 0 24 24"><path d="M4 8h13"/><path d="M13 4l4 4-4 4"/><path d="M20 16H7"/><path d="M11 20l-4-4 4-4"/></symbol>
+<symbol id="ic-baby" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M6 20c0-4 3-6 6-6s6 2 6 6"/><path d="M10 8h.01M14 8h.01"/></symbol>
+<symbol id="ic-grad-cap" viewBox="0 0 24 24"><path d="M12 4 2 9l10 5 10-5z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/></symbol>
+<symbol id="ic-bolt" viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></symbol>
+<symbol id="ic-calculator" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M8 6h8"/><path d="M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01M8 19h.01M12 19h.01"/></symbol>
+</svg>
+"""
+
+
 HOME_SEARCH_JS = """
 <script>
 (function () {
@@ -614,6 +672,7 @@ def main():
         "ADSENSE_SLOT": adsense_slot(cfg),
         "ANALYTICS": analytics_tag(cfg),
         "CATNAV": catnav_html(cfg),
+        "ICON_SPRITE": ICON_SPRITE,
         "JSONLD": "",
         "BREADCRUMB": "",
         "RELATED": "",
@@ -661,6 +720,16 @@ def main():
 
     # --- Beranda: hero + pencarian + kartu per kategori ---
     index_pages = [p for p in cfg["pages"] if p.get("in_index")]
+    by_slug = {p["slug"]: p for p in cfg["pages"]}
+    popular = [by_slug[s] for s in cfg.get("primary_nav", []) if s in by_slug]
+    popular_html = ""
+    if popular:
+        links = "\n".join(
+            f'<a class="hero-pop" href="/{p["slug"]}/">'
+            f'{icon_html(p.get("icon", ""), 16)}<span>{p["nav"] or p["title"]}</span></a>'
+            for p in popular
+        )
+        popular_html = f'<div class="hero-popular">{links}</div>'
     sections = category_sections(cfg) + "\n" + coming_soon_section(cfg)
     index_inner = (
         '<div class="hero">'
@@ -668,6 +737,9 @@ def main():
         f'<p class="lead">{cfg["tagline"]}</p>'
         '<input type="search" id="cari" class="search" autocomplete="off" '
         'placeholder="Cari kalkulator… (mis. KPR, BMI, umur)">'
+        f'<p class="hero-trust">{len(index_pages)} kalkulator gratis &middot; tanpa daftar '
+        '&middot; data diperbarui berkala</p>'
+        f'{popular_html}'
         '</div>\n'
         + sections
         + '\n<p id="cari-kosong" class="empty" hidden>Tidak ada kalkulator yang cocok.</p>'

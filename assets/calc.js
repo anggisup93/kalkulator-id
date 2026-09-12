@@ -243,7 +243,9 @@ function kirimForm(form, onDone) {
       active = shown.length ? 0 : -1;
       list.innerHTML = shown.map(function (t, i) {
         return '<li class="' + (i === active ? "active" : "") + '" data-u="' + t.u + '">' +
-          '<span class="sr-ic" aria-hidden="true">' + (t.i || "") + "</span>" +
+          '<span class="sr-ic" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" ' +
+          'stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
+          (t.i ? '<use href="#ic-' + t.i + '"/>' : "") + "</svg></span>" +
           '<span class="sr-n">' + t.n + '</span><span class="sr-c">' + t.c + "</span></li>";
       }).join("") || '<li class="sr-empty">Tidak ada alat yang cocok</li>';
     }
