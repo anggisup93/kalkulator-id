@@ -458,6 +458,16 @@
       "icon": "",
       "title": "Kebijakan Privasi - KalkulatorID",
       "description": "Kebijakan privasi KalkulatorID mengenai penggunaan cookie, analitik, dan iklan pihak ketiga."
+    },
+    {
+      "slug": "forex",
+      "nav": "",
+      "in_index": false,
+      "hidden": true,
+      "category": "",
+      "icon": "",
+      "title": "Dashboard",
+      "description": "Halaman pribadi."
     }
   ]
 }

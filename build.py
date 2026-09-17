@@ -701,6 +701,7 @@ def main():
         inner = render_partial(
             (PAGES / f"{slug}.html").read_text(encoding="utf-8"), page_tokens)
         is_calc = bool(p.get("in_index"))
+        hidden = bool(p.get("hidden"))
         ctx = {
             **base_ctx,
             "TITLE": p["title"],
@@ -715,8 +716,14 @@ def main():
             "RELATED": related_html(cfg, p) if is_calc else "",
             "FEEDBACK": feedback if is_calc else "",
         }
+        if hidden:
+            # Halaman privat: tidak masuk sitemap/precache, dan larang
+            # pengindeksan sebagai lapis pertahanan tambahan (akses
+            # sebenarnya ditahan Cloudflare Access di depan Worker).
+            ctx["META_ROBOTS"] = "noindex, nofollow"
         write(DIST / slug / "index.html", render(layout, ctx))
-        urls.append(f"{domain}/{slug}/")
+        if not hidden:
+            urls.append(f"{domain}/{slug}/")
 
     # --- Beranda: hero + pencarian + kartu per kategori ---
     index_pages = [p for p in cfg["pages"] if p.get("in_index")]
@@ -894,7 +901,7 @@ def main():
                 f"/assets/style.css?v={asset_ver}",
                 f"/assets/calc.js?v={asset_ver}",
                 "/assets/icon.svg"]
-    precache += [f"/{p['slug']}/" for p in cfg["pages"]]
+    precache += [f"/{p['slug']}/" for p in cfg["pages"] if not p.get("hidden")]
     if articles:
         precache.append("/panduan/")
         precache += [f'/panduan/{a["slug"]}/' for a in articles]

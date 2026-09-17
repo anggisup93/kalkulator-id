@@ -1,0 +1,72 @@
+<h1>Forex Realtime</h1>
+<p class="lead">Dashboard pribadi &mdash; data dari TradingView, bukan bagian dari kalkulator publik.</p>
+
+<h2>Semua pasangan forex</h2>
+<div id="fx-screener" style="border:1px solid var(--line);border-radius:var(--radius);overflow:hidden"></div>
+
+<h2 style="margin-top:32px">Mayor &mdash; sekilas</h2>
+<div id="fx-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin:20px 0"></div>
+
+<h2 style="margin-top:32px">USD/IDR &mdash; chart penuh</h2>
+<div id="fx-main" style="height:520px;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden"></div>
+
+<script>
+(function () {
+  var theme = document.documentElement.getAttribute("data-theme") ||
+    (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+
+  var pairs = [
+    { symbol: "FX:EURUSD", label: "EUR/USD" },
+    { symbol: "FX:GBPUSD", label: "GBP/USD" },
+    { symbol: "FX:USDJPY", label: "USD/JPY" },
+    { symbol: "FX_IDC:USDIDR", label: "USD/IDR" }
+  ];
+
+  function widget(container, scriptSrc, config) {
+    var box = document.createElement("div");
+    box.className = "tradingview-widget-container";
+    box.style.height = "100%";
+    var inner = document.createElement("div");
+    inner.className = "tradingview-widget-container__widget";
+    inner.style.height = "100%";
+    box.appendChild(inner);
+    var s = document.createElement("script");
+    s.type = "text/javascript";
+    s.async = true;
+    s.src = scriptSrc;
+    s.text = JSON.stringify(config);
+    box.appendChild(s);
+    container.appendChild(box);
+  }
+
+  // Screener: tabel semua pasangan forex yang dilacak TradingView, live,
+  // bisa disortir/difilter langsung di widgetnya (bukan daftar manual).
+  widget(document.getElementById("fx-screener"),
+    "https://s3.tradingview.com/external-embedding/embed-widget-screener.js",
+    {
+      width: "100%", height: 600, defaultColumn: "overview",
+      defaultScreen: "general", market: "forex", showToolbar: true,
+      colorTheme: theme, locale: "id_ID"
+    });
+
+  var grid = document.getElementById("fx-grid");
+  pairs.forEach(function (p) {
+    widget(grid,
+      "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js",
+      {
+        symbol: p.symbol, width: "100%", height: 220, locale: "id_ID",
+        dateRange: "1D", colorTheme: theme, isTransparent: false,
+        autosize: true, largeChartUrl: ""
+      });
+  });
+
+  widget(document.getElementById("fx-main"),
+    "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js",
+    {
+      autosize: true, symbol: "FX_IDC:USDIDR", interval: "60",
+      timezone: "Asia/Jakarta", theme: theme, style: "1", locale: "id_ID",
+      withdateranges: true, allow_symbol_change: true,
+      hide_side_toolbar: false, support_host: "https://www.tradingview.com"
+    });
+})();
+</script>
